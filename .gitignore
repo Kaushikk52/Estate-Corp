@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+Frontend/node_modules/express/node_modules/finalhandler/HISTORY.md
+.gitignore
+Frontend/node_modules/make-fetch-happen/lib/fetch.js
