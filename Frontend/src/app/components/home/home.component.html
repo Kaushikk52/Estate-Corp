@@ -1,0 +1,289 @@
+<!-- slider design  -->
+<app-navbar></app-navbar>
+<div class="container">
+    <div class="row mt-5">
+      <div class="col-md-6">
+        <h2>Welcome to Estatecorp</h2>
+        <p>Your Dream Home Awaits! <a href="#">Add Property</a></p>
+        <div class="row mt-4 search-container">
+            <div class="search-tab">
+                <button class="btn btn-primary">All</button>
+                <button class="btn btn-primary">New Project</button>
+                <button class="btn btn-primary">Rental</button>
+                <button class="btn btn-primary">Resale</button>
+            </div>
+            <div class="input-group mb-3 d-flex">
+              <input type="text" class="form-control width" placeholder="Property Name" aria-label="Property Name">
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">I'm looking for</button>
+                <ul class="dropdown-menu p-3">
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="Commercial">Commercial</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="rent">- IT Park</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="rent">- Office</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="rent">- Shop</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="rent">- Showroom</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="rent">- Warehouse</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="rent">Residential</label></li>
+                  
+                </ul>
+              </div>
+              
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Area
+                </button>
+                <ul class="dropdown-menu p-3">
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area">
+                    <label class="form-check-label ms-2" for="area">Area</label>
+                  </li>
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area2">
+                    <label class="form-check-label ms-2" for="area2">Borivali E <span>Mumbai</span></label>
+                  </li>
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area3">
+                    <label class="form-check-label ms-2" for="area3">Borivali W<span>Mumbai</span></label>
+                  </li>
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area4">
+                    <label class="form-check-label ms-2" for="area4">Kandivali E <span>Mumbai</span></label>
+                  </li>
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area5">
+                    <label class="form-check-label ms-2" for="area5">Kandivali W <span>Mumbai</span></label>
+                  </li>
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area6">
+                    <label class="form-check-label ms-2" for="area6">Malad E <span>Mumbai</span></label>
+                  </li>
+                  <li>
+                    <input type="checkbox" class="form-check-input" id="area7">
+                    <label class="form-check-label ms-2" for="area7">Mira Road E <span>Mumbai</span></label>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Bedroom</button>
+                <ul class="dropdown-menu p-3">
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom1">1 Bedroom</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom2">2 Bedrooms</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom3">3 Bedrooms</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom4">4 Bedrooms</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom5">5 Bedrooms</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom6">6 Bedrooms</label></li>
+                  <li><input type="checkbox" class="form-check-input"><label class="form-check-label ms-2" for="bedroom7">7 Bedrooms</label></li>
+                </ul>
+              </div>
+              
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Max Price</button>
+                <ul class="dropdown-menu p-3">
+                  <li><input type="checkbox" class="form-check-input" id="price1"><label class="form-check-label ms-2" for="price1">$1000</label></li>
+                  <li><input type="checkbox" class="form-check-input" id="price2"><label class="form-check-label ms-2" for="price2">$2000</label></li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" type="button">Search</button>
+            </div>
+          </div>
+        </div> 
+
+      <div class="col-md-6 d-flex justify-content-end">
+        <div id="carouselExample" class="carousel slide w-100" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="assets/bg-image/new-york.jpeg" class="d-block w-80" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="assets/bg-image/chicago.jpeg" class="d-block w-80" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="assets/bg-image/pexelsphoto534233.jpeg" class="d-block w-80" alt="...">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+
+
+
+<div class="container about-container">
+    <div class="row about-flex">
+        <div class="col-lg-6 col-md-12 about-content">
+            <h5><img src="../../../assets/icons/stars.svg" alt="stars" class="icons"> About Us</h5>
+            <p>Launched in 2005, 99acres.com, India’s No. 1 property portal, deals with every aspect of the consumers’
+                needs in the real estate industry. It is an online forum where buyers, sellers and brokers/agents can
+                exchange information about real estate properties quickly, effectively and inexpensively. At
+                99acres.com, you can advertise a property, search for a property, browse through properties, build your
+                own property microsite, and keep yourself updated with the latest news and trends making headlines in
+                the realty sector.</p>
+            <a href="" class="btn btn-about">Read More</a>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <img src="../../../assets/bg-image/aboutus_back.jpeg" alt="" class="about-us-img">
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid searched-container">
+    <h4><img src="../../../assets/icons/stars.svg" alt="stars" class="icons">New Projects</h4>
+    <owl-carousel-o [options]="customOptions">
+        <ng-template carouselSlide *ngFor="let property of properties">
+            <app-cards [property]="property" [isApproved]="property.isApproved"></app-cards>
+        </ng-template>
+    </owl-carousel-o>
+</div>
+
+
+
+<div class="container searched-container">
+    <h4><img src="../../../assets/icons/stars.svg" alt="stars" class="icons"> Because you Searched </h4>
+    <div class="row flex-searched">
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card searched-card">
+                    <div class="card-body">
+                        <h5><span>0k</span>
+                            Properties listed
+                            <br>
+                            for you
+                        </h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card searched-card">
+                    <div class="card-body">
+                        <h5>
+                            Get personalised property
+                            <br>
+                            recommendations from us
+                        </h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card searched-card">
+                    <div class="card-body">
+                        <h5>
+                            Top Handpicked Projects
+                            <br>
+                            for you
+                        </h5>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card searched-card">
+                    <div class="card-body">
+                        <h5>
+                            Top Exclusive Owner
+                            <br>
+                            Properties
+                        </h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid searched-container">
+    <h4><img src="../../../assets/icons/stars.svg" alt="stars" class="icons">Hot Rental properties</h4>
+    <owl-carousel-o [options]="customOptions">
+        <ng-template carouselSlide *ngFor="let property of properties">
+            <app-cards [property]="property" [isApproved]="property.isApproved"></app-cards>
+        </ng-template>
+    </owl-carousel-o>
+</div>
+
+
+
+
+<div class="container propertyService-container">
+    <h4><img src="../../../assets/icons/stars.svg" alt="stars" class="icons">Hot Commercial properties</h4>
+    <div class="row flex-propertyService">
+        <div class="col-lg-4 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card">
+                    <img src="../../../assets/card/graphic-packers-movers.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5>Packers & Movers</h5>
+                        <p class="card-text">Home shifting and Vehicle shifting at Guaranteed lowest prices</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card">
+                    <img src="../../../assets/card/graphic-home-loans.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5>Best Home Loan Deals</h5>
+                        <p class="card-text">Compare & choose from 34+ banks to get the best home loan deal</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12">
+            <a href="" class="card-link">
+                <div class="card">
+                    <img src="../../../assets/card/graphic-home-decor.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5>Home Interiors</h5>
+                        <p class="card-text">Transform your space with our trusted Decor partners</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- owner cards design  -->
+<div class="owner-container">
+    <div class="owner-heading">
+        <h3>Owner's Choice</h3>
+        <p>Lorem ipsum dolor sit amet, cons</p>
+        <hr />
+    </div>
+    <div class="container marketing">
+        <!-- Three columns of text below the carousel -->
+        <div class="row flex-owner-card">
+            <div class="col-lg-3 owner-card">
+                <img src="../../../assets/card/third-owner.jpeg" alt="first-owner.jpg" class="owner-img">
+                <h4 class="fw-normal">Mr. Ajay Singh Kushwah</h4>
+                <p>(Managing Director, <br> BSc-Maths)</p>
+            </div><!-- /.col-lg-4 -->
+            <div class="col-lg-3 owner-card">
+                <img src="../../../assets/card/second-owner.jpeg" alt="second-owner.jpg" class="owner-img">
+                <h4 class="fw-normal">Mr. Rakesh Gaykar (Founder)</h4>
+                <p>(Founder & Managing Director, <br> MBA in Sales & Marketing)</p>
+            </div><!-- /.col-lg-4 -->
+            <div class="col-lg-3 owner-card">
+                <img src="../../../assets/card/first-owner.jpeg" alt="third-owner.jpg" class="owner-img">
+                <h4 class="fw-normal">Mr. Prem Dubey</h4>
+                <p>Business Associate</p>
+            </div><!-- /.col-lg-4 -->
+        </div><!-- /.row -->
+    </div>
+</div>

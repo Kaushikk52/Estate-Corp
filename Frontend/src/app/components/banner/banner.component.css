@@ -1,0 +1,13 @@
+.banner-container{
+    background: var(--background-darkWhite1);
+    height: 50vh;
+}
+
+.banner-row{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    height: 41vh;
+    font-size: 2rem;
+    font-weight: 700;
+}

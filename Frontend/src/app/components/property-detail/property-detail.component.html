@@ -1,0 +1,133 @@
+<!-- <p>property-detail works!</p> -->
+<div class="container-fluid property-detail-container">
+    <div class="property-feature">
+        <div class="row">
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.propertyOwner">
+                <h6>Owner: {{property.propertyOwner}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.propertyId">
+                <h6>Property Id: {{property.propertyId}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.propertyName">
+                <h6>Property Name: {{property.propertyName}}</h6>
+            </div>
+            <!-- <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.propertyType">
+                <h6>Property Type: {{property.propertyType === '0' ? 'Flat/Apartment' : property.propertyType === '1' ? 'Residential House' : property.propertyType === '2' ? 'Villa' : property.propertyType === '3' ? 'Builder Floor Apartment' : property.propertyType === '4' ? 'Residential Land/Plot' : property.propertyType === '5' ? 'Penthouse' : property.propertyType === '6' ? 'Studio Apartment' : property.propertyType === '7' ? 'Commercial office park' : property.propertyType === '8' ? 'Office in IT Park/SEZ' : property.propertyType === '9' ? 'Commercial Shop' : property.propertyType === '10' ? 'Commercial Showroom' : property.propertyType === '11' ? 'Commercial Land' : property.propertyType === '12' ? 'Warehouse/Godown' : property.propertyType === '13' ? 'Industrial Land' : property.propertyType === '14' ? 'Industrial Building' : property.propertyType === '15' ? 'Industrial Shed' : property.propertyType === '16' ? 'Agricultural Land' : property.propertyType === '17' ? 'Farm House' : 'property Type is not present'}}</h6>
+            </div> -->
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.projectName">
+                <h6>Property Type: {{property.projectName}}</h6>
+            </div>
+        </div>
+    </div>
+    <div class="gallery">
+        <div class="image-container" *ngFor="let image of property.images">
+            <img src="../../uploads/{{image.filename}}">
+        </div>        
+    </div>
+    <div class="property-feature">
+        <div class="row">
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.bedrooms">
+                <h6>Beds: {{property.bedrooms}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.bathrooms">
+                <h6>Bathroom : {{property.bathrooms}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.furnishedStatus">
+                <h6>Status: {{property.furnishedStatus}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.expectedPrice && property.expectedPriceType">
+                <h6>Price: {{property.expectedPrice}} {{property.expectedPriceType}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.monthlyRent">
+                <h6>Monthly rent: {{property.monthlyRent}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.mintanceCharge && property.mintanceChargeUnit">
+                <h6>Maintanance Charges: {{property.mintanceCharge}} {{property.mintanceChargeUnit}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.constructionAge">
+                <h6>Construction Age: {{property.constructionAge}}</h6>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-2" *ngIf="property.possesionStatus">
+                <h6>Possesion Status: {{property.mintanceCharge}} {{property.possesionStatus}}</h6>
+            </div>
+            <div class="col-lg-2 col-md-3 col-sm-2" *ngIf="property.availabilityMonth && property.availabilityYear">
+                <h6>Avaliable In: {{property.availabilityMonth}} {{property.availabilityYear}}</h6>
+            </div>
+        </div>
+    </div>
+    <div class="property-feature">
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.totalFloor && property.floorNo">
+                <p>Floor</p>
+                <h5>{{property.floorNo}} / {{property.totalFloor}} </h5>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.boundaryWall">
+                <p>Boundary Wall</p>
+                <h5>{{property.boundaryWall}}</h5>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.personalWashroom">
+                <p>Personal washroom</p>
+                <h5>{{property.personalWashroom === '0' ? 'yes' : 'No' }}</h5>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.balconies">
+                <p>Balconies</p>
+                <h5>{{property.balconies}}</h5>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.pentryCafetria">
+                <p>Pentry Cafetria</p>
+                <h5>{{property.pentryCafetria === '0' ? 'Yes' : property.pentryCafetria === '1' ? 'No' : 'Not Avaliable'}}</h5>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.facing">
+                <p>Facing</p>
+                <h5>{{property.facing }}</h5>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.carpetArea && property.carpetAreaUnit">
+                <p>Carpet Area</p>
+                <h5>{{property.carpetArea}} {{property.carpetAreaUnit}}</h5>
+            </div>            
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.coveredArea && property.coveredAreaUnit">
+                <p>Covered Area</p>
+                <h5>{{property.coveredArea}} {{property.coveredAreaUnit}}</h5>
+            </div>            
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.superArea && property.superAreaUnit">
+                <p>Super Area</p>
+                <h5>{{property.superArea}} {{property.superAreaUnit}}</h5>
+            </div>            
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.plotArea && property.plotAreaUnit">
+                <p>Plot Area</p>
+                <h5>{{property.plotArea}} {{property.plotAreaUnit}}</h5>
+            </div>            
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2" *ngIf="property.entranceWidth && property.entranceWidthUnit">
+                <p>Entrance Width</p>
+                <h5>{{property.entranceWidth}} {{property.entranceWidthUnit}}</h5>
+            </div>            
+            <div class="col-lg-3 col-md-4 col-sm-6 my-2">
+                <p>Furnished Status</p>
+                <h5>Unfurnished</h5>
+            </div>
+        </div>
+    </div>
+    <div class="more-detail">
+        <h4>More Detail</h4>
+        <div class="unorder-list">
+            <ul>
+                <li *ngIf="property.expectedPrice && property.expectedPriceType"><b>Price:</b> {{property.expectedPrice}} {{property.expectedPriceType}}</li>                                                
+                <li *ngIf="property.monthlyRent"><b>Price:</b> {{property.monthlyRent}}</li>                                                
+                <li *ngIf="property.mintanceCharge && property.mintanceChargeUnit"><b>Maintanance change:</b> {{property.mintanceCharge}} {{property.mintanceChargeUnit}}</li>                                                
+                <li *ngIf="property.city"><b>City:</b> {{property.city}}</li>
+                <li *ngIf="property.locality"><b>Locality:</b> {{property.locality}}</li>
+                <li *ngIf="property.address"><b>Address:</b> {{property.address}}</li>
+                <li *ngIf="property.possesionStatus"><b>Possesion Status:</b> {{property.possesionStatus}}</li>                
+                <li *ngIf="property.furnishedStatus"><b>Furnished Status:</b> {{property.furnishedStatus}}</li>                
+            </ul>        
+        </div>
+    </div>
+    <div class="amenities">
+        <h4>Amenities</h4>
+        <div class="row">
+            <div class="col-lg-2 col-md-4 my-2" *ngFor="let amenity of property.amenities">
+                <button type="button" class="btn active" data-bs-toggle="button" aria-pressed="true" >{{amenity}}</button>
+            </div>            
+        </div>
+    </div>
+</div>

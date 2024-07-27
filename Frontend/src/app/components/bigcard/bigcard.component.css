@@ -1,0 +1,160 @@
+
+
+.bigcard-container {
+    background: rgb(255, 255, 255);
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.25), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.1);
+}
+
+.bigcard-container h2 {
+    max-width: calc(100% - 95px);
+    font-size: 1rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: underline;
+}
+
+.bigcard-container p {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.property-info small {
+    font-size: 0.7rem;
+}
+
+.property-info p {
+    margin-bottom: 0;
+}
+
+.prop-desc {
+    max-width: calc(100% - 95px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    text-align: justify;
+    margin: 0;
+}
+
+
+
+.images-part {
+    padding: 0.6rem;
+    height: 100%;
+
+}
+
+.property-images {
+    height: 325px;
+    overflow-y: hidden;
+}
+
+.middle-container {
+    padding: 2rem 0.5rem;
+    /* overflow-y: hidden; */
+}
+
+.middle-small-container {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.25), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    margin: 0.5rem 0 1rem 0;
+}
+
+
+.icons {
+    width: 2rem;
+    height: 2rem;
+}
+
+.grid {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 4fr;
+    gap: 0.3rem;
+}
+
+
+
+/* left container of the card */
+.left-container{
+    background-color: var(--background-darkWhite1);
+    padding: 0.5rem 1rem;
+}
+
+.carpet-price-icon{
+    width: 0.9rem;
+    height: 1rem;
+}
+
+.price-icon{
+    width: 1.4rem;
+    height: 1.6rem;
+}
+
+
+.left-container h3{
+    font-size: 1.3rem;
+}
+
+.left-flex{
+    justify-content: space-around;
+    height: 100%;
+}
+
+.left-price{
+    text-align: center;
+}
+
+.callback-btn{
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--background-darkRed1);
+    border-radius: 28px;
+    margin: 1rem 0;
+    width: 100%;
+    
+}
+
+.callback-btn a {
+    color: var(--red-shad-1);
+    font-weight: 500;
+}
+
+.Detail-info{
+    padding: 0.4rem ;
+    background: var(--background-darkRed1);
+    border-radius: 28px;
+    margin: 1rem 0;
+    border: none;
+    width: 100%;
+}
+
+.Detail-info a{
+    color: var(--white);
+
+}
+
+.left-price{
+    margin-top: 2rem;
+}
+
+.left-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.left-btn p{
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 0.5rem 1rem ;
+    width: 100%;
+    border-radius: 4px;
+    text-align: center;
+}

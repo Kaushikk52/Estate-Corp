@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+<app-banner></app-banner>
+
+<div class="filter-search-container container">
+    <div class="row">
+        <!-- Location Input -->
+        <div class="col-lg-3 col-md-6 col-sm-12 form-group ">
+            <label for="location" class="form-lable">Location</label>
+            <input type="text" class="form-control" id="location" [(ngModel)]="city">
+        </div>
+        <!-- Property Type Select -->
+        <div class="col-lg-3 col-md-6 col-sm-6 form-group">
+            <label for="propertyType" class="form-lable">Property Type</label>
+            <select class="form-select" id="propertyType" [(ngModel)]="propertyType">
+                <option value="1">1 BHK</option>
+                <option value="2">2 BHK</option>
+                <option value="3">3 BHK</option>
+            </select>
+        </div>
+        <!-- Min Budget Select -->
+        <div class="col-auto form-group">
+            <label for="minBudget" class="form-lable">Min Budget</label>
+            <select class="form-select" id="minBudget" [(ngModel)]="minBudget">
+                <option value="10">10 lac</option>
+                <option value="15">15 lac</option>
+                <option value="20">20 lac</option>
+                <option value="25">25 lac</option>
+                <option value="30">30 lac</option>
+                <option value="35">35 lac</option>
+                <option value="40">40 lac</option>
+                <option value="45">45 lac</option>
+                <option value="50">50 lac</option>
+            </select>
+        </div>
+        <!-- Max Budget Select -->
+        <div class="col-auto form-group">
+            <label for="maxBudget" class="form-lable">Max Budget</label>
+            <select class="form-select" id="maxBudget" [(ngModel)]="maxBudget">
+                <option value="10">10 lac</option>
+                <option value="15">15 lac</option>
+                <option value="20">20 lac</option>
+                <option value="25">25 lac</option>
+                <option value="30">30 lac</option>
+                <option value="35">35 lac</option>
+                <option value="40">40 lac</option>
+                <option value="45">45 lac</option>
+                <option value="50">50 lac</option>
+            </select>
+        </div>
+        <!-- Search Button -->
+        <div class="col-auto form-group d-flex align-items-end">
+            <button class="btn btn-primary w-100" (click)="searchProperties()">Search</button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 col-md-8" *ngFor="let property of properties">
+            <app-bigcard [property]="property"></app-bigcard>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="card">
+                <div class="card-body bg">
+                    <h5 class="card-title">Sell/Rent your Property with us for Free</h5>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Find Buyers & Tenants easily</h5>
+
+                    <a href="#" class="btn link-btn">Post Property</a>
+                </div>
+                <div class="card-content">
+                    <h5 class="card-content-title">Here's Why <br> Estatecorp:</h5>
+                    <ul class="content-grp-list">
+                        <li class="content-list"><img src="../../../assets/icons/check.svg" alt="check icon"
+                                class="icons"> Get more views and showcase your property to a wider audience.</li>
+                        <li class="content-list"><img src="../../../assets/icons/check.svg" alt="check icon"
+                                class="icons"> Sell Faster with Premium Serivce</li>
+                        <li class="content-list"><img src="../../../assets/icons/check.svg" alt="check icon"
+                                class="icons"> Find only the right buyers or tenants that match your criteria.</li>
+                        <li class="content-list"><img src="../../../assets/icons/check.svg" alt="check icon"
+                                class="icons"> Get Quotations from multiple sellers at once. Save time, money and
+                            effort.</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
