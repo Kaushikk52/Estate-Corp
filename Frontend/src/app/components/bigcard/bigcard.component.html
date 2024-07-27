@@ -1,0 +1,125 @@
+<!-- <p>bigcard works!</p> -->
+
+
+<div class="row bigcard-container">
+    <div class="col-lg-3 images-part">
+        <owl-carousel-o [options]="customOptions" class="owl-content">
+            <ng-template carouselSlide class="owl-contents-image">
+                <img src="../../../assets/card/card-images.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images-3.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images.jpg" alt="" class="property-images">
+            </ng-template>
+            <ng-template carouselSlide>
+                <img src="../../../assets/card/card-images-2.jpg" alt="" class="property-images">
+            </ng-template>
+        </owl-carousel-o>
+    </div>
+
+    <div class="col-lg-7 middle-container">        
+        <h2>{{property.bedrooms}} BHK flat for Sale in {{property.locality}},{{property.city}}</h2>
+        <p>{{property.propertyOwner}}</p>
+        <div class="middle-small-container">
+            <div class="row">
+                <div class="col-lg-4 property-info">
+                    <div class="grid">
+                        <div>
+                            <img src="../../../assets/icons/carpet.svg" alt="" class="icons">
+                        </div>
+                        <div>
+                            <small>CARPET AREA</small>
+                            <p>{{property.carpetArea}} {{property.carpetAreaUnit}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 property-info">
+                    <div class="grid">
+                        <div>
+                            <img src="../../../assets/icons/construction.svg" alt="" class="icons">
+                        </div>
+                        <div>
+                            <small>STATUS </small>
+                            <p>{{property.possesionStatus}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 property-info">
+                    <div class="grid">
+                        <div>
+                            <img src="../../../assets/icons/floor.svg" alt="floor icons" class="icons">
+                        </div>
+                        <div>
+                            <small>FLOOR</small>
+                            <p>{{property.floorNo}} of {{property.totalFloor}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 property-info">
+                    <div class="grid">
+                        <div>
+                            <img src="../../../assets/icons/furnishing.svg" alt="furnishing icons" class="icons">
+                        </div>
+                        <div>
+                            <small>FURNISHING</small>
+                            <p>{{property.furnishedStatus}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 property-info">
+                    <div class="grid">
+                        <div>
+                            <img src="../../../assets/icons/transition.svg" alt="" class="icons">
+                        </div>
+                        <div>
+                            <small>TRANSITION</small>
+                            <p>New Project</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 property-info">
+                    <div class="grid">
+                        <div>
+                            <img src="../../../assets/icons/facing.svg" alt="facing icons" class="icons">
+                        </div>
+                        <div>
+                            <small>FACING</small>
+                            <p>{{property.facing}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="prop-desc">{{property.furnishedStatus}} flat with {{property.balconies}} balconies , with amenities like {{property.amenities}}</p>
+    </div>
+    
+        <div class="col-lg-2 left-container">
+            <div class="left-flex row">
+                <div class="left-price">
+                    <h3><img src="../../../assets/icons/rupee.svg" alt="rupee icon" class="price-icon"> 1.4 cr </h3>
+                    <p><img src="../../../assets/icons/rupee.svg" alt="rupee icon" class="carpet-price-icon"> per
+                        Sqft</p>
+                </div>
+
+                <div class="left-btn">
+                    <p><b>Price is Negociable</b></p>
+                    <button class="callback-btn"><a href="">Request Callback</a></button>
+                    <button class="Detail-info"><a href="">Detail Info</a></button>
+                </div>
+            </div>
+        </div>    
+</div>

@@ -1,0 +1,61 @@
+footer {
+	background: var(--background-black);
+	padding: 4rem 0;
+}
+.single-content {
+	text-align: center;
+	padding: 115px 0;
+}
+.single-box p {
+	color: var(--white);
+	line-height: 1.9;
+}
+.single-box h3 {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--white);
+    margin-bottom: 0.5rem !important;
+}
+.single-box .card-area i {
+	color: var(--white)fff;
+	font-size: 20px;
+	margin-right: 10px;
+}
+.single-box ul {
+	list-style: none;
+	padding: 0;
+}
+.single-box ul li a {
+	text-decoration: none;
+	color: var(--white);
+	line-height: 1;
+	font-weight: 100;
+}
+.single-box h2 {
+	color: var(--white);
+	font-size: 20px;
+	font-weight: 700;
+    margin-bottom: 1rem !important;
+}
+
+.icons {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-right: 0.3rem;
+}
+
+@media (max-width: 767px) {
+	.single-box {
+		margin-bottom: 50px;
+	}
+}
+@media (min-width: 768px) and (max-width: 991px) {
+	.single-box {
+		margin-bottom: 50px;
+	}
+}
+
+.copy-right p{
+	color: gray;
+	font-size: 0.9rem;
+}
