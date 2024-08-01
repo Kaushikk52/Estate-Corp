@@ -1,6 +1,8 @@
 import { Component, OnInit,Input } from '@angular/core';
 import { OwlOptions } from 'ngx-owl-carousel-o';
 import { Properties } from '../../Models/properties';
+import { DatabaseService } from '../../services/database.service';
+import { DashProperties } from '../../Models/dashproperties';
 
 @Component({
   selector: 'app-bigcard',
@@ -9,12 +11,10 @@ import { Properties } from '../../Models/properties';
 })
 export class BigcardComponent implements OnInit {
   @Input() property!: Properties;
+  prop!:DashProperties;
+  constructor(private dbService : DatabaseService) { }
 
-  constructor() { }
-
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   customOptions: OwlOptions = {
     loop: true,
@@ -46,5 +46,15 @@ export class BigcardComponent implements OnInit {
     nav: false,    
   }
 
+  getApprovedPropertyById(){
+    this.dbService.getApprovedPropertyById(this.property.propertyId).subscribe({
+      next: (response) => {
+        this.prop = response;
+      },
+      error:(err) => {
+        console.error('Error:', err);
+      },
+    });
+  }
 
 }
