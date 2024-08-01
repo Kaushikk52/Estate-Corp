@@ -10,22 +10,9 @@ import { DashProperties } from '../../Models/dashproperties';
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
-  @Input() property: Properties | undefined;
-  properties: Properties[] = [];
-  dashProperties: DashProperties[] = [];
-
+  
   constructor(private database: DatabaseService) {}
-
-  ngOnInit() {
-
-    this.database.getAllProperties().subscribe((data) => {
-      this.properties = data.filter((property) => property.isApproved === 1);
-    });
-
-    // this.database.getApprovedProperties().subscribe((data) => {
-    //   this.dashProperties = data;
-    // });
-  }
+  ngOnInit() {}
 
   customOptions: OwlOptions = {
     loop: true,
