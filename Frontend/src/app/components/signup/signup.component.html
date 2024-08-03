@@ -1,0 +1,90 @@
+<!-- <p>signup works!</p> -->
+<app-navbar></app-navbar>
+<app-banner></app-banner>
+<div class="login-container">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <h3>Sign up</h3>
+                <div class="login-form">                    
+                    <form [formGroup]="signupForm" (ngSubmit)="submitSignup()">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" formControlName="fullName">
+                            <div *ngIf="signupForm.controls['fullName'].invalid && signupForm.controls['fullName'].touched"
+                                class="error-message">
+                                <div *ngIf="signupForm.controls['fullName'].errors?.['required']">Full Name is
+                                    required</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">I am</label>
+                            <select class="form-select" aria-label="Default select example" formControlName="post">                                
+                                <option value="1">Owner</option>
+                                <option value="2">Tenant</option>
+                                <option value="3">Buyer</option>
+                                <option value="3">Agent</option>
+                                <option value="3">Builder</option>
+                            </select>
+                            <div *ngIf="signupForm.controls['post'].invalid && signupForm.controls['post'].touched"
+                                class="error-message">
+                                <div *ngIf="signupForm.controls['post'].errors?.['required']">This field is
+                                    required</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email address <small class="error-message">{{emailPrompt}}</small></label>
+                            <input type="email" class="form-control" formControlName="email" (focusout)="checkEmail()">
+                            <div *ngIf="signupForm.controls['email'].invalid && signupForm.controls['email'].touched"
+                                class="error-message">
+                                <div *ngIf="signupForm.controls['email'].errors?.['required']">Email is required</div>
+                                <div *ngIf="signupForm.controls['email'].errors?.['email']">
+                                    Please Enter the valid Email id
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Maharera No.</label>
+                            <input type="text" class="form-control" formControlName="maharera">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contact Number <small class="error-message">{{contactNoPrompt}}</small></label>
+                            <input type="text" class="form-control" formControlName="contactNo" (focusout)="checkContact()">
+                            <div *ngIf="signupForm.controls['contactNo'].invalid && signupForm.controls['contactNo'].touched"
+                                class="error-message">
+                                <div *ngIf="signupForm.controls['contactNo'].errors?.['required']">Contact No. is
+                                    required</div>
+                                <div *ngIf="signupForm.controls['contactNo'].errors?.['pattern']">
+                                    Please Enter the valid Mobile No.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" formControlName="password">
+                            <div *ngIf="signupForm.controls['password'].invalid && signupForm.controls['password'].touched"
+                                class="error-message">
+                                <div *ngIf="signupForm.controls['password'].errors?.['required']">Password is
+                                    required</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" formControlName="confirmPassword">
+                            <div *ngIf="signupForm.errors?.['mismatch']" class="error-message">
+                                Password is not Match
+                            </div>
+
+                        </div>
+                        <button type="submit" class="btn btn-login" [disabled]="signupForm.invalid">Submit</button>
+                    </form>
+                    <small><b>Already a member? <a [routerLink]="['/login']" routerLinkActive="router-link-active">Login</a></b></small>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <img src="../../../assets/images/login-images.jpg" alt="login-images.jpg" class="signup-image">
+            </div>
+        </div>
+    </div>
+</div>

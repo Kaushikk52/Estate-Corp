@@ -1,0 +1,43 @@
+<!-- <p>user-dash works!</p> -->
+<app-navbar></app-navbar>
+<app-banner></app-banner>
+<div class="search-bar">
+  <img src="../../../assets/icons/search.svg" alt="" class="icons">
+  <input type="text" placeholder="Search for a user..." class="search-input" [(ngModel)]="searchText">
+</div>
+<div class="container table-container my-4">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email Id</th>
+            <th scope="col">Contact No.</th>
+            <th scope="col">Maharera No.</th>
+            <th scope="col">No. Property</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="searchText; else originalUsers">
+            <tr *ngFor="let user of filterUsers()">
+              <th scope="row">{{user.id}}</th>
+              <td>{{user.fullName}}</td>
+              <td>{{user.email}}</td>            
+              <td>{{user.contactNo}}</td>            
+              <td>{{user.maharera}}</td>            
+              <td>{{user.propertyCount}}</td>            
+            </tr>
+          </ng-container>
+          <ng-template #originalUsers>
+            <tr *ngFor="let user of users">
+              <th scope="row">{{user.id}}</th>
+              <td>{{user.fullName}}</td>
+              <td>{{user.email}}</td>            
+              <td>{{user.contactNo}}</td>            
+              <td>{{user.maharera}}</td>            
+              <td>{{user.propertyCount}}</td>            
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+</div>

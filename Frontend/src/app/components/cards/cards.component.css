@@ -1,0 +1,32 @@
+.global-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+  
+  .global-card:hover {
+    transform: scale(1.05); /* Increase the size on hover */
+  }
+  
+  .global-card p{
+    margin-bottom: 1rem !important;
+  }
+  
+  .card-body {
+    position: relative;
+  }
+  
+  .link-btn {
+    /* position: absolute; */
+    /* bottom: 10px;  */
+    /* left: 50%; */
+    transform: translateX(-50%);
+    opacity: 0; /* Initially hide the button */
+    transition: opacity 0.3s, bottom 0.3s; /* Add bottom property to the transition */
+  }
+  
+  .global-card:hover .link-btn {
+    opacity: 1; /* Show the button on hover */
+    bottom: 20px; /* Adjust the bottom position on hover */
+  }
+  
