@@ -25,6 +25,9 @@ export class DashProperties {
     possesionStatus: string;
     amenities: string[];
     isApproved: number;
+    saleNagociablePrice:number;
+    expectedPrice:number;
+    expectedPriceType:string;
 
     constructor(
         id: number,
@@ -50,7 +53,10 @@ export class DashProperties {
         superAreaUnit: string,
         possesionStatus: string,
         amenities: string[],
-        isApproved: number
+        isApproved: number,
+        saleNagociablePrice:number,
+        expectedPrice:number,
+        expectedPriceType:string
     ) {
         this.id = id;
         this.propertyOwner = propertyOwner;
@@ -76,5 +82,8 @@ export class DashProperties {
         this.possesionStatus = possesionStatus;
         this.amenities = amenities;
         this.isApproved = isApproved;
+        this.saleNagociablePrice = saleNagociablePrice;
+        this.expectedPrice = expectedPrice;
+        this.expectedPriceType = expectedPriceType;
     }
 }
