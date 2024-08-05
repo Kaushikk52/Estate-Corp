@@ -1,55 +1,45 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ComponentService } from '../../services/component.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from '../../services/database.service';
 
 @Component({
   selector: 'app-addproperty',
   templateUrl: './addproperty.component.html',
-  styleUrl: './addproperty.component.css'
+  styleUrls: ['./addproperty.component.css']
 })
 export class AddpropertyComponent implements OnInit {
-
   @Input() propertyForm: FormGroup;
-  
+  @Input() secondFormGroup: FormGroup;
+  @Input() thirdFormGroup: FormGroup;
+  @Input() fourthFormGroup: FormGroup;
+
+  currentStep = 1;
   title: string = 'Add property';
   selectedFloor!: number;
   floors: number[];
-
-
-
   images: any = [];
   propertiesFilesSource: any = [];
   defaultImageIndex: number = -1;
 
-  constructor(private component: ComponentService, private database: DatabaseService) {
-    this.propertyForm = new FormGroup({
+  constructor(
+    private component: ComponentService,
+    private database: DatabaseService,
+    private formBuilder: FormBuilder
+  ) {
+    // Initialize the form
+    this.propertyForm = this.formBuilder.group({
       propertyOption: new FormControl('', [Validators.required]),
       propertyType: new FormControl('0', [Validators.required]),
-      propertyVariant: new FormControl('', [Validators.required]),
+      propertyVariant: new FormControl(''),
       projectName: new FormControl(''),
       propertyName: new FormControl(''),
       city: new FormControl('', [Validators.required]),
       locality: new FormControl('', [Validators.required]),
       address: new FormControl('', [Validators.required]),
-      bedrooms: new FormControl(''),
-      totalFloor: new FormControl(''),
-      floorNo: new FormControl(''),
-      furnishedStatus: new FormControl(''),
       boundaryWall: new FormControl(''),
       personalWashroom: new FormControl(''),
-      balconies: new FormControl(''),
-      bathrooms: new FormControl(''),
       pentryCafetria: new FormControl(''),
-      facing: new FormControl(''),
-      carpetArea: new FormControl(''),
-      carpetAreaUnit: new FormControl(''),
-      coveredArea: new FormControl(''),
-      coveredAreaUnit: new FormControl(''),
-      superArea: new FormControl(''),
-      superAreaUnit: new FormControl(''),
-      plotArea: new FormControl(''),
-      plotAreaUnit: new FormControl(''),
       entranceWidth: new FormControl(''),
       entranceWidthUnit: new FormControl(''),
       monthlyRent: new FormControl(''),
@@ -59,37 +49,59 @@ export class AddpropertyComponent implements OnInit {
       constructionAge: new FormControl(''),
       availabilityMonth: new FormControl(''),
       availabilityYear: new FormControl(''),
-      rentNagociablePrice: new FormControl(''),
+      rentNegotiablePrice: new FormControl(''),
       expectedPrice: new FormControl(''),
       expectedPriceType: new FormControl(''),
-      saleNagociablePrice: new FormControl(''),
-      amenities: new FormControl([]),
+      saleNegotiablePrice: new FormControl(''),
+    });
+
+    this.secondFormGroup = this.formBuilder.group({
       propertiesFile: new FormControl(''),
-      // propertiesFileSource: new FormControl(''),
       defaultImage: new FormControl('', [Validators.required])
-    })
+    });
+
+    this.thirdFormGroup = this.formBuilder.group({
+      bedrooms: new FormControl(''),
+      balconies: new FormControl(''),
+      bathrooms: new FormControl(''),
+      totalFloor: new FormControl(''),
+      floorNo: new FormControl(''),
+      facing: new FormControl(''),
+      furnishedStatus: new FormControl(''),
+      carpetArea: new FormControl(''),
+      carpetAreaUnit: new FormControl(''),
+      coveredArea: new FormControl(''),
+      coveredAreaUnit: new FormControl(''),
+      superArea: new FormControl(''),
+      superAreaUnit: new FormControl(''),
+      plotArea: new FormControl(''),
+      plotAreaUnit: new FormControl(''),
+     
+    });
+
+    this.fourthFormGroup = this.formBuilder.group({
+      amenities: new FormControl([]),
+    });
 
     this.floors = Array.from({ length: 200 }, (_, i) => i + 1);
   }
 
-
   ngOnInit(): void {
     this.setBannerTitle();
+    this.onPropertyOptionChange(); // Add this line to initialize the listener
   }
 
   get f() {
-    return this.propertyForm.controls
+    return this.propertyForm.controls;
   }
 
   onSelectDefaultImage(index: number) {
-    this.defaultImageIndex = index;   //update the defaultImageIndex
-    this.propertyForm.patchValue({ defaultImage: index })
+    this.defaultImageIndex = index; // Update the defaultImageIndex
+    this.propertyForm.patchValue({ defaultImage: index });
   }
 
-
-
   onFileChange(event: any) {
-    const files = event.target.files
+    const files = event.target.files;
     this.images.push(...files);
 
     if (files && files.length) {
@@ -97,12 +109,8 @@ export class AddpropertyComponent implements OnInit {
         const reader = new FileReader();
         reader.readAsDataURL(files[i]);
         reader.onload = (event: any) => {
-          // this.images.push(reader.result);
-          // this.propertyForm.patchValue({
-          // propertiesFileSource: this.images
-          // })
-          this.propertiesFilesSource.push(event.target.result)
-        }
+          this.propertiesFilesSource.push(event.target.result);
+        };
       }
     }
   }
@@ -120,7 +128,6 @@ export class AddpropertyComponent implements OnInit {
     return false; // Hide the section by default
   }
 
-
   onCheckboxChange(event: any, amenity: string) {
     const amenities = this.propertyForm.get('amenities')?.value;
     if (event.target.checked) {
@@ -132,6 +139,50 @@ export class AddpropertyComponent implements OnInit {
       }
     }
     this.propertyForm.get('amenities')?.setValue(amenities);
+  }
+
+  // Listen for changes on the propertyOption form control
+  onPropertyOptionChange() {
+    this.propertyForm.get('propertyOption')?.valueChanges.subscribe((value) => {
+      const propertyVariantControl = this.propertyForm.get('propertyVariant');
+
+      if (value === 'rent') {
+        propertyVariantControl?.setValidators([Validators.required]);
+      } else {
+        propertyVariantControl?.clearValidators();
+      }
+
+      propertyVariantControl?.updateValueAndValidity();
+    });
+  }
+
+  nextStep() {
+    // Log the form validity and all controls
+    console.log('Property Form Valid:', this.propertyForm.valid);
+    Object.keys(this.propertyForm.controls).forEach((key) => {
+      const control = this.propertyForm.get(key);
+      console.log(
+        `Control: ${key}, Valid: ${control?.valid}, Value: ${control?.value}, Errors: ${control?.errors}`
+      );
+    });
+
+    // Check if form is valid and proceed
+    if (this.currentStep === 1 && this.propertyForm.valid) {
+      this.currentStep++;
+      console.log('Moving to step 2');
+    } else if (this.currentStep === 2 && this.secondFormGroup.valid) {
+      this.currentStep++;
+      console.log('Moving to step 3');
+    }else if(this.currentStep === 3 && this.thirdFormGroup.valid){
+      this.currentStep++;
+      console.log('Moving to step 4');
+    }else {
+      console.log('Form is not valid or another issue is present');
+    }
+  }
+
+  previousStep() {
+    this.currentStep--;
   }
 
   submitPropertyForm() {
@@ -177,10 +228,10 @@ export class AddpropertyComponent implements OnInit {
       formData.append('constructionAge', this.propertyForm.get('constructionAge')?.value);
       formData.append('availabilityMonth', this.propertyForm.get('availabilityMonth')?.value);
       formData.append('availabilityYear', this.propertyForm.get('availabilityYear')?.value);
-      formData.append('rentNagociablePrice', this.propertyForm.get('rentNagociablePrice')?.value);
+      formData.append('rentNegotiablePrice', this.propertyForm.get('rentNegotiablePrice')?.value);
       formData.append('expectedPrice', this.propertyForm.get('expectedPrice')?.value);
       formData.append('expectedPriceType', this.propertyForm.get('expectedPriceType')?.value);
-      formData.append('saleNagociablePrice', this.propertyForm.get('saleNagociablePrice')?.value);
+      formData.append('saleNegotiablePrice', this.propertyForm.get('saleNegotiablePrice')?.value);
       formData.append('amenities', this.propertyForm.get('amenities')?.value);
       formData.append('defaultImage', this.propertyForm.get('defaultImage')?.value);   
 
