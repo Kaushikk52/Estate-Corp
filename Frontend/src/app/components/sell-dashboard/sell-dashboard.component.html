@@ -32,8 +32,8 @@
               <td>{{property.city}}</td>            
               <td>{{property.locality}}</td>  
               <td class="view" [routerLink]="['/property', property.propertyId]" routerLinkActive="router-link-active" >View</td>          
-              <!-- <td class="edit">Edit</td> -->
               <td class="delete" [hidden]="property.isConfirm">Delete</td>   
+              <td><button class="edit" (click)="approveProperty(property.propertyId)">Approve</button></td>
               <td class="view" (click)="confirmProperty(property.propertyId)">{{ property.isConfirm ? 'Confirmed' : 'Confirm' }}</td>   
             </ng-container>
             </tr>
