@@ -186,7 +186,6 @@ export class AddpropertyComponent implements OnInit {
   }
 
   submitPropertyForm() {
-    // console.log(this.propertyForm.value);
     var propertyOwner = localStorage.getItem('Name');
     if (propertyOwner !== null) {
       const randomNum = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit number
@@ -242,15 +241,23 @@ export class AddpropertyComponent implements OnInit {
       this.database.postProperty(formData).subscribe(data => {
         console.log(data);
       })
-
-
-
-
-
-
-
-
       // this.propertyForm.reset();
+    }
+  }
+
+  onImageChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length) {
+      const file = input.files[0];
+      this.propertyForm.patchValue({
+        image: file
+      });
+      // Optional: You can also use a FileReader to preview the image
+      // const reader = new FileReader();
+      // reader.onload = () => {
+      //   console.log(reader.result); // Handle the file preview
+      // };
+      // reader.readAsDataURL(file);
     }
   }
 

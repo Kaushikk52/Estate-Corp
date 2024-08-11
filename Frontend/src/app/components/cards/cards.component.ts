@@ -15,12 +15,21 @@ constructor(private dbServ: DatabaseService){}
 
 ngOnInit(): void {
     this.getAllProperties();
+    this.setPropertyType();
 }
 
   getAllProperties() {
     this.dbServ.getAllProperties().subscribe((res)=>{
         this.properties = res
-        .filter((element)=> element.isApproved == 1);
+        .filter((element)=> element.isApproved == 1)
     })
   }
+
+  setPropertyType(){
+    this.properties?.forEach((property)=>{
+      if(property.propertyType == "1") property.propertyType = "Residential Buy"
+      if(property.propertyType == "2") property.propertyType = "Residential Rent"
+    })
+  }
+
 }
