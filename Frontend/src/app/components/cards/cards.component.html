@@ -1,26 +1,19 @@
-<!-- 
-  <a href="">
-    <div class="card global-card">
-      <img src="../../../assets/images/property.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <span>{{property.bedrooms}} BHK Flat</span>
-        <h6> &#x20B9; 47 Lac | {{property.carpetArea}} {{property.carpetAreaUnit}}</h6>
-        <p class="card-text">{{property.possesionStatus}}</p>
-        <a href="" class="link-btn">View Detail</a>
+<div class="col-md-4 mb-4" *ngFor="let property of properties">
+  <div class="card">
+    <img src="{{ property.defaultImage }}" class="card-img-top" alt="Villa Image">
+    <div class="card-body">
+      <h5 class="card-title">{{ property.propertyName}}</h5>
+      <p class="card-text">{{ property.bathrooms }} bathrooms • {{ property.bedrooms }} bedrooms</p>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span>From {{ property.expectedPrice }} {{property.expectedPriceType}} INR</span>
+          <span class="badge bg-warning text-dark">{{ property.totalFloor }} ★</span>
+        </div>
+        <button class="btn btn-outline-secondary">
+          <i class="bi bi-heart"></i>
+        </button>
       </div>
     </div>
-  </a> -->
+  </div>
+</div>
 
-  <a href="">
-    <div class="card global-card">
-      <img src="../../../assets/images/property.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <span> {{property.propertyName}}</span>
-        <span> {{property.bedrooms}} BHK Flat | {{property.carpetArea}} {{property.carpetAreaUnit}}</span>
-        <h6>  {{property.possesionStatus}}</h6>
-        <h6> &#x20B9; 3Lac </h6>
-        <p> Location - {{property.locality}} - {{property.city}}</p>
-        <a href="" class="link-btn">View Detail</a>
-      </div>
-    </div>
-  </a>
