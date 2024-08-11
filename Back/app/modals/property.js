@@ -3,7 +3,6 @@ const sequelize = require('../../util/database');
 
 
 const Property = sequelize.define('Property', {
-  // Model attributes are defined here
   propertyOwner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -41,7 +40,8 @@ const Property = sequelize.define('Property', {
     type: DataTypes.STRING
   },
   totalFloor: {
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
+    allowNull:true
   },
   floorNo: {
     type: DataTypes.STRING
