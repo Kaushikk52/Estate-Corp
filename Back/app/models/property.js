@@ -3,7 +3,6 @@ const sequelize = require('../../util/database');
 
 
 const Property = sequelize.define('Property', {
-  // Model attributes are defined here
   propertyOwner: {
     type: DataTypes.STRING,
     allowNull: false
@@ -38,10 +37,14 @@ const Property = sequelize.define('Property', {
     type: DataTypes.STRING,
   },
   bedrooms: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   totalFloor: {
-    type: DataTypes.INTEGER
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   floorNo: {
     type: DataTypes.STRING
@@ -118,7 +121,7 @@ const Property = sequelize.define('Property', {
   availabilityYear: {
     type: DataTypes.STRING
   },
-  rentNagociablePrice: {
+  rentNegotiablePrice: {
     type: DataTypes.STRING
   },
   expectedPrice: {
@@ -127,7 +130,7 @@ const Property = sequelize.define('Property', {
   expectedPriceType: {
     type: DataTypes.STRING
   },
-  saleNagociablePrice: {
+  saleNegotiablePrice: {
     type: DataTypes.STRING
   },
   amenities: {

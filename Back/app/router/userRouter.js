@@ -4,9 +4,9 @@ module.exports = app => {
     var router = require('express').Router();
 
 
-    router.post('/signup', UserController.postSignup);
+    router.post('/signup', UserController.register);
 
-    router.post('/login', UserController.postLogin);
+    router.post('/login', UserController.login);
 
     router.get('/all-user', UserController.getUsers);
 

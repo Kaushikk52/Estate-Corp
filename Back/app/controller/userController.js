@@ -1,138 +1,51 @@
-const User = require('../modals/user');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
-
-exports.postSignup = (req, res) =>{
-    // console.log(req.body);
-    User.create(req.body).then((response)=>{
-        res.send({message: "User created successfully!"});
-    }).catch(err =>{
+//register
+exports.register = async (req, res) =>{
+    try{
+        const user = await User.create(req.body);
+        res.status(201).send({message: "User created successfully!",user:user});
+    }catch(err){
         console.log(err);
         res.send({error: err.message})
-    })
+    }
 }
 
-// exports.postLogin = (req, res) => {
-//     console.log(req.body);
-//     const email = req.body.email;
-//     const password = req.body.password;
-//     if(email === email && isAdmin){
-//         if(password === password){
-//             const token = jwt.sign({emailId: email}, 'estatecorp', {expiresIn: '1h'})
-//             console.log('login is Sucessful')
-//             res.send({status: 'success', token: token})
-//         }else{
-//             console.log('Incorrect password')
-//             return res.send({status: 'password'})
-//         }
-//     }else{
-//         try{
-//             User.findOne({ where: {email: email}}).then(user =>{
-//                 if(!user){
-//                     console.log('User not found');
-//                     return res.send({status: 'login'})
-//                 }
-
-//                 if(password !== user.password){
-//                     console.log('Incorrect Password')
-//                     res.send({status: 'password'})
-//                 }
-
-//                 const token = jwt.sign({email: user.email}, 'estatecorp', {expiresIn: '1h'})
-
-//                 console.log('Login successful');
-//                 res.send({ status: 'successful' , token: token});
-//             }).catch(err =>{
-//                 console.log(err)
-//                 res.send({ error: 'Error while retrieving user data' });
-//             })
-//         } catch(error){
-//             console.log(error);
-//             res.send({ error: 'Error while retrieving user data' });
-//         }
-//     }
-
-// }
-
-exports.postLogin = (req, res) => {
-
-
-    console.log(req.body)
-    User.findOne({ where: { email: req.body.email }})
-    .then(user =>{
-        // console.log(user)
-        if(!user){
+//login
+exports.login = async (req, res) => {
+    try{
+        const {email,password} = req.body;
+        const existingUser = await User.findOne({ where: { email: email }});
+        if(!existingUser){
             console.log('User not found');
             return res.json({ status: 'login' });
         }
-
-        if (req.body.password !== user.password) {
+        if (password !== existingUser.password) {
             console.log('Incorrect password');
             return res.json({ status: 'password' });
         }
-
-        const token = jwt.sign({emailId: user.email}, 'estatecorp', {expiresIn: '1h'})
-
+        const token = jwt.sign({emailId: existingUser.email}, 'estatecorp', {expiresIn: '1h'})
         console.log('Login success');
-        res.json({ status: 'success' , token: token, user: user});
-
-
-    }).catch(err =>{
+        res.json({ status: 'success' , token: token, user: existingUser});
+    }catch(err){
         console.log(err)
         res.json({ error: 'Error while retrieving user data' });
-    })
-
-
-
-
-
-
-
-
-    // console.log(req.body);
-    // const email = req.body.email;
-    // const password = req.body.password;
-
-    // // Assuming isAdmin is a property of the User model
-    // User.findOne({ where: { email: email } }).then(user => {
-    //     if (!user) {
-    //         console.log('User not found');
-    //         return res.send({ status: 'login' });
-    //     }
-
-    //     if(password !== user.password){
-    //         console.log('Incorrect Password');
-    //         return res.send({ status: 'password' });
-    //     }
-
-    //     // if (user.isAdmin) {
-    //     //     // Admin login logic
-    //     //     // You may want to check the password here as well
-    //     //     const token = jwt.sign({ email: user.email }, 'estatecorp', { expiresIn: '1h' });
-    //     //     console.log('Admin login successful');
-    //     //     // console.log(user)
-    //     //     return res.send({ status: 'admin', token: token, user: user });
-    //     // }
-        
-    //     const token = jwt.sign({ email: user.email }, 'estatecorp', { expiresIn: '1h' });
-    //     console.log('Regular user login successful');
-    //     // console.log(user)
-    //     res.send({ status: 'success', token: token, user: user });
-    // }).catch(err => {
-    //     console.log(err);
-    //     res.send({ error: 'Error while retrieving user data' });
-    // });
+    }
 };
 
-
-exports.getUsers = (req, res) =>{
-    User.findAll().then(users =>{
-        // console.log(users);
-    
-        res.send(users)
-    }).catch(err =>{
-        console.log(err)
-    })
+//Get all users
+exports.getUsers = async (req, res) =>{
+    try{
+        const users = await User.findAll();
+        if(!users){
+            throw new Error('No users in DB');
+        }
+        res.status(200).send(users);
+    }catch(err){
+        console.log(err);
+        res.status(500).send({message:err.message})
+    }
 }
 
 

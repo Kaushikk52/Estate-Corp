@@ -13,7 +13,7 @@ module.exports = app => {
             callback(null, Date.now() + path.extname(file.originalname))
         }
     })
-
+    // file size = 10mb
     var upload = multer({ storage: storage,  limits: {fileSize: 10 * 1024 * 1024 * 1024 , fieldSize: 10 * 1024 * 1024 }})
 
 
@@ -21,21 +21,20 @@ module.exports = app => {
 
     router.get('/all', PropertyController.getAllProperties);
 
-    router.get('/search', PropertyController.getProperties);
+    router.get('/search', PropertyController.getPropertiesByCityBedrooms);
 
-    router.get('', PropertyController.getNotConfirmProperties);
+    router.get('', PropertyController.getNotApprovedProperties);
 
-    router.get('/confirmProperties', PropertyController.getConfirmedProperties);
-
-    router.get('/confirm', PropertyController.confirmProperty);
-
-    router.get('/:propertyId', PropertyController.getPropertyDetil)
+    router.get('/:propertyId', PropertyController.getPropertyDetails)
 
     router.get('/allapproved', PropertyController.getApprovedProperties);
 
     router.put('/approve', PropertyController.approveProperty);
 
     router.put('/unapprove', PropertyController.unApproveProperty);
+
+    // router.get('/confirmProperties', PropertyController.getConfirmedProperties);
+    // router.get('/confirm', PropertyController.confirmProperty);
 
     // Mount the usersRouter under the /users base path
     app.use('/properties', router);

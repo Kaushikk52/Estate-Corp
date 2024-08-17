@@ -11,6 +11,8 @@ export class SellDashboardComponent implements OnInit {
 
   title: string = 'Property List';
   notConfirmProperties: Array<any> = []
+  notApprovedProperties: Array<any> = []
+  isApproved: boolean = false;
   isConfimed: boolean = false
   loggedIn:any = localStorage.getItem('Name');
 
@@ -27,7 +29,7 @@ export class SellDashboardComponent implements OnInit {
 
   getNotConfirmProperty() {
     this.database.getNotConfirmProperties().subscribe((data: any) => {
-      console.log('this is te not confim property', data)
+      console.log('this is not confim property', data)
       this.notConfirmProperties = data
     })
   }
@@ -44,6 +46,13 @@ export class SellDashboardComponent implements OnInit {
           propertyToUpdate.isConfirm = true;          
         }
       }
+    })
+  }
+
+  approveProperty(propertyId: any){
+    this.database.approveProperty(propertyId).subscribe((res)=>{
+      console.log(res.toString(),propertyId);
+      this.database.approveProperty(propertyId);
     })
   }
 

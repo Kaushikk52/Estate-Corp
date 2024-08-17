@@ -36,10 +36,14 @@ const DashProperty = sequelize.define('DashProperty', {
     type: DataTypes.STRING,
   },
   bedrooms: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   totalFloor: {
-    type: DataTypes.INTEGER
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   floorNo: {
     type: DataTypes.STRING
