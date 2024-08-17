@@ -33,7 +33,6 @@
 /* Villa Listings Styles */
 .villa-listings {
   margin-top: 20px;
-  gap: 20px;
 }
 
 .villa-card {
@@ -42,6 +41,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
   transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
 }
 
 .villa-card:hover {
@@ -68,7 +68,7 @@
 }
 
 .price {
-  font-size: 25px;
+  font-size: 18px;
   font-weight: bold;
   color: #000000;
 }
@@ -92,9 +92,9 @@
       flex-direction: column;
   }
 
-  .villa-card {
+  /* .villa-card {
       width: 100%;
-  }
+  } */
 }
   
   
