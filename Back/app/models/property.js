@@ -121,7 +121,7 @@ const Property = sequelize.define('Property', {
   availabilityYear: {
     type: DataTypes.STRING
   },
-  rentNagociablePrice: {
+  rentNegotiablePrice: {
     type: DataTypes.STRING
   },
   expectedPrice: {
@@ -130,7 +130,7 @@ const Property = sequelize.define('Property', {
   expectedPriceType: {
     type: DataTypes.STRING
   },
-  saleNagociablePrice: {
+  saleNegotiablePrice: {
     type: DataTypes.STRING
   },
   amenities: {

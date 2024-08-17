@@ -4,9 +4,6 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const sequelize = require('./util/database');
-const User = require('./app/modals/user');
-const Property = require('./app/modals/property');
-const DashProperty = require('./app/modals/dashProperty');
 
 
 const app = express()
