@@ -37,11 +37,14 @@ const Property = sequelize.define('Property', {
     type: DataTypes.STRING,
   },
   bedrooms: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   totalFloor: {
-    type: DataTypes.INTEGER,
-    allowNull:true
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   floorNo: {
     type: DataTypes.STRING

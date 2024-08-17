@@ -3,102 +3,169 @@ const Property = require('../modals/property');
 const DashProperty = require('../modals/dashProperty');
 
 
-exports.postProperty = (req, res) => {
-    console.log('Property data', req.body)
-    console.log('files', req.files)
-    const {
-        propertyId,
-        propertyOwner,
-        propertyName,
-        projectName,
-        propertyType,
-        propertyVariant,
-        city,
-        locality,
-        address,
-        bedrooms,
-        totalFloor,
-        floorNo,
-        furnishedStatus,
-        boundaryWall,
-        personalWashroom,
-        balconies,
-        bathrooms,
-        pentryCafetria,
-        facing,
-        carpetArea,
-        carpetAreaUnit,
-        coveredArea,
-        coveredAreaUnit,
-        superArea,
-        superAreaUnit,
-        plotArea,
-        plotAreaUnit,
-        entranceWidth,
-        entranceWidthUnit,
-        monthlyRent,
-        mintanceCharge,
-        mintanceChargeUnit,
-        possesionStatus,
-        onstructionAge,
-        availabilityMonth,
-        availabilityYear,
-        rentNagociablePrice,
-        expectedPrice,
-        expectedPriceType,
-        saleNagociablePrice,
-        amenities,
-        defaultImage
-    } = req.body
+// exports.postProperty = (req, res) => {
+//     console.log('Property data', req.body)
+//     console.log('files', req.files)
+//     const {
+//         propertyId,
+//         propertyOwner,
+//         propertyName,
+//         projectName,
+//         propertyType,
+//         propertyVariant,
+//         city,
+//         locality,
+//         address,
+//         bedrooms,
+//         totalFloor,
+//         floorNo,
+//         furnishedStatus,
+//         boundaryWall,
+//         personalWashroom,
+//         balconies,
+//         bathrooms,
+//         pentryCafetria,
+//         facing,
+//         carpetArea,
+//         carpetAreaUnit,
+//         coveredArea,
+//         coveredAreaUnit,
+//         superArea,
+//         superAreaUnit,
+//         plotArea,
+//         plotAreaUnit,
+//         entranceWidth,
+//         entranceWidthUnit,
+//         monthlyRent,
+//         mintanceCharge,
+//         mintanceChargeUnit,
+//         possesionStatus,
+//         onstructionAge,
+//         availabilityMonth,
+//         availabilityYear,
+//         rentNagociablePrice,
+//         expectedPrice,
+//         expectedPriceType,
+//         saleNagociablePrice,
+//         amenities,
+//         defaultImage
+//     } = req.body
 
-    const images = req.files.map(file => ({ filename: file.filename }));
+//     const images = req.files.map(file => ({ filename: file.filename }));
 
-    Property.create({
-        propertyId,
-        propertyOwner,
-        propertyName,
-        projectName,
-        propertyType,
-        propertyVariant,
-        city,
-        locality,
-        address,
-        bedrooms,
-        totalFloor,
-        floorNo,
-        furnishedStatus,
-        boundaryWall,
-        personalWashroom,
-        balconies,
-        bathrooms,
-        pentryCafetria,
-        facing,
-        carpetArea,
-        carpetAreaUnit,
-        coveredArea,
-        coveredAreaUnit,
-        superArea,
-        superAreaUnit,
-        plotArea,
-        plotAreaUnit,
-        entranceWidth,
-        entranceWidthUnit,
-        monthlyRent,
-        mintanceCharge,
-        mintanceChargeUnit,
-        possesionStatus,
-        onstructionAge,
-        availabilityMonth,
-        availabilityYear,
-        rentNagociablePrice,
-        expectedPrice,
-        expectedPriceType,
-        saleNagociablePrice,
-        amenities,
-        defaultImage,
-        images: JSON.stringify(images) // Store images as JSON string
-    }).then(result => {
-        DashProperty.create({
+//     Property.create({
+//         propertyId,
+//         propertyOwner,
+//         propertyName,
+//         projectName,
+//         propertyType,
+//         propertyVariant,
+//         city,
+//         locality,
+//         address,
+//         bedrooms,
+//         totalFloor,
+//         floorNo,
+//         furnishedStatus,
+//         boundaryWall,
+//         personalWashroom,
+//         balconies,
+//         bathrooms,
+//         pentryCafetria,
+//         facing,
+//         carpetArea,
+//         carpetAreaUnit,
+//         coveredArea,
+//         coveredAreaUnit,
+//         superArea,
+//         superAreaUnit,
+//         plotArea,
+//         plotAreaUnit,
+//         entranceWidth,
+//         entranceWidthUnit,
+//         monthlyRent,
+//         mintanceCharge,
+//         mintanceChargeUnit,
+//         possesionStatus,
+//         onstructionAge,
+//         availabilityMonth,
+//         availabilityYear,
+//         rentNagociablePrice,
+//         expectedPrice,
+//         expectedPriceType,
+//         saleNagociablePrice,
+//         amenities,
+//         defaultImage,
+//         images: JSON.stringify(images) // Store images as JSON string
+//     }).then(result => {
+//         DashProperty.create({
+//             propertyId,
+//             propertyOwner,
+//             propertyName,
+//             projectName,
+//             propertyType,
+//             propertyVariant,
+//             city,
+//             locality,
+//             address,
+//             bedrooms,
+//             totalFloor,
+//             floorNo,
+//             furnishedStatus,
+//             boundaryWall,
+//             personalWashroom,
+//             balconies,
+//             bathrooms,
+//             pentryCafetria,
+//             facing,
+//             carpetArea,
+//             carpetAreaUnit,
+//             coveredArea,
+//             coveredAreaUnit,
+//             superArea,
+//             superAreaUnit,
+//             plotArea,
+//             plotAreaUnit,
+//             entranceWidth,
+//             entranceWidthUnit,
+//             monthlyRent,
+//             mintanceCharge,
+//             mintanceChargeUnit,
+//             possesionStatus,
+//             onstructionAge,
+//             availabilityMonth,
+//             availabilityYear,
+//             rentNagociablePrice,
+//             expectedPrice,
+//             expectedPriceType,
+//             saleNagociablePrice,
+//             amenities,
+//             defaultImage,
+//             images: JSON.stringify(images) // Store images as JSON string
+//         }).then(property => {
+//             console.log(property)
+//             res.send(JSON.stringify({ message: 'Property and Dashboard property created sucessfully' }))
+//         }).catch(err => {
+//             console.log(err)
+//             res.send(JSON.stringify({ err: 'Property and Dashboard property is failed to create' }))
+//         })
+//     }).catch(err => {
+//         console.log(err)
+//         res.send(JSON.stringify({ error: err }))
+//     })
+// }
+
+
+const getValueOrDefault = (value, defaultValue = null) => {
+    return value === undefined || value === '' ? defaultValue : value;
+};
+
+exports.postProperty = async (req, res) => {
+    try {
+        console.log('Property data', req.body);
+        console.log('files', req.files);
+
+        const {
             propertyId,
             propertyOwner,
             propertyName,
@@ -132,28 +199,77 @@ exports.postProperty = (req, res) => {
             mintanceCharge,
             mintanceChargeUnit,
             possesionStatus,
-            onstructionAge,
+            constructionAge,
             availabilityMonth,
             availabilityYear,
-            rentNagociablePrice,
+            rentNegotiablePrice,
             expectedPrice,
             expectedPriceType,
-            saleNagociablePrice,
+            saleNegotiablePrice,
             amenities,
-            defaultImage,
+            defaultImage
+        } = req.body;
+
+        const images = req.files.map(file => ({ filename: file.filename }));
+
+        // Handle missing or empty fields
+        const propertyData = {
+            propertyId: getValueOrDefault(propertyId),
+            propertyOwner: getValueOrDefault(propertyOwner),
+            propertyName: getValueOrDefault(propertyName),
+            projectName: getValueOrDefault(projectName),
+            propertyType: getValueOrDefault(propertyType),
+            propertyVariant: getValueOrDefault(propertyVariant),
+            city: getValueOrDefault(city),
+            locality: getValueOrDefault(locality),
+            address: getValueOrDefault(address),
+            bedrooms: getValueOrDefault(bedrooms, null),
+            totalFloor: getValueOrDefault(totalFloor, null),
+            floorNo: getValueOrDefault(floorNo, null),
+            furnishedStatus: getValueOrDefault(furnishedStatus),
+            boundaryWall: getValueOrDefault(boundaryWall),
+            personalWashroom: getValueOrDefault(personalWashroom),
+            balconies: getValueOrDefault(balconies, null),
+            bathrooms: getValueOrDefault(bathrooms, null),
+            pentryCafetria: getValueOrDefault(pentryCafetria),
+            facing: getValueOrDefault(facing),
+            carpetArea: getValueOrDefault(carpetArea, null),
+            carpetAreaUnit: getValueOrDefault(carpetAreaUnit),
+            coveredArea: getValueOrDefault(coveredArea, null),
+            coveredAreaUnit: getValueOrDefault(coveredAreaUnit),
+            superArea: getValueOrDefault(superArea, null),
+            superAreaUnit: getValueOrDefault(superAreaUnit),
+            plotArea: getValueOrDefault(plotArea, null),
+            plotAreaUnit: getValueOrDefault(plotAreaUnit),
+            entranceWidth: getValueOrDefault(entranceWidth, null),
+            entranceWidthUnit: getValueOrDefault(entranceWidthUnit),
+            monthlyRent: getValueOrDefault(monthlyRent, null),
+            mintanceCharge: getValueOrDefault(mintanceCharge, null),
+            mintanceChargeUnit: getValueOrDefault(mintanceChargeUnit),
+            possesionStatus: getValueOrDefault(possesionStatus),
+            constructionAge: getValueOrDefault(constructionAge),
+            availabilityMonth: getValueOrDefault(availabilityMonth),
+            availabilityYear: getValueOrDefault(availabilityYear),
+            rentNegotiablePrice: getValueOrDefault(rentNegotiablePrice, null),
+            expectedPrice: getValueOrDefault(expectedPrice),
+            expectedPriceType: getValueOrDefault(expectedPriceType),
+            saleNegotiablePrice: getValueOrDefault(saleNegotiablePrice, null),
+            amenities: getValueOrDefault(amenities),
+            defaultImage: getValueOrDefault(defaultImage),
             images: JSON.stringify(images) // Store images as JSON string
-        }).then(property => {
-            console.log(property)
-            res.send(JSON.stringify({ message: 'Property and Dashboard property created sucessfully' }))
-        }).catch(err => {
-            console.log(err)
-            res.send(JSON.stringify({ err: 'Property and Dashboard property is failed to create' }))
-        })
-    }).catch(err => {
-        console.log(err)
-        res.send(JSON.stringify({ error: err }))
-    })
-}
+        };
+
+        const property = await Property.create(propertyData);
+
+        await DashProperty.create(propertyData);
+
+        res.send({ message: 'Property and Dashboard property created successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: 'Property and Dashboard property creation failed', details: err.message });
+    }
+};
+
 
 
 exports.getAllProperties = (req, res) => {
