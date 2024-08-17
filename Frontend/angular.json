@@ -33,11 +33,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              {
-                "glob": "**/*",
-                "input": "./node_modules/bootstrap-icons/font/",
-                "output": "./assets/fonts/"
-              }
+              "src/assets/fonts"
             ],
             "styles": [
               "./node_modules/bootstrap/dist/css/bootstrap.css",
