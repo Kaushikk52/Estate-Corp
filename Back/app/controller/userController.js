@@ -21,13 +21,13 @@ exports.login = async (req, res) => {
             console.log('User not found');
             return res.json({ status: 'login' });
         }
-        if (password !== user.password) {
+        if (password !== existingUser.password) {
             console.log('Incorrect password');
             return res.json({ status: 'password' });
         }
-        const token = jwt.sign({emailId: user.email}, 'estatecorp', {expiresIn: '1h'})
+        const token = jwt.sign({emailId: existingUser.email}, 'estatecorp', {expiresIn: '1h'})
         console.log('Login success');
-        res.json({ status: 'success' , token: token, user: user});
+        res.json({ status: 'success' , token: token, user: existingUser});
     }catch(err){
         console.log(err)
         res.json({ error: 'Error while retrieving user data' });
