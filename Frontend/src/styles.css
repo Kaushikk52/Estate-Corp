@@ -1,4 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 :root{
 
     /* text color collection  */
@@ -37,32 +39,14 @@
 h1, h2, h3, h4, h5{
     margin: 0 !important;
 }
-
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Roboto'), local('Roboto-Regular'),
-         url('/assets/fonts/roboto-v20-latin-regular.woff2') format('woff2'),
-         url('/assets/fonts/roboto-v20-latin-regular.woff') format('woff');
-  }
-  
-  @font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    src: local('Roboto Bold'), local('Roboto-Bold'),
-         url('/assets/fonts/roboto-v20-latin-700.woff2') format('woff2'),
-         url('/assets/fonts/roboto-v20-latin-700.woff') format('woff');
-  }
   
   /* Apply the font to your app */
   body {
-    font-family: 'Roboto', sans-serif;
+    font-family: '', sans-serif;
   }
 
 body{
-    font-family: 'Roboto',Arial, sans-serif;
+    font-family: '',Arial, sans-serif;
     line-height: 1.6;
 }
 
