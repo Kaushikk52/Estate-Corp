@@ -3,6 +3,7 @@ import { ComponentService } from '../../services/component.service';
 import { DatabaseService } from '../../services/database.service';
 import { Properties } from '../../Models/properties';
 import { Router,ActivatedRoute  } from '@angular/router';
+import { User } from '../../Models/user';
 
 @Component({
   selector: 'app-property-list',
@@ -14,6 +15,7 @@ export class PropertyListComponent implements OnInit {
   title: string = 'Property List';
   propertyId: string = '';
   properties: Properties[] = [];
+  users: User[] = [];
   searchText: string = '';
   showApprovalAlert: boolean = false;
   showUnapprovalAlert: boolean = false;
@@ -26,6 +28,11 @@ export class PropertyListComponent implements OnInit {
     this.database.getAllProperties().subscribe(data => {
       this.properties = data;
    })
+
+   this.database.getAllUser().subscribe(users => {
+    this.users = users;
+
+ })
 
   }
 
@@ -80,5 +87,11 @@ export class PropertyListComponent implements OnInit {
 
   setBannerTitle(){
     this.component.setCurrentTitle(this.title);
+  }
+
+  filterUsers() {
+    return this.users.filter(user => {
+      return user.fullName.toLowerCase().includes(this.searchText.toLowerCase());
+    });
   }
 }

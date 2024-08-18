@@ -9,7 +9,8 @@ import { DatabaseService } from '../../services/database.service';
   styleUrls: ['./cards.component.css'] 
 })
 export class CardsComponent implements OnInit{
-  @Input() properties:Properties[] | undefined;
+  @Input() properties!:Properties[];
+  images!:[];
 
 constructor(private dbServ: DatabaseService){}
 
@@ -22,6 +23,10 @@ ngOnInit(): void {
     this.dbServ.getAllProperties().subscribe((res)=>{
         this.properties = res
         .filter((element)=> element.isApproved == 1)
+
+        this.properties.map((filteredProperties) => {
+          filteredProperties.images.forEach((image)=> this.images.push(image) )
+        })
     })
   }
 

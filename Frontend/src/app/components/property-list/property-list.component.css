@@ -1,3 +1,18 @@
+
+
+#sidebar {
+    flex: 0 0 200px;
+    height: auto;
+    background-color: #343a40; /* Dark background color */
+  }
+  
+
+main{
+    flex: 1;
+    overflow-y: auto; 
+
+}
+
 .table-container{
     overflow-y: overlay;
     height: 30rem;
@@ -5,17 +20,22 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.07), 0 4px 8px rgba(0,0,0,0.07), 0 8px 16px rgba(0,0,0,0.07), 0 16px 32px rgba(0,0,0,0.07), 0 32px 64px rgba(0,0,0,0.07);
 }
 
-.search-bar{
-    box-shadow: 0 1px 1px rgba(0,0,0,0.12), 0 2px 2px rgba(0,0,0,0.12);
-    display: inline-block;
-    padding: 0.3rem 0.5rem;
-    margin: 1rem;
-    border-radius: 5px;
+.search-bar {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Slightly larger shadow for better emphasis */
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0; /* Ensure vertical spacing is consistent */
+    border-radius: 8px; /* Slightly larger border-radius for a modern look */
+    background-color: #ffffff; /* Background color to match the design */
 }
 
-.search-input{
+.search-input {
     outline: none;
     border: none;
+    padding: 0.5rem;
+    border-radius: 4px; /* Rounded corners for input */
+    margin-left: 0.5rem; /* Space between icon and input */
 }
 
 .icons{
@@ -68,11 +88,15 @@
 
 
 .sidebar {
-    height: 100vh;
-    padding: 0;
+    flex: 0 0 250px;
+    height: 100vh; /* Full viewport height */
+    background-color: #343a40; /* Dark background color */
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-header h3 {
+    
     margin: 0;
     font-size: 24px;
 }
@@ -112,14 +136,43 @@
     transition: width 0.6s ease;
 }
 
+.card-property {
+    border: 1px solid #ddd; /* Light border for card separation */
+    border-radius: 8px; /* Rounded corners for cards */
+    overflow: hidden; /* Ensure content doesn’t overflow card boundaries */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for elevation effect */
+    height: 100%;
+}
+
+
+.card img {
+    width: 100%; /* Ensure images fill card width */
+    height: 200px; /* Fixed height for consistency */
+    object-fit: cover; /* Maintain aspect ratio */
+}
+
 
 .my-table{
     width: 100%;
 }
 
 
-@media screen and (max-width: 786px){
+@media screen and (max-width: 786px) and (max-width: 1024px){
     .my-table{
         overflow: scroll;
+    }
+
+    .sidebar {
+        height: 100vh;
+        min-height: 100vh;
+    }
+
+    .table-container {
+        overflow: scroll; /* Enable horizontal scrolling for tables */
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
