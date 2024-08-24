@@ -133,7 +133,7 @@ exports.getAllProperties = async (req, res) => {
 
     for (const property of properties) {
       const images = property.images;
-      console.log("images",images)
+      // console.log("images",images)
       images.forEach(image => {
         const imagePath = path.join("D:/A9 Projects/Estate-Corp/Back/", 'uploads/', image.filename); 
         if (fs.existsSync(imagePath)) {
