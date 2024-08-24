@@ -2,6 +2,7 @@ package com.estate.corp.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.Date;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import java.util.UUID;
 public class Property {
     @Id
     private String id;
-    private String name;
+    private String propertyName;
     private String location;
     private Double price;
     private Date createdAt;
@@ -26,7 +27,8 @@ public class Property {
     private PropertyDetails details;
 
     @Enumerated(EnumType.STRING)
-    private Property.PropertyType propertyType;
+    private Property.PropertyVariant propertyVariant;
+    private String propertyType;
 
 
     @PrePersist
@@ -36,33 +38,31 @@ public class Property {
         }
     }
 
-    public enum PropertyType{
-        RESIDENTIAL(SubCategory.RESIDENTIAL_SUBCATEGORY),
-        COMMERCIAL(SubCategory.COMMERCIAL_SUBCATEGORY);
+    public enum PropertyVariant{
+        RESIDENTIAL(SubVariant.RESIDENTIAL_SUBVARIANT),
+        COMMERCIAL(SubVariant.COMMERCIAL_SUBVARIANT);
 
-        private SubCategory subCategory;
+        private SubVariant subVariant;
 
-        PropertyType(SubCategory subCategory) {
-            this.subCategory = subCategory;
+        PropertyVariant(SubVariant subVariant) {
+            this.subVariant = subVariant;
         }
 
-        public SubCategory getSubCategory() {
-            return subCategory;
+        public SubVariant getSubVariant() {
+            return subVariant;
         }
 
-        public enum SubCategory {
-            RESIDENTIAL_SUBCATEGORY("Apartment", "Villa", "Townhouse"),
-            COMMERCIAL_SUBCATEGORY("Office", "Retail", "Warehouse");
 
-            private String[] subTypes;
+        public enum SubVariant {
+            RESIDENTIAL_SUBVARIANT("Apartment", "Villa", "Townhouse"),
+            COMMERCIAL_SUBVARIANT("Office", "Retail", "Warehouse");
 
-            SubCategory(String... subTypes) {
-                this.subTypes = subTypes;
+            private String[] subVariants;
+
+            SubVariant(String... subVariants) {
+                this.subVariants = subVariants;
             }
 
-            public String[] getSubTypes() {
-                return subTypes;
-            }
         }
     }
 }

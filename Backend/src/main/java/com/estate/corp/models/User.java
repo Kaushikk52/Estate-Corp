@@ -1,7 +1,10 @@
 package com.estate.corp.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,9 +18,17 @@ public class User implements UserDetails {
 
     @Id
     private String id;
-    private String name;
+    @Size(min=3, max=30)
+    private String firstName;
+    @Size(min=3, max=30)
+    private String lastName;
+    @NotNull
+    @Min(7)
     private String password;
+    @NotNull
+    @Min(7)
     private String email;
+    @Size(min=10)
     private long phone;
     @Enumerated(EnumType.STRING)
     private UserRole role;
@@ -43,7 +54,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.name;
+        return this.firstName +" "+ this.lastName;
     }
 
     @Override
