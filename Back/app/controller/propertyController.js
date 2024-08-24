@@ -1,5 +1,7 @@
 const Property = require("../models/property");
 const DashProperty = require("../models/dashProperty");
+const path = require('path');
+const fs = require('fs');
 
 const getValueOrDefault = (value, defaultValue = null) => {
   return value === undefined || value === "" ? defaultValue : value;
@@ -127,11 +129,25 @@ exports.postProperty = async (req, res) => {
 exports.getAllProperties = async (req, res) => {
   try {
     const properties = await Property.findAll();
-    //console.log(properties)
-    res.send(properties);
+    
+
+    for (const property of properties) {
+      const images = property.images;
+      console.log("images",images)
+      images.forEach(image => {
+        const imagePath = path.join("D:/A9 Projects/Estate-Corp/Back/", 'uploads/', image.filename); 
+        if (fs.existsSync(imagePath)) {
+          const imageBuffer = fs.readFileSync(imagePath);
+          property.defaultImage = imageBuffer.toString('base64');
+        } else {
+          property.imageData = null; 
+        }
+      });
+    }
+    res.json(properties);
   } catch (err) {
-    console.log(err);
-    res.send(JSON.stringify({ error: err }));
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve properties' });
   }
 };
 
