@@ -2,7 +2,8 @@
 
 <div class="d-flex row justify-content-start g-4">
   <div class="villa-listing  col-md-6 col-lg-4 col-xl-3" *ngFor="let property of properties">
-    <div class="villa-card card shadow-sm"> <img src="../../../assets/card/card-images-3.jpg" alt="Villa Image" />
+    <div class="villa-card card shadow-sm">   
+      <img *ngIf="property.defaultImage" [src]="'data:defaultImage/jpeg;base64,' + property.defaultImage" alt="Property Image" />
       <div class="card-body">
         <div class="d-flex justify-content-between mb-2">
           <span class="property-type text-uppercase align-self-start">{{ property.propertyType }}</span>
