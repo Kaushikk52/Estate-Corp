@@ -44,7 +44,7 @@
 }
 
 .container {
-  margin-top: 5rem;
+  /* margin-top: 5rem; */
   /* Adjust margin-top as needed */
 }
 
@@ -196,7 +196,7 @@ h2 {
 }
 
 .flex-owner-card {
-  gap: 0.3rem;
+  /* gap: 0.3rem; */
   justify-content: space-around;
   align-items: center;
 }
@@ -269,3 +269,23 @@ h2 {
 .social-icons a.linkedin:hover {
   color: #0077B5;
 }
+
+
+
+.main-box{
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-bottom: 3px solid #409fff;
+  border-top: 3px solid #409fff;
+
+}
+
+
+.blue-color{
+  color:#409fff ;
+}
+
+.margin-top-5{
+  margin-top: 5rem;
+}
+

@@ -143,13 +143,18 @@ const Property = sequelize.define('Property', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  images: {
-    type: DataTypes.STRING
-  },
+  // images: {
+  //   type: DataTypes.STRING
+  // },
   isApproved: {
     type: DataTypes.NUMBER,
     defaultValue: 0
+  },
+  images :{
+    type: DataTypes.JSON,
+    defaultValue: null
   }
+
 });
 
 // Export the User model

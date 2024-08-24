@@ -25,12 +25,12 @@ export class Properties {
   expectedPrice : number;
   expectedPriceType : string;
   amenities: string[];
-  defaultImage: number;
+  defaultImage: string;
   isConfirm: number;
   isApproved: number;
-  images:[];
-  
-  constructor(id: number, propertyOwner: string, propertyId: string, propertyName: string, propertyType: string, propertyOption: number, city: string, locality: string, address: string, bedrooms: number, totalFloor: number, floorNo: number, furnishedStatus: string, balconies: number, bathrooms: number, facing: string, carpetArea: number, carpetAreaUnit: string, superArea: number, superAreaUnit: string, possesionStatus: string, constructionAge: number, expectedPrice : number, expectedPriceType : string,amenities: string[], defaultImage: number, isConfirm: number, isApproved: number,images:[]) {
+  imageData: string[];
+
+  constructor(id: number, propertyOwner: string, propertyId: string, propertyName: string, propertyType: string, propertyOption: number, city: string, locality: string, address: string, bedrooms: number, totalFloor: number, floorNo: number, furnishedStatus: string, balconies: number, bathrooms: number, facing: string, carpetArea: number, carpetAreaUnit: string, superArea: number, superAreaUnit: string, possesionStatus: string, constructionAge: number, expectedPrice : number, expectedPriceType : string,amenities: string[], defaultImage: string, isConfirm: number, isApproved: number,imageData:string[]) {
       this.id = id;
       this.propertyOwner = propertyOwner;
       this.propertyId = propertyId;
@@ -59,6 +59,6 @@ export class Properties {
       this.defaultImage = defaultImage;
       this.isConfirm = isConfirm;
       this.isApproved = isApproved;
-      this.images = images;
+      this.imageData = imageData;
   }
 }

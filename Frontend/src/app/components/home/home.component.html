@@ -139,7 +139,7 @@
 
 
 
-<div class="container about-container">
+<div class="container about-container mt-5">
   <div class="row about-flex">
     <div class="col-lg-6 col-md-12 about-content">
       <h5><img src="../../../assets/icons/stars.svg" alt="stars" class="icons"> About Us</h5>
@@ -159,77 +159,116 @@
 
 
 <div class="container-fluid searched-container">
-  <h4>New Projects</h4>
-    <app-cards></app-cards>
+  <app-cards></app-cards>   
 </div>
 
-<div class="container searched-container">
-  <h4><img src="../../../assets/icons/stars.svg" alt="stars" class="icons"> Because you Searched </h4>
-  <div class="row flex-searched">
-    <div class="col-lg-3 col-md-4 col-sm-12">
-      <a href="" class="card-link">
-        <div class="card searched-card">
-          <div class="card-body">
-            <h5><span>0k</span>
-              Properties listed
-              <br>
-              for you
-            </h5>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-12">
-      <a href="" class="card-link">
-        <div class="card searched-card">
-          <div class="card-body">
-            <h5>
-              Get personalised property
-              <br>
-              recommendations from us
-            </h5>
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-12">
-      <a href="" class="card-link">
-        <div class="card searched-card">
-          <div class="card-body">
-            <h5>
-              Top Handpicked Projects
-              <br>
-              for you
-            </h5>
 
-          </div>
+<h2 class="text-center mb-3 fw-bold">We've got properties for everyone</h2>
+<div class="container-fluid main-box py-5 mb-5">
+
+  <div class="container">
+  <div class="row  g-3  ">
+    <div class="col-md-4 col-6">
+        <div class="row">
+            <div class="col-md-3 ">
+                <div class="">
+                    <img src="../../../assets/images/demo1.jpg" alt="" class="img-fluid rounded-1">
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="">
+                    <h6 class="mb-0">Flat/Apartment</h6>
+                    <p class="mb-0 blue-color">More Information </p>
+                </div>
+            </div>
         </div>
-      </a>
     </div>
-    <div class="col-lg-3 col-md-4 col-sm-12">
-      <a href="" class="card-link">
-        <div class="card searched-card">
-          <div class="card-body">
-            <h5>
-              Top Exclusive Owner
-              <br>
-              Properties
-            </h5>
+    <div class="col-md-4 col-6">
+      <div class="row">
+          <div class="col-md-3 ">
+              <div class="">
+                  <img src="../../../assets/images/demo1.jpg" alt="" class="img-fluid rounded-1">
+              </div>
           </div>
+          <div class="col-md-9">
+              <div class="">
+                  <h6 class="mb-0">Flat/Apartment</h6>
+                  <p class="mb-0 blue-color">More Information </p>
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="col-md-4 col-6">
+    <div class="row">
+        <div class="col-md-3 ">
+            <div class="">
+                <img src="../../../assets/images/demo1.jpg" alt="" class="img-fluid rounded-1">
+            </div>
         </div>
-      </a>
+        <div class="col-md-9">
+            <div class="">
+                <h6 class="mb-0">Flat/Apartment</h6>
+                <p class="mb-0 blue-color">More Information </p>
+            </div>
+        </div>
     </div>
+</div>
+<div class="col-md-4 col-6">
+  <div class="row">
+      <div class="col-md-3 ">
+          <div class="">
+              <img src="../../../assets/images/demo1.jpg" alt="" class="img-fluid rounded-1">
+          </div>
+      </div>
+      <div class="col-md-9">
+          <div class="">
+              <h6 class="mb-0">Flat/Apartment</h6>
+              <p class="mb-0 blue-color">More Information </p>
+          </div>
+      </div>
+  </div>
+</div>
+<div class="col-md-4 col-6">
+  <div class="row">
+      <div class="col-md-3 ">
+          <div class="">
+              <img src="../../../assets/images/demo1.jpg" alt="" class="img-fluid rounded-1">
+          </div>
+      </div>
+      <div class="col-md-9">
+          <div class="">
+              <h6 class="mb-0">Flat/Apartment</h6>
+              <p class="mb-0 blue-color">More Information </p>
+          </div>
+      </div>
+  </div>
+</div>
+<div class="col-md-4 col-6">
+  <div class="row">
+      <div class="col-md-3 ">
+          <div class="">
+              <img src="../../../assets/images/demo1.jpg" alt="" class="img-fluid rounded-1">
+          </div>
+      </div>
+      <div class="col-md-9">
+          <div class="">
+              <h6 class="mb-0">Flat/Apartment</h6>
+              <p class="mb-0 blue-color">More Information </p>
+          </div>
+      </div>
   </div>
 </div>
 
-<!-- <div class="">
-    <h4><img src="../../../assets/icons/stars.svg" alt="stars" class="icons">Hot Rental properties</h4>
-    <owl-carousel-o [options]="customOptions">
-        <ng-template carouselSlide *ngFor="let property of properties">
-            <app-cards [property]="property" [isApproved]="property.isApproved"></app-cards>
-        </ng-template>
-    </owl-carousel-o>
-</div> -->
+ 
+    
+    
+   
+    
+   
+</div>
+</div>
+</div>
+
 
 
 
@@ -282,21 +321,28 @@
   </div>
   <div class="container marketing">
     <!-- Three columns of text below the carousel -->
-    <div class="row flex-owner-card">
-      <div class="col-lg-3 owner-card">
-        <img src="../../../assets/card/third-owner.jpeg" alt="first-owner.jpg" class="owner-img">
-        <h4 class="fw-normal">Mr. Ajay Singh Kushwah</h4>
-        <p>(Managing Director, <br> BSc-Maths)</p>
+    <div class="row flex-owner-card ">
+      <div class="col-md-4 ">
+        <div class="owner-card">
+          <img src="../../../assets/card/third-owner.jpeg" alt="first-owner.jpg" class="owner-img">
+          <h4 class="fw-normal">Mr. Ajay Singh Kushwah</h4>
+          <p>(Managing Director, <br> BSc-Maths)</p>
+        </div>
       </div><!-- /.col-lg-4 -->
-      <div class="col-lg-3 owner-card">
-        <img src="../../../assets/card/second-owner.jpeg" alt="second-owner.jpg" class="owner-img">
-        <h4 class="fw-normal">Mr. Rakesh Gaykar (Founder)</h4>
-        <p>(Founder & Managing Director, <br> MBA in Sales & Marketing)</p>
+      <div class="col-md-4">
+        <div class="owner-card">
+          <img src="../../../assets/card/second-owner.jpeg" alt="second-owner.jpg" class="owner-img">
+          <h4 class="fw-normal">Mr. Rakesh Gaykar (Founder)</h4>
+          <p>(Founder & Managing Director, <br> MBA in Sales & Marketing)</p>
+        </div>
+
       </div><!-- /.col-lg-4 -->
-      <div class="col-lg-3 owner-card">
-        <img src="../../../assets/card/first-owner.jpeg" alt="third-owner.jpg" class="owner-img">
-        <h4 class="fw-normal">Mr. Prem Dubey</h4>
-        <p>Business Associate</p>
+      <div class="col-md-4 ">
+        <div class="owner-card">
+          <img src="../../../assets/card/first-owner.jpeg" alt="third-owner.jpg" class="owner-img">
+          <h4 class="fw-normal">Mr. Prem Dubey</h4>
+          <p>Business Associate</p>
+        </div>
       </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
   </div>

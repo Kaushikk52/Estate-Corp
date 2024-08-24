@@ -1,28 +1,44 @@
+
 <section class="container">
-<div class="d-flex row justify-content-start g-4">
-  <div class="villa-listing  col-md-6 col-lg-4 col-xl-3" *ngFor="let property of properties">
-    <div class="villa-card card shadow-sm"> <img src="../../../assets/card/card-images-3.jpg" alt="Villa Image" />
-      <div class="card-body">
-        <div class="d-flex justify-content-between mb-2">
-          <span class="property-type text-uppercase align-self-start">{{ property.propertyType }}</span>
-          <span class="rating text-muted align-self-end">4.6 <i class="bi bi-star-fill text-warning"></i></span>
+  <h4 *ngIf="properties?.length !== 0 " class="mb-3">New Projects</h4>
+  <owl-carousel-o [options]="carouselOptions">
+    <ng-container *ngFor="let property of properties">
+      <ng-template carouselSlide>
+        <div class="villa-card card shadow-sm">
+          <img
+            *ngIf="property.defaultImage"
+            [src]="'data:image/jpeg;base64,' + property.defaultImage"
+            alt="Property Image"
+          />
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="property-type text-uppercase align-self-start">{{
+                property.propertyType
+              }}</span>
+              <span class="rating text-muted align-self-end"
+                >4.6 <i class="bi bi-star-fill text-warning"></i
+              ></span>
+            </div>
+            <div
+              class="villa-footer justify-content-between align-items-center mb-2"
+            >
+              <span class="price text-primary font-weight-bold">
+                From {{ property.expectedPrice }}
+                {{ property.expectedPriceType }} INR
+              </span>
+            </div>
+            <h5 class="h5 mb-3">
+              <i class="bi bi-geo-alt-fill"></i>
+              {{ property.propertyName }}, {{ property.address }},
+              {{ property.city }}
+            </h5>
+          </div>
+          <p class="mb-3">
+            {{ property.balconies }} balconies •
+            {{ property.bedrooms }} bedrooms
+          </p>
         </div>
-        <div class="villa-footer justify-content-between align-items-center mb-2">
-          <span class="price text-primary font-weight-bold">
-            From {{ property.expectedPrice }} {{ property.expectedPriceType }} INR
-          </span>
-        </div>
-        <h5 class="h5 mb-3">
-          <i class="bi bi-geo-alt-fill"></i>
-          {{ property.propertyName }}, {{ property.address }}, {{ property.city }}
-        </h5>
-        <p class="mb-3">
-          {{ property.balconies }} balconies • {{ property.bedrooms }} bedrooms
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
+      </ng-template>
+    </ng-container>
+  </owl-carousel-o>
 </section>
-

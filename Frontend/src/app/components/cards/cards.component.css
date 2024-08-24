@@ -29,7 +29,6 @@
   } */
 
 
-
 /* Villa Listings Styles */
 .villa-listings {
   margin-top: 20px;
@@ -42,6 +41,11 @@
   padding: 10px;
   transition: transform 0.3s, box-shadow 0.3s;
   height: 100%;
+  aspect-ratio: 4/2;
+}
+
+.card-body{
+  height: 100%;
 }
 
 .villa-card:hover {
@@ -50,12 +54,15 @@
 }
 
 .villa-card img {
+  
   width: 100%;
+  height: 100%;
   border-radius: 10px;
   margin-bottom: 15px;
 }
 
 .villa-card p {
+  padding-left: 16px;
   color: #777;
   margin-bottom: 15px;
   font-size: 14px;
@@ -92,9 +99,12 @@
       flex-direction: column;
   }
 
-  /* .villa-card {
-      width: 100%;
-  } */
+  
+}
+
+
+ .owl-carousel .owl-nav .owl-next, .owl-carousel .owl-nav .owl-prev{
+  border: 2px solid red ;
 }
   
-  
+ 

@@ -67,7 +67,7 @@ import { MultiStepFormComponent } from './components/multi-step-form/multi-step-
     RouterModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [provideClientHydration()],
   bootstrap: [AppComponent],

@@ -240,9 +240,11 @@
                 <td>{{ property.propertyName }}</td>
                 <td>
                   {{
-                    property.propertyType === "1"
-                      ? "Residential Buy"
-                      : "Residential Rent"
+                    property.propertyType === "1"? "Residential Buy" :
+                    property.propertyType === "2" ? "Residential Rent" :
+                    property.propertyType === "3" ? "Commercial Buy" :
+                    property.propertyType === "4" ? "Commercial Rent" :
+                    "Type Not Set"
                   }}
                 </td>
                 <!-- <td>{{property.propertyOption}}</td>  -->
