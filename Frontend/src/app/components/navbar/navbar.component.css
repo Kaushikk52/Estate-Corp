@@ -17,7 +17,7 @@
 .navbar-nav .nav-link.active, .nav-link.dropdown-toggle{
     font-weight: 600;
     color: #1e2d41;
-    font : 'Roboto',14px;
+    font : '',14px;
     padding: 0px 8px;
 }
 
