@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Properties } from '../../Models/properties';
 import { DatabaseService } from '../../services/database.service';
 
+
 @Component({
   selector: 'app-cards',
   templateUrl: './cards.component.html',
@@ -10,8 +11,25 @@ import { DatabaseService } from '../../services/database.service';
 export class CardsComponent implements OnInit {
   @Input() properties: Properties[] | undefined;
 
+  carouselOptions = {
+    dots: true,
+    loop: true,
+    margin: 10,   
+    responsive: {
+      0: {
+        items: 1,
+      },
+      600: {
+        items: 2
+      },
+      1000: {
+        items: 3
+      }
+    }
+  };
+  
   constructor(private dbServ: DatabaseService) {}
-
+  
   ngOnInit(): void {
     this.getAllProperties();
   }
