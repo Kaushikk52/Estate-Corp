@@ -101,7 +101,7 @@ export default function Navbar() {
               </span>
             </a> */}
             <button className="text-gray-600 hover:text-gray-800 transition-colors duration-200" aria-label="Account">
-              <User size={20} />
+              <a href="/account"><User size={20} /></a>
             </button>
           </div>
         </div>
