@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import Home from './components/Home/Home.tsx'
 import Layout from './components/Layout.tsx'
-import DashBoard from './components/Account/Dashboard.tsx'
+import DashBoard from './components/Dashboard/Dashboard.tsx'
 
 function App() {
 
