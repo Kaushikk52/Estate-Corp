@@ -1,8 +1,12 @@
 package com.estate.corp.models;
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Date;
+import java.util.List;
 
 @Embeddable
+@Data
 public class PropertyDetails {
     @Id
     private String id;
@@ -10,7 +14,7 @@ public class PropertyDetails {
     private int totalFloor;
     private int floorNo;
     private String boundaryWall;
-    private String ammenities;
+    private List<String> ammenities;
     private String facing;
     private String carpetArea;
     private String coveredArea;

@@ -22,6 +22,7 @@ public class User implements UserDetails {
     private String firstName;
     @Size(min=3, max=30)
     private String lastName;
+    private String fullName;
     @NotNull
     @Min(7)
     private String password;

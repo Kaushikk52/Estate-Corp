@@ -12,24 +12,21 @@ import java.util.UUID;
 public class Property {
     @Id
     private String id;
+    private String propertyOwner;
     private String propertyName;
-    private String location;
+    private String projectName;
     private Double price;
     private Date createdAt;
     private Date updatedAt;
-
     @Lob
     private byte[] image;
-
     @Embedded
     private Address address;
     @Embedded
     private PropertyDetails details;
-
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
     private String propertyType;
-
 
     @PrePersist
     private void prePersist(){
@@ -51,7 +48,6 @@ public class Property {
         public SubVariant getSubVariant() {
             return subVariant;
         }
-
 
         public enum SubVariant {
             RESIDENTIAL_SUBVARIANT("Apartment", "Villa", "Townhouse"),

@@ -46,9 +46,11 @@ public class UserService implements UserDetailsService {
         return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User updateUsername(String username , String id){
+    public User updateUsername(String firstName,String lastName , String id){
         User existingUser = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
-        existingUser.setName(username);
+        existingUser.setFirstName(firstName);
+        existingUser.setLastName(lastName);
+        existingUser.setFullName(existingUser.getFirstName()+" "+existingUser.getLastName());
         return userRepo.save(existingUser);
     }
 
