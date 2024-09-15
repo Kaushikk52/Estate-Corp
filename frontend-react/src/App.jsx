@@ -3,6 +3,7 @@ import './App.css'
 import Home from './components/Home/Home.tsx'
 import Layout from './components/Layout.tsx'
 import DashBoard from './components/Dashboard/Dashboard.tsx'
+import Residential from './components/Residential/Residential.tsx'
 
 function App() {
 
@@ -13,9 +14,9 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path='/dashboard' element={<DashBoard />} />
-            {/* <Route path="ServiceListing" element={<ServiceListing />}> */}
+            <Route path="/residential/buy" element={<Residential />}>
               {/* <Route path="service/:id" element={<Services />} /> */}
-            {/* </Route> */}
+            </Route>
             {/* <Route path="services/" element={<Services />} /> */}
           </Route>
         </Routes>
