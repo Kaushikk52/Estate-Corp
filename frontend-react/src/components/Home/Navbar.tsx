@@ -50,7 +50,7 @@ export default function Navbar() {
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
             <a href="/" className="text-xl font-semibold text-gray-800 uppercase flex items-center">
-              <img src="/public/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
+              <img src="/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
                Estatecorp
             </a>
           </div>

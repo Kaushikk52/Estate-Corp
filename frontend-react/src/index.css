@@ -27,3 +27,18 @@
   .nav DropdownLink:hover{
     color: red !important;
   }
+
+/* For extra small screens (mobile) */
+@media (max-width: 640px) {
+  .carousel-card { width: 100%; }
+}
+
+/* For small screens (tablet) */
+@media (min-width: 640px) and (max-width: 1024px) {
+  .carousel-card { width: 50%; }
+}
+
+/* For large screens (desktop) */
+@media (min-width: 1024px) {
+  .carousel-card { width: 33.33%; }
+}
