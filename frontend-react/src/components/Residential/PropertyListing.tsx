@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Search, Bed, Bath, Home, MapPin, ChevronUp, ChevronDown } from 'lucide-react'
+import BlogSidebar from './BlogSidebar'
 
 export default function PropertyListing() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -150,36 +151,8 @@ export default function PropertyListing() {
       </main>
 
       {/* Featured Blogs Sidebar */}
-      <aside className="lg:w-1/4 bg-white bg-opacity-90 flex flex-col h-screen sticky top-0 overflow-hidden">
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6 text-purple-700">Featured Blogs</h2>
-        </div>
-        <div className="relative flex-grow px-6 pb-6">
-          <button
-            onClick={() => scrollBlogs('up')}
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-white rounded-full p-1 shadow-md z-10"
-            style={{ display: scrollPosition > 0 ? 'block' : 'none' }}
-          >
-            <ChevronUp className="h-6 w-6 text-purple-500" />
-          </button>
-          <div ref={blogContainerRef} className="space-y-4 h-full overflow-y-auto custom-scrollbar pr-2">
-            {blogs.map(blog => (
-              <div key={blog.id} className="bg-gradient-to-r from-yellow-200 to-yellow-400 hover:from-yellow-300 hover:to-yellow-500 rounded-lg p-4 transition-all duration-300">
-                <h3 className="text-lg font-semibold text-purple-800 mb-2">{blog.title}</h3>
-                <p className="text-purple-900 mb-2">{blog.excerpt}</p>
-                <button className="text-purple-700 hover:text-purple-900 font-semibold">Read More</button>
-              </div>
-            ))}
-          </div>
-          <button
-            onClick={() => scrollBlogs('down')}
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full bg-white rounded-full p-1 shadow-md z-10"
-            style={{ display: blogContainerRef.current && scrollPosition < blogContainerRef.current.scrollHeight - blogContainerRef.current.clientHeight ? 'block' : 'none' }}
-          >
-            <ChevronDown className="h-6 w-6 text-purple-500" />
-          </button>
-        </div>
-      </aside>
+        <BlogSidebar/>
+
     </div>
   )
 }
