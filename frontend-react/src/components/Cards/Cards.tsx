@@ -58,7 +58,7 @@ export default function PropertyCardsCarousel() {
           <ChevronLeft className="h-6 w-6 text-purple-700" />
         </button>
         <div className="overflow-hidden">
-          <div className="flex gap-4 transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * (100 / visibleCards)}%)` }}>
+          <div className="flex gap-4 transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * (107 / visibleCards)}%)` }}>
             {properties.map((property) => (
               <div key={property.id} className={`w-full flex-shrink-0 ${visibleCards === 1 ? 'w-full' : visibleCards === 2 ? 'sm:w-3/5' : 'sm:w-3/5 lg:w-1/3'}`}>
 
