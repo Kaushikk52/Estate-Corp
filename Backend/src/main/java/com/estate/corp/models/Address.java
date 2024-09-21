@@ -1,8 +1,6 @@
 package com.estate.corp.models;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data

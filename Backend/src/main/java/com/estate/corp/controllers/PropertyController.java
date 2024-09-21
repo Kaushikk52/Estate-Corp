@@ -77,7 +77,7 @@ public class PropertyController {
     @GetMapping(value = "/isApproved")
     public ResponseEntity<?> getPropertiesByApprovalStatus(@RequestParam boolean isApproved) {
         try {
-            if (isApproved == false) {
+            if (!isApproved) {
                 List<Property> unApprovedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
                 log.info("Retrieved all approved properties :{}", unApprovedProperties);
                 return ResponseEntity.status(HttpStatus.OK).body(unApprovedProperties);
