@@ -12,27 +12,33 @@ import java.util.UUID;
 public class Property {
     @Id
     private String id;
-    private String propertyOwner;
-    private String propertyName;
-    private String projectName;
-    private Double price;
     private Date createdAt;
     private Date updatedAt;
+    private String owner;
+    private String name;
     @Lob
     private byte[] image;
+    @Enumerated(EnumType.STRING)
+    private PropertyType type;
+    @Enumerated(EnumType.STRING)
+    private Property.PropertyVariant propertyVariant;
     @Embedded
     private Address address;
     @Embedded
     private PropertyDetails details;
-    @Enumerated(EnumType.STRING)
-    private Property.PropertyVariant propertyVariant;
-    private String propertyType;
+    @ManyToOne
+    @JoinColumn(name = "projectId")
+    private Project project;
 
     @PrePersist
     private void prePersist(){
         if(this.id == null){
             this.id = UUID.randomUUID().toString();
         }
+    }
+
+    public enum PropertyType{
+        RENT,BUY
     }
 
     public enum PropertyVariant{

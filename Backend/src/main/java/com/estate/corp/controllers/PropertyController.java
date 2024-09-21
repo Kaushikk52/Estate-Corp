@@ -5,7 +5,6 @@ import com.estate.corp.services.PropertyServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +29,35 @@ public class PropertyController {
         return ResponseEntity.status(HttpStatus.OK).body(properties);
     }
 
-    @GetMapping
+    @GetMapping("/filter")
+    public ResponseEntity<?>  filterProperties(
+            @RequestParam(required = false) int bedrooms,
+            @RequestParam(required = false) double minPrice,
+            @RequestParam(required = false) double maxPrice,
+            @RequestParam(required = false) List<String> cities,
+            @RequestParam(required = false) double minCarpetArea,
+            @RequestParam(required = false) double maxCarpetArea) {
+
+        try{
+
+            List<Property> filteredProperties = propertyServ.getFilteredProperties(bedrooms, minPrice, maxPrice, cities, minCarpetArea, maxCarpetArea);
+            if (filteredProperties.isEmpty()) {
+                log.warn("Properties does not exists");
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(filteredProperties);
+            }else{
+                log.info("Retrieved all properties ");
+                return ResponseEntity.status(HttpStatus.OK).body(filteredProperties);
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        }
+
+
+    }
+
+    @GetMapping(value = "/filter")
     public ResponseEntity<?> getPropertiesByCityAndBedrooms(@RequestParam String city, @RequestParam int bedrooms) {
         try {
             List<Property> properties = propertyServ.getPropertiesByCityAndBedrooms(city,bedrooms);

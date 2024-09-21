@@ -26,7 +26,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByName(username);
+        User user = userRepo.findByFullName(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
@@ -73,7 +73,7 @@ public class UserService implements UserDetailsService {
     }
 
     public String deleteUser(String name){
-        User existingUser = userRepo.findByName(name);
+        User existingUser = userRepo.findByFullName(name);
         userRepo.delete(existingUser);
         return "User deleted successfully...";
     }
