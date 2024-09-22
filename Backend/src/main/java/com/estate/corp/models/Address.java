@@ -1,11 +1,14 @@
 package com.estate.corp.models;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Data;
 
 @Data
-@Embeddable
+@Entity
 public class Address {
+    @Id
+    private String id;
     private String street;
     private String locality;
     private String landmark;

@@ -57,7 +57,7 @@ public class PropertyController {
 
     }
 
-    @GetMapping(value = "/filter")
+    @GetMapping(value = "/find")
     public ResponseEntity<?> getPropertiesByCityAndBedrooms(@RequestParam String city, @RequestParam int bedrooms) {
         try {
             List<Property> properties = propertyServ.getPropertiesByCityAndBedrooms(city,bedrooms);

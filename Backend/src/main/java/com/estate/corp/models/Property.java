@@ -13,7 +13,6 @@ public class Property {
     private String id;
     private Date createdAt;
     private Date updatedAt;
-    private String owner;
     private String name;
     @Lob
     private byte[] image;
@@ -21,8 +20,10 @@ public class Property {
     private PropertyType type;
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
-    @Embedded
+    @OneToOne
     private Address address;
+    @OneToOne
+    private User owner;
     @Embedded
     private PropertyDetails details;
     @ManyToOne

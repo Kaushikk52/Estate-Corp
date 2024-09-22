@@ -34,9 +34,16 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v1/api/users/add", "/v1/api/auth/login", "/v1/api/auth/send-otp",
-                                "/v1/api/auth/verify-otp", "/v1/api/users/reset-password","v1/api/*").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/v1/api/auth/register",
+                                "/v1/api/auth/login",
+                                "/v1/api/auth/send-otp",
+                                "/v1/api/auth/verify-otp",
+                                "v1/api/projects/all",
+                                "v1/api/*",
+                                "v1/api/projects/add",
+                                "v1/api/users/**").permitAll()
+                        .requestMatchers(
+                                "/v1/api/users/reset-password").authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

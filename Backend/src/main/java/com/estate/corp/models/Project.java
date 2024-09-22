@@ -25,9 +25,13 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String ownerName;
 
-    @Embedded
+    @OneToOne
     @NotNull(message = "Address cannot be null")
     private Address address;
+
+    @OneToOne
+    @NotNull(message = "Owner cannot be null")
+    private User owner;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Property> properties;

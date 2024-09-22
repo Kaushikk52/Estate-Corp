@@ -42,6 +42,23 @@ public class AuthController {
     // Store OTPs temporarily
     private Map<String, String> otpStorage = new HashMap<>();
 
+    @PostMapping(value = "/register")
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        try {
+            User savedUser = userService.addUser(user);
+            String token = helper.generateToken(savedUser);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User registered successfully");
+            response.put("user", savedUser);
+            response.put("token", token);
+            log.info("User added Successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            log.error("Error adding user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+    }
+
     @PostMapping(value = "/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
         this.doAuthenticate(request.getName(), request.getPassword());

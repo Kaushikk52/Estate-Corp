@@ -33,9 +33,10 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public void addUser(User user){
+    public User addUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-         userRepo.save(user);
+        User savedUser =  userRepo.save(user);
+        return savedUser;
     }
 
     public List<User> getAllUsers(){
@@ -46,15 +47,13 @@ public class UserService implements UserDetailsService {
         return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User updateUsername(String firstName,String lastName , String id){
+    public User updateUsername(String fullName, String id){
         User existingUser = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
-        existingUser.setFirstName(firstName);
-        existingUser.setLastName(lastName);
-        existingUser.setFullName(existingUser.getFirstName()+" "+existingUser.getLastName());
+        existingUser.setFullName(fullName);
         return userRepo.save(existingUser);
     }
 
-    public User updatePhone(long phone, String id){
+    public User updatePhone(String phone, String id){
         User existingUser = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         existingUser.setPhone(phone);
         return userRepo.save(existingUser);
@@ -72,8 +71,8 @@ public class UserService implements UserDetailsService {
         return userRepo.save(existingUser);
     }
 
-    public String deleteUser(String name){
-        User existingUser = userRepo.findByFullName(name);
+    public String deleteUser(String email){
+        User existingUser = userRepo.findByEmail(email);
         userRepo.delete(existingUser);
         return "User deleted successfully...";
     }
