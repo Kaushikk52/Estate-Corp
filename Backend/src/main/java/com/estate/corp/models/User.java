@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -42,7 +43,7 @@ public class User implements UserDetails {
     private UserRole role;
 
     public enum UserRole {
-        USER, RESALER, AGENT, ADMIN
+        ROLE_USER, ROLE_RESALER, ROLE_AGENT, ROLE_ADMIN;
     }
 
     @PrePersist
@@ -51,14 +52,14 @@ public class User implements UserDetails {
             this.id = UUID.randomUUID().toString();  // Generate UUID for ID
         }
         if (this.role == null) {
-            this.role = UserRole.USER;  // Default role to USER
+            this.role = UserRole.ROLE_USER;  // Default role to USER
         }
     }
 
     // Override methods from UserDetails interface
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();  // No authorities for now
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

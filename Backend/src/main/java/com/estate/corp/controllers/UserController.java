@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/update-username")
-    public ResponseEntity<User> updateUsername(@RequestBody String fullName, @PathVariable String id) {
+    public ResponseEntity<User> updateUsername(@RequestBody String id,@RequestBody String fullName) {
         try {
             User updatedUser = userServ.updateUsername(fullName, id);
             log.info("Username updated successfully: {}", updatedUser);

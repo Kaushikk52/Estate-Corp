@@ -4,6 +4,7 @@ import com.estate.corp.security.JwtAuthenticationEntryPoint;
 import com.estate.corp.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
@@ -34,15 +35,13 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v1/api/auth/register",
+                        .requestMatchers(HttpMethod.POST,"/v1/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET,
                                 "/v1/api/auth/login",
                                 "/v1/api/auth/send-otp",
                                 "/v1/api/auth/verify-otp",
-                                "v1/api/projects/all",
-                                "v1/api/*",
-                                "v1/api/projects/add",
-                                "v1/api/users/**").permitAll()
-                        .requestMatchers(
+                                "v1/api/*/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,
                                 "/v1/api/users/reset-password").authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
@@ -56,7 +55,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Adjust allowed origins as needed
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Adjust allowed origins as needed
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // Add allowed headers if needed
         configuration.setAllowCredentials(true); // Allow credentials if needed
