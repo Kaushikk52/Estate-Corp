@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Search, Bed, Bath, Home, MapPin, ChevronUp, ChevronDown } from 'lucide-react'
 import BlogSidebar from './BlogSidebar'
+import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function PropertyListing() {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState('')
   const [propertyType, setPropertyType] = useState('')
@@ -36,6 +39,10 @@ export default function PropertyListing() {
       const scrollAmount = direction === 'up' ? -200 : 200
       blogContainerRef.current.scrollBy({ top: scrollAmount, behavior: 'smooth' })
     }
+  }
+
+  const handlePropertyClick = (propertyId: number) => {
+    navigate(`/residential/buy/${propertyId}`)
   }
 
   useEffect(() => {
@@ -106,52 +113,67 @@ export default function PropertyListing() {
         </div>
 
         {/* Property Listings */}
-        <div className="space-y-8">
-          {filteredProperties.map(property => (
-            <div key={property.id} className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <div className="flex flex-col md:flex-row">
-                <div className="w-full md:w-2/5 lg:w-1/3 relative">
-                  <img src={property.image} alt={property.name} className="w-full h-full object-cover" />
-                  <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
-                    property.status === 'Ready to Move' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-gray-800'
-                  }`}>
-                    {property.status}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="space-y-8"
+        >
+          <AnimatePresence>
+            {filteredProperties.map((property, index) => (
+              <motion.div
+                key={property.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                onClick={() => handlePropertyClick(property.id)}
+              >
+                <div className="flex flex-col md:flex-row">
+                  <div className="w-full md:w-2/5 lg:w-1/3 relative">
+                    <img src={property.image} alt={property.name} className="w-full h-full object-cover" />
+                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
+                      property.status === 'Ready to Move' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-gray-800'
+                    }`}>
+                      {property.status}
+                    </div>
+                  </div>
+                  <div className="flex-1 p-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start mb-2">
+                        <h2 className="text-2xl font-bold text-purple-700">{property.name}</h2>
+                        <p className="text-xl font-semibold text-purple-600">${property.price.toLocaleString()}</p>
+                      </div>
+                      <p className="text-gray-600 mb-4 flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" /> {property.location}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                          <Home className="h-4 w-4" /> {property.type}
+                        </span>
+                        <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                          <Bed className="h-4 w-4" /> {property.bedrooms} Beds
+                        </span>
+                        <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                          <Bath className="h-4 w-4" /> {property.bathrooms} Baths
+                        </span>
+                      </div>
+                      <p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    </div>
+                    <button className="mt-4 w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded">
+                      View Details
+                    </button>
                   </div>
                 </div>
-                <div className="flex-1 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start mb-2">
-                      <h2 className="text-2xl font-bold text-purple-700">{property.name}</h2>
-                      <p className="text-xl font-semibold text-purple-600">${property.price.toLocaleString()}</p>
-                    </div>
-                    <p className="text-gray-600 mb-4 flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" /> {property.location}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                        <Home className="h-4 w-4" /> {property.type}
-                      </span>
-                      <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                        <Bed className="h-4 w-4" /> {property.bedrooms} Beds
-                      </span>
-                      <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                        <Bath className="h-4 w-4" /> {property.bathrooms} Baths
-                      </span>
-                    </div>
-                    <p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                  </div>
-                  <button className="mt-4 w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </main>
 
       {/* Featured Blogs Sidebar */}
-        <BlogSidebar/>
+      <BlogSidebar/>
 
     </div>
   )
