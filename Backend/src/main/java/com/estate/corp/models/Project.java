@@ -25,8 +25,9 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String ownerName;
 
-    @OneToOne
     @NotNull(message = "Address cannot be null")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
 
     @OneToOne
@@ -36,9 +37,11 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Property> properties;
 
-    @Lob
-    @Column(columnDefinition = "BLOB") // Specifies that this is a large binary object
-    private byte[] images;
+    @Column(name = "image_name")
+    private String imageName;
+
+    @Column(name = "base64image")
+    private String base64Image;
 
     @Min(value = 1, message = "Total floors must be at least 1")
     @Max(value = 200, message = "Total floors cannot exceed 200")

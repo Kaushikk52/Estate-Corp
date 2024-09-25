@@ -19,6 +19,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
+import static org.hibernate.CacheMode.PUT;
+import static org.springframework.http.HttpMethod.DELETE;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -34,15 +38,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/v1/api/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/v1/api/auth/login",
-                                "/v1/api/auth/send-otp",
-                                "/v1/api/auth/verify-otp",
-                                "v1/api/*/*").permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/v1/api/users/reset-password").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/v1/api/auth/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/v1/api/users/all").hasRole("ADMIN")
+                        .requestMatchers( "/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/api/users/**").authenticated()
+                        .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN","AGENT")
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

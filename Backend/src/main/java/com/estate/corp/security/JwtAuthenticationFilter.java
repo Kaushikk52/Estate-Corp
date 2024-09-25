@@ -1,5 +1,8 @@
 package com.estate.corp.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,6 +64,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+            // Handle token expiration
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token has expired: " + e.getMessage());
+
+        } catch (MalformedJwtException e) {
+            // Handle malformed token
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Malformed JWT token: " + e.getMessage());
+
+        } catch (SignatureException e) {
+            // Handle invalid signature
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid JWT signature: " + e.getMessage());
+
+        } catch (IllegalArgumentException e) {
+            // Handle invalid token or claims
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Invalid token or claims: " + e.getMessage());
+
         } catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }

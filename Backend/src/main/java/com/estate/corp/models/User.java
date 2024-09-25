@@ -19,6 +19,9 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false, updatable = false, length = 36)
     private String id;
 
+    @Column(name="token",nullable = false,updatable = true)
+    private String token;
+
     @Size(min = 5, max = 30, message = "Full name must be between 5 and 30 characters.")
     @Column(name = "full_name", nullable = false, length = 30)  // Set length to 30
     private String fullName;

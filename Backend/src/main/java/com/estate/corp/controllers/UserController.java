@@ -43,39 +43,24 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "/update-username")
-    public ResponseEntity<User> updateUsername(@RequestBody String id,@RequestBody String fullName) {
-        try {
-            User updatedUser = userServ.updateUsername(fullName, id);
-            log.info("Username updated successfully: {}", updatedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
-        } catch (IllegalArgumentException e) {
-            log.warn("An Error occurred : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
-        }
-    }
 
-    @PutMapping(value = "/update-phone")
-    public ResponseEntity<User> updatePhone(@RequestBody String phone, @PathVariable String id) {
-        try {
-            User updatedUser = userServ.updatePhone(phone, id);
-            log.info("User Phone No. updated successfully: {}", updatedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
-        } catch (IllegalArgumentException e) {
+    @PutMapping(value="/update")
+    public ResponseEntity<?> updateUser(@RequestBody Map<String, String> updates){
+        try{
+            User updatedUser = userServ.updateUser(updates);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User updated successfully");
+            response.put("user", updatedUser);
+            log.info("User updated successfully: {}", updatedUser);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(IllegalArgumentException e){
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", e.getMessage());
+            log.warn("An error occurred: {}", response);
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(response);
+        } catch (RuntimeException e) {
             log.warn("An Error occurred : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
-        }
-    }
-
-    @PutMapping(value = "/update-email")
-    public ResponseEntity<User> updateEmail(@RequestBody String email, @PathVariable String id) {
-        try {
-            User updatedUser = userServ.updateEmail(email, id);
-            log.info("User Email updated successfully: {}", updatedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
-        } catch (IllegalArgumentException e) {
-            log.warn("An Error occurred : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 

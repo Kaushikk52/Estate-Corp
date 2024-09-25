@@ -42,15 +42,22 @@ public class AuthController {
     // Store OTPs temporarily
     private Map<String, String> otpStorage = new HashMap<>();
 
+    private void doAuthenticate(String username,String password){
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,password);
+        try{
+            manager.authenticate(authentication);
+        }catch (Exception e){
+            throw new RuntimeException("Invalid user name or password...");
+        }
+    }
+
     @PostMapping(value = "/register")
     public ResponseEntity<?> addUser(@RequestBody User user) {
         try {
             User savedUser = userService.addUser(user);
-            String token = helper.generateToken(savedUser);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User registered successfully");
             response.put("user", savedUser);
-            response.put("token", token);
             log.info("User added Successfully");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
@@ -61,23 +68,18 @@ public class AuthController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
-        this.doAuthenticate(request.getName(), request.getPassword());
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getName());
-        String token = this.helper.generateToken(userDetails);
-
-        JwtResponse response = JwtResponse.builder()
-                .jwtToken(token)
-                .name(userDetails.getUsername()).build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    private void doAuthenticate(String username,String password){
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,password);
         try{
-            manager.authenticate(authentication);
-        }catch (Exception e){
-            throw new RuntimeException("Invalid user name or password...");
+            this.doAuthenticate(request.getName(), request.getPassword());
+            User userDetails = (User)userDetailsService.loadUserByUsername(request.getName());
+            String token = userService.checkAndRenewToken(userDetails);
+            JwtResponse response = JwtResponse.builder()
+                    .jwtToken(token)
+                    .name(userDetails.getUsername()).build();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
         }
+
     }
 
     @PostMapping("/send-otp")
@@ -96,9 +98,11 @@ public class AuthController {
     public ResponseEntity<String> verifyOTP(@RequestParam String email, @RequestParam String otp, @RequestParam String newPass) {
         if (otpStorage.containsKey(email) && otpStorage.get(email).equals(otp)) {
             log.info("OTP verified Successfully");
+            otpStorage.remove(email,otp);
             User updatedUser = userService.resetPassword(email, newPass);
             return ResponseEntity.ok().body(updatedUser.getUsername());
         } else {
+            log.warn("Invalid OTP");
             return ResponseEntity.badRequest().body("Invalid OTP!");
         }
     }

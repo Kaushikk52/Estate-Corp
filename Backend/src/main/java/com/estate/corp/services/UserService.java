@@ -2,6 +2,7 @@ package com.estate.corp.services;
 
 import com.estate.corp.models.User;
 import com.estate.corp.repositories.UserRepo;
+import com.estate.corp.security.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -17,11 +19,13 @@ public class UserService implements UserDetailsService {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final JwtHelper helper;
 
     @Autowired
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder,JwtHelper helper) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.helper = helper;
     }
 
     @Override
@@ -33,8 +37,24 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    public String checkAndRenewToken(User user){
+        String token = user.getToken();
+        boolean isExpired = this.helper.isTokenExpired(token);
+        if(isExpired){
+            String newToken = this.helper.generateToken(user);
+            user.setToken(newToken);
+            userRepo.save(user);
+            return newToken;
+        }else{
+            return token;
+        }
+    }
+
+
     public User addUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String token = this.helper.generateToken(user);
+        user.setToken(token);
         User savedUser =  userRepo.save(user);
         return savedUser;
     }
@@ -47,22 +67,29 @@ public class UserService implements UserDetailsService {
         return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public User updateUsername(String fullName, String id){
-        User existingUser = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
-        existingUser.setFullName(fullName);
-        return userRepo.save(existingUser);
-    }
 
-    public User updatePhone(String phone, String id){
-        User existingUser = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        existingUser.setPhone(phone);
-        return userRepo.save(existingUser);
-    }
-
-    public User updateEmail(String email, String id){
-        User existingUser = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
-        existingUser.setEmail(email);
-        return userRepo.save(existingUser);
+    public User updateUser(Map<String, String> updates){
+        String id = updates.get("id");
+        User user = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not Found with ID : "+id));
+        updates.forEach((key,value) -> {
+            switch (key){
+                case "id":
+                    break;
+                case "fullName":
+                    user.setFullName(value);
+                    user.setToken(this.helper.generateToken(user));
+                    break;
+                case "phone":
+                    user.setPhone(value);
+                    break;
+                case "email":
+                    user.setEmail(value);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid field : " +key);
+            }
+        });
+        return userRepo.save(user);
     }
 
     public User resetPassword(String email,String newPass){
@@ -76,8 +103,4 @@ public class UserService implements UserDetailsService {
         userRepo.delete(existingUser);
         return "User deleted successfully...";
     }
-
-
-
-
 }
