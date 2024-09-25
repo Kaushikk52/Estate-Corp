@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -34,9 +35,9 @@ public class ProjectController {
 
 
     @PostMapping(value = "/add")
-    public ResponseEntity<Project> saveProperty(@RequestBody Project project) {
+    public ResponseEntity<Project> saveProperty(@RequestBody Project project, Principal principal) {
         try {
-            projectServ.saveProject(project);
+            projectServ.saveProject(project,principal);
             log.info("Project posted successfully : {}", project);
             return ResponseEntity.status(HttpStatus.CREATED).body(null);
         } catch (IllegalArgumentException e) {

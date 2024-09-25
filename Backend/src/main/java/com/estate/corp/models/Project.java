@@ -25,23 +25,26 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String ownerName;
 
-    @NotNull(message = "Address cannot be null")
+//    @NotNull(message = "Address cannot be null")
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address", referencedColumnName = "id")
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @OneToOne
     @NotNull(message = "Owner cannot be null")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id",nullable = true)
     private User owner;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany( cascade = CascadeType.ALL)
+    @Column(nullable = true)
     private List<Property> properties;
 
     @Column(name = "image_name")
     private String imageName;
 
-    @Column(name = "base64image")
-    private String base64Image;
+//    @Lob
+//    @Column(name = "base64image",columnDefinition = "LONGTEXT")
+//    private String base64Image;
 
     @Min(value = 1, message = "Total floors must be at least 1")
     @Max(value = 200, message = "Total floors cannot exceed 200")
@@ -55,7 +58,7 @@ public class Project {
 
     @PastOrPresent(message = "Update date must be in the past or present")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Date updatedAt;
 
 

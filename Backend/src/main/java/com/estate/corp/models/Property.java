@@ -1,6 +1,7 @@
 package com.estate.corp.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,9 +21,12 @@ public class Property {
     private PropertyType type;
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
-    @OneToOne
+    @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
-    @OneToOne
+    @NotNull(message = "Owner cannot be null")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id",nullable = true)
     private User owner;
     @Embedded
     private PropertyDetails details;
