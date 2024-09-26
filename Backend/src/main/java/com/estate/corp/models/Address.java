@@ -3,6 +3,7 @@ package com.estate.corp.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,6 +16,12 @@ public class Address {
     private String landmark;
     private String city;
     private String zipCode;
+
+//    @OneToMany(mappedBy = "address")
+//    private List<Project> projects;
+//
+//    @OneToMany(mappedBy = "address")
+//    private List<Property> properties;
 
     @PrePersist
     private void prePersist(){

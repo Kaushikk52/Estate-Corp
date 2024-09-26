@@ -42,12 +42,12 @@ public class User implements UserDetails {
     @Column(name = "phone", nullable = false, unique = true, length = 15)  // Set length to 15
     private String phone;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Project> projects= new ArrayList<>();
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Project> projects;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @Column(nullable = true)
-    private List<Property> properties= new ArrayList<>();
+    private List<Property> properties;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 10)

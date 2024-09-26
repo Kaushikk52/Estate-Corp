@@ -21,18 +21,21 @@ public class Property {
     private PropertyType type;
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
-    @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "address", referencedColumnName = "id")
-    private Address address;
-    @NotNull(message = "Owner cannot be null")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id",nullable = true)
-    private User owner;
     @Embedded
     private PropertyDetails details;
-    @ManyToOne
-    @JoinColumn(name = "projectId")
-    private Project project;
+
+    @ManyToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
+    private Address address;
+
+//    @NotNull(message = "Owner cannot be null")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "owner_id",nullable = true)
+//    private User owner;
+
+//    @ManyToOne
+//    @JoinColumn(name = "projectId")
+//    private Project project;
 
     @PrePersist
     private void prePersist(){

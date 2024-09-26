@@ -26,7 +26,7 @@ public class Project {
     private String ownerName;
 
 //    @NotNull(message = "Address cannot be null")
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 

@@ -42,7 +42,7 @@ public class ProjectService {
         try {
             Address savedAddress = addressRepo.save(project.getAddress());
             User currentUser = (User) userServ.loadUserByUsername(principal.getName());
-            project.setOwner(currentUser);
+//            project.setOwner(currentUser);
             project.setCreatedAt(new Date());
             project.setUpdatedAt(new Date());
             project.setAddress(savedAddress);
