@@ -1,5 +1,6 @@
 package com.estate.corp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String ownerName;
 
-//    @NotNull(message = "Address cannot be null")
+    //    @NotNull(message = "Address cannot be null")
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
@@ -33,6 +34,7 @@ public class Project {
     @NotNull(message = "Owner cannot be null")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id",nullable = true)
+    @JsonIgnore
     private User owner;
 
     @OneToMany( cascade = CascadeType.ALL)

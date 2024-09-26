@@ -19,10 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-import static javax.swing.text.html.FormSubmitEvent.MethodType.POST;
-import static org.hibernate.CacheMode.PUT;
-import static org.springframework.http.HttpMethod.DELETE;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -45,7 +41,15 @@ public class SecurityConfig {
                         .requestMatchers( "/v1/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/v1/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/v1/api/users/removeProject/*").hasAnyRole("ADMIN","AGENT")
                         .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN","AGENT")
+                        .requestMatchers(HttpMethod.GET,"/v1/api/projects/all",
+                                "/v1/api/projects/id/*",
+                                "/v1/api/projects/name/*").authenticated()
+                        .requestMatchers("/v1/api/properties/all").authenticated()
+                        .requestMatchers(HttpMethod.POST,
+                                "/v1/api/properties/post").hasAnyRole("ADMIN","AGENT","RESALER")
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,18 @@ public class UserController {
             userServ.deleteUser(email);
             log.info("User deleted successfully: {}", email);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully");
+        } catch (Exception e) {
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping(value = "/removeProject/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable String id, Principal principal){
+        try {
+            userServ.deleteProject(id,principal);
+            log.info("Project deleted successfully: {}", id);
+            return ResponseEntity.status(HttpStatus.OK).body("Project deleted successfully");
         } catch (Exception e) {
             log.warn("An Error occurred : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

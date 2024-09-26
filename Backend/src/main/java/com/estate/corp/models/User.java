@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +41,7 @@ public class User implements UserDetails {
     @Column(name = "phone", nullable = false, unique = true, length = 15)  // Set length to 15
     private String phone;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Project> projects;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)

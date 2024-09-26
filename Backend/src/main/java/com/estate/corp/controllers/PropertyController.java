@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -93,14 +95,17 @@ public class PropertyController {
     }
 
     @PostMapping(value = "/post")
-    public ResponseEntity<Property> saveProperty(@RequestBody Property property) {
+    public ResponseEntity<Property> saveProperty(@RequestBody Property property, Principal principal) {
         try {
-            propertyServ.saveProperty(property);
+            propertyServ.saveProperty(property,principal);
             log.info("Property posted successfully : {}", property);
             return ResponseEntity.status(HttpStatus.CREATED).body(null);
         } catch (IllegalArgumentException e) {
             log.warn("An Error occurred : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (IOException e) {
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

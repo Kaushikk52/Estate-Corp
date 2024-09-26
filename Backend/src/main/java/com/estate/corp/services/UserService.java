@@ -1,6 +1,8 @@
 package com.estate.corp.services;
 
+import com.estate.corp.models.Project;
 import com.estate.corp.models.User;
+import com.estate.corp.repositories.ProjectRepo;
 import com.estate.corp.repositories.UserRepo;
 import com.estate.corp.security.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -17,13 +20,15 @@ import java.util.Map;
 public class UserService implements UserDetailsService {
 
 
+    private final ProjectRepo projectRepo;
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtHelper helper;
 
     @Autowired
-    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder,JwtHelper helper) {
+    public UserService(UserRepo userRepo,ProjectRepo projectRepo, PasswordEncoder passwordEncoder,JwtHelper helper) {
         this.userRepo = userRepo;
+        this.projectRepo = projectRepo;
         this.passwordEncoder = passwordEncoder;
         this.helper = helper;
     }
@@ -60,11 +65,13 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> getAllUsers(){
-        return userRepo.findAll();
+        List<User> users = userRepo.findAll();
+        return users;
     }
 
     public User getUserById(String id){
-        return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return user;
     }
 
 
@@ -103,4 +110,21 @@ public class UserService implements UserDetailsService {
         userRepo.delete(existingUser);
         return "User deleted successfully...";
     }
+
+    public void deleteProject(String id, Principal principal){
+        User currentUser = (User) this.loadUserByUsername(principal.getName());
+        List<Project> projectList = currentUser.getProjects();
+        Project project = projectRepo.findById(id).orElseThrow(()-> new RuntimeException("Project not found"));
+        if(projectList.contains(project)) {
+            projectList.remove(project);
+            currentUser.setProjects(projectList);
+            userRepo.save(currentUser);
+        }else{
+            throw new RuntimeException("Project does not belong to the current user");
+        }
+
+    }
+
+
+
 }

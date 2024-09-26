@@ -1,13 +1,20 @@
 package com.estate.corp.services;
 
+import com.estate.corp.models.Address;
 import com.estate.corp.models.Property;
 import com.estate.corp.models.PropertyDetails;
+import com.estate.corp.models.User;
+import com.estate.corp.repositories.AddressRepo;
 import com.estate.corp.repositories.PropertyRepo;
 import com.estate.corp.specifications.PropertySpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -16,8 +23,30 @@ public class PropertyServices {
     @Autowired
     private PropertyRepo propertyRepo;
 
-    public Property saveProperty(Property property) {
-        return propertyRepo.save(property);
+    @Autowired
+    private AddressRepo addressRepo;
+
+    @Autowired
+    private ImageService imageServ;
+
+    @Autowired
+    private UserService userServ;
+
+    @Value("${imgUrl.source.path}")
+    private String sourceUrl;
+    @Value("${imgUrl.destination.path}")
+    private String destinationUrl;
+
+    public Property saveProperty(Property property, Principal principal) throws IOException {
+        Address savedAddress = addressRepo.save(property.getAddress());
+        User currentUser = (User) userServ.loadUserByUsername(principal.getName());
+        property.setOwner(currentUser);
+        property.setCreatedAt(new Date());
+        property.setUpdatedAt(new Date());
+        property.setAddress(savedAddress);
+        imageServ.saveImageToUrl(sourceUrl, destinationUrl, property.getImageName());
+        Property savedProperty = propertyRepo.save(property);
+        return savedProperty;
     }
 
     public List<Property> getAllProperties() {
@@ -66,7 +95,5 @@ public class PropertyServices {
         Property property = propertyRepo.findByName(name);
         propertyRepo.delete(property);
     }
-
-
 
 }

@@ -1,5 +1,6 @@
 package com.estate.corp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -15,27 +16,27 @@ public class Property {
     private Date createdAt;
     private Date updatedAt;
     private String name;
-    @Lob
-    private byte[] image;
+
+    @Column(name = "image_name")
+    private String imageName;
+
     @Enumerated(EnumType.STRING)
     private PropertyType type;
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
-    @Embedded
-    private PropertyDetails details;
-
-    @ManyToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
-
-//    @NotNull(message = "Owner cannot be null")
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "owner_id",nullable = true)
-//    private User owner;
-
-//    @ManyToOne
-//    @JoinColumn(name = "projectId")
-//    private Project project;
+    @NotNull(message = "Owner cannot be null")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id",nullable = true)
+    @JsonIgnore
+    private User owner;
+    @Embedded
+    private PropertyDetails details;
+    @ManyToOne
+    @JoinColumn(name = "projectId")
+    private Project project;
 
     @PrePersist
     private void prePersist(){

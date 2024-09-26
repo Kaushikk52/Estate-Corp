@@ -5,14 +5,13 @@ import com.estate.corp.models.Project;
 import com.estate.corp.models.User;
 import com.estate.corp.repositories.AddressRepo;
 import com.estate.corp.repositories.ProjectRepo;
+import com.estate.corp.repositories.UserRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +24,9 @@ public class ProjectService {
 
     @Autowired
     private AddressRepo addressRepo;
+
+    @Autowired
+    private UserRepo userRepo;
 
     @Autowired
     private ImageService imageServ;
@@ -42,7 +44,7 @@ public class ProjectService {
         try {
             Address savedAddress = addressRepo.save(project.getAddress());
             User currentUser = (User) userServ.loadUserByUsername(principal.getName());
-//            project.setOwner(currentUser);
+            project.setOwner(currentUser);
             project.setCreatedAt(new Date());
             project.setUpdatedAt(new Date());
             project.setAddress(savedAddress);
@@ -62,13 +64,8 @@ public class ProjectService {
         return projectRepo.findById(id).orElseThrow(()-> new RuntimeException("Project not found"));
     }
 
-    public Project getProject(String name){
+    public Project getProjectByName(String name){
         return projectRepo.findByName(name);
-    }
-
-    public void removeProject(String name){
-        Project project = projectRepo.findByName(name);
-        projectRepo.delete(project);
     }
 
 }
