@@ -62,3 +62,8 @@
 @media (min-width: 1024px) {
   .carousel-card { width: 33.33%; }
 }
+
+
+input:focus { 
+  outline: none !important;
+}
