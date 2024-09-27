@@ -12,7 +12,7 @@ public interface PropertyRepo extends JpaRepository<Property,String> , JpaSpecif
 
     Property findByName(String name);
 
-    List<Property> findByAddressCityAndDetailsBedrooms(String city, int bedrooms);
+    List<Property> findByDetailsCityAndDetailsBedrooms(String city, int bedrooms);
 
     List<Property> findByDetailsIsApproved(boolean isApproved);
 

@@ -1,10 +1,13 @@
 package com.estate.corp.services;
 
 import com.estate.corp.models.Project;
+import com.estate.corp.models.Property;
 import com.estate.corp.models.User;
 import com.estate.corp.repositories.ProjectRepo;
+import com.estate.corp.repositories.PropertyRepo;
 import com.estate.corp.repositories.UserRepo;
 import com.estate.corp.security.JwtHelper;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,14 +24,16 @@ public class UserService implements UserDetailsService {
 
 
     private final ProjectRepo projectRepo;
+    private final PropertyRepo propertyRepo;
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtHelper helper;
 
     @Autowired
-    public UserService(UserRepo userRepo,ProjectRepo projectRepo, PasswordEncoder passwordEncoder,JwtHelper helper) {
+    public UserService(UserRepo userRepo,ProjectRepo projectRepo,PropertyRepo propertyRepo, PasswordEncoder passwordEncoder,JwtHelper helper) {
         this.userRepo = userRepo;
         this.projectRepo = projectRepo;
+        this.propertyRepo = propertyRepo;
         this.passwordEncoder = passwordEncoder;
         this.helper = helper;
     }
@@ -44,15 +49,15 @@ public class UserService implements UserDetailsService {
 
     public String checkAndRenewToken(User user){
         String token = user.getToken();
-        boolean isExpired = this.helper.isTokenExpired(token);
-        if(isExpired){
+        try{
+            boolean isExpired = this.helper.isTokenExpired(token);
+        }catch(ExpiredJwtException e){
             String newToken = this.helper.generateToken(user);
             user.setToken(newToken);
             userRepo.save(user);
             return newToken;
-        }else{
-            return token;
         }
+        return token;
     }
 
 
@@ -122,9 +127,19 @@ public class UserService implements UserDetailsService {
         }else{
             throw new RuntimeException("Project does not belong to the current user");
         }
-
     }
 
-
+    public void deleteProperty(String id, Principal principal){
+        User currentUser = (User) this.loadUserByUsername(principal.getName());
+        List<Property> propertyList = currentUser.getProperties();
+        Property property = propertyRepo.findById(id).orElseThrow(()-> new RuntimeException("Property not found"));
+        if(propertyList.contains(property)) {
+            propertyList.remove(property);
+            currentUser.setProperties(propertyList);
+            userRepo.save(currentUser);
+        }else{
+            throw new RuntimeException("Property does not belong to the current user");
+        }
+    }
 
 }

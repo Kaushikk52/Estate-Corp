@@ -1,5 +1,6 @@
 package com.estate.corp.controllers;
 
+import com.estate.corp.models.Project;
 import com.estate.corp.models.Property;
 import com.estate.corp.services.PropertyServices;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -33,19 +36,27 @@ public class PropertyController {
 
     @GetMapping("/filter")
     public ResponseEntity<?>  filterProperties(
-            @RequestParam(required = false) int bedrooms,
-            @RequestParam(required = false) double minPrice,
-            @RequestParam(required = false) double maxPrice,
+            @RequestParam(required = false) Integer bedrooms,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) List<String> cities,
-            @RequestParam(required = false) double minCarpetArea,
-            @RequestParam(required = false) double maxCarpetArea) {
+            @RequestParam(required = false) Double minCarpetArea,
+            @RequestParam(required = false) Double maxCarpetArea) {
 
         try{
+            Map<String,Object> filters = new HashMap<>();
+            // Add only non-null filters
+            if (bedrooms != null) filters.put("bedrooms", bedrooms);
+            if (minPrice != null) filters.put("minPrice", minPrice);
+            if (maxPrice != null) filters.put("maxPrice", maxPrice);
+            if (cities != null && !cities.isEmpty()) filters.put("cities", cities);
+            if (minCarpetArea != null) filters.put("minCarpetArea", minCarpetArea);
+            if (maxCarpetArea != null) filters.put("maxCarpetArea", maxCarpetArea);
 
-            List<Property> filteredProperties = propertyServ.getFilteredProperties(bedrooms, minPrice, maxPrice, cities, minCarpetArea, maxCarpetArea);
+            List<Property> filteredProperties = propertyServ.getFilteredProperties(filters);
             if (filteredProperties.isEmpty()) {
                 log.warn("Properties does not exists");
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(filteredProperties);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(filteredProperties);
             }else{
                 log.info("Retrieved all properties ");
                 return ResponseEntity.status(HttpStatus.OK).body(filteredProperties);
@@ -91,6 +102,30 @@ public class PropertyController {
         } catch (Exception e) {
             log.warn("An Error occurred : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/id/{id}")
+    public ResponseEntity<?> getPropertyById(@PathVariable String id){
+        try{
+            Property property = propertyServ.getPropertyById(id);
+            log.info("Retrieved property with ID :{}", id);
+            return ResponseEntity.status(HttpStatus.OK).body(property);
+        }catch(Exception e){
+            log.error("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/name/{name}")
+    public ResponseEntity<?> getPropertyByName(@PathVariable String name){
+        try{
+            Property property = propertyServ.getPropertyByName(name);
+            log.info("Retrieved property with Name :{}", name);
+            return ResponseEntity.status(HttpStatus.OK).body(property);
+        }catch(Exception e){
+            log.error("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 

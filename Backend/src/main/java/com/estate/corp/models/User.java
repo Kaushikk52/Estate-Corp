@@ -44,7 +44,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
     @Column(nullable = true)
     private List<Property> properties;
 

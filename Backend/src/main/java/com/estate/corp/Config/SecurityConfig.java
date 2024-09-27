@@ -43,11 +43,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/v1/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE,
                                 "/v1/api/users/removeProject/*").hasAnyRole("ADMIN","AGENT")
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/v1/api/users/removeProperty/*").hasAnyRole("ADMIN","AGENT","RESALER")
                         .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN","AGENT")
                         .requestMatchers(HttpMethod.GET,"/v1/api/projects/all",
                                 "/v1/api/projects/id/*",
                                 "/v1/api/projects/name/*").authenticated()
-                        .requestMatchers("/v1/api/properties/all").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter",
+                                "/v1/api/properties/all",
+                                "/v1/api/properties/isApproved",
+                                "/v1/api/properties/id/*",
+                                "/v1/api/properties/name/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/v1/api/properties/approvalStatus/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,
                                 "/v1/api/properties/post").hasAnyRole("ADMIN","AGENT","RESALER")
                 )

@@ -44,6 +44,8 @@ public class Project {
     @Column(name = "image_name")
     private String imageName;
 
+    private String city;
+
 //    @Lob
 //    @Column(name = "base64image",columnDefinition = "LONGTEXT")
 //    private String base64Image;

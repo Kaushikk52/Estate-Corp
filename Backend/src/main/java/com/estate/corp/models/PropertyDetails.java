@@ -14,12 +14,15 @@ public class PropertyDetails {
     private int bathrooms;
     private int balconies;
     private int floorNo;
+    private String city;
 //    private String boundaryWall;
     private List<String> ammenities;
     private String facing;
     private String carpetArea;
     private String areaUnit;
-    private boolean isApproved;
+
+    @Column(name = "is_approved")
+    private Boolean isApproved;
 
     @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")

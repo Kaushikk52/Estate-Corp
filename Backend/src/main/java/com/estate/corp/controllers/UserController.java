@@ -89,5 +89,17 @@ public class UserController {
         }
     }
 
+    @DeleteMapping(value = "/removeProperty/{id}")
+    public ResponseEntity<?> deleteProperty(@PathVariable String id,Principal principal){
+        try {
+            userServ.deleteProperty(id,principal);
+            log.info("Property deleted successfully: {}", id);
+            return ResponseEntity.status(HttpStatus.OK).body("Property deleted successfully");
+        } catch (Exception e) {
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 
 }

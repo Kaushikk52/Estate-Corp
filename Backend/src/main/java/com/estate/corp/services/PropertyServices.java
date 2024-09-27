@@ -7,6 +7,7 @@ import com.estate.corp.models.User;
 import com.estate.corp.repositories.AddressRepo;
 import com.estate.corp.repositories.PropertyRepo;
 import com.estate.corp.specifications.PropertySpecification;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PropertyServices {
@@ -37,6 +39,7 @@ public class PropertyServices {
     @Value("${imgUrl.destination.path}")
     private String destinationUrl;
 
+    @Transactional
     public Property saveProperty(Property property, Principal principal) throws IOException {
         Address savedAddress = addressRepo.save(property.getAddress());
         User currentUser = (User) userServ.loadUserByUsername(principal.getName());
@@ -62,32 +65,24 @@ public class PropertyServices {
     }
 
     public List<Property> getPropertiesByCityAndBedrooms(String city,int bedrooms){
-        return propertyRepo.findByAddressCityAndDetailsBedrooms(city,bedrooms);
+        return propertyRepo.findByDetailsCityAndDetailsBedrooms(city,bedrooms);
     }
 
     public List<Property> getPropertiesByApprovalStatus(boolean isApproved){
         return propertyRepo.findByDetailsIsApproved(isApproved);
     }
 
-    public List<Property> getFilteredProperties(
-            Integer bedrooms,
-            Double minPrice,
-            Double maxPrice,
-            List<String> cities,
-            Double minCarpetArea,
-            Double maxCarpetArea) {
-
-        Specification<Property> spec = PropertySpecification.filterByCriteria(
-                bedrooms, minPrice, maxPrice, cities, minCarpetArea, maxCarpetArea);
-
-        return propertyRepo.findAll(spec);
+    public List<Property> getFilteredProperties(Map<String,Object> filters) {
+        Specification<Property> spec = PropertySpecification.filterByCriteria(filters);
+        List<Property> filteredProperties =  propertyRepo.findAll(spec);
+        return filteredProperties;
     }
 
     public Property changeApprovalStatus(String id){
         Property property = propertyRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Property with ID: " + id + " not found"));
         PropertyDetails details = property.getDetails();
-        details.setApproved(!details.isApproved());
+        details.setIsApproved(!details.getIsApproved());
         return propertyRepo.save(property);
     }
 

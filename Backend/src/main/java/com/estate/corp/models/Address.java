@@ -13,7 +13,7 @@ public class Address {
     private String street;
     private String locality;
     private String landmark;
-    private String city;
+//    private String city;
     private String zipCode;
 
 //    @OneToMany(mappedBy = "address")
