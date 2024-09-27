@@ -38,8 +38,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-
-
     // Store OTPs temporarily
     private Map<String, String> otpStorage = new HashMap<>();
 
