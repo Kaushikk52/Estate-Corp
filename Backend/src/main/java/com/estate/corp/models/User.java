@@ -22,23 +22,24 @@ public class User implements UserDetails {
     @Column(name="token",nullable = false,updatable = true)
     private String token;
 
+    @NotNull(message = "Full name cannot be null.")
     @Size(min = 5, max = 30, message = "Full name must be between 5 and 30 characters.")
-    @Column(name = "full_name", nullable = false, length = 30)  // Set length to 30
+    @Column(name = "full_name", nullable = false, length = 30)
     private String fullName;
 
     @NotNull(message = "Password cannot be null.")
-    @Size(min = 7, message = "Password must be at least 7 characters long.")
+    @Size(min = 6, message = "Password must be at least 6 characters long.")
     @Column(name = "password", nullable = false)
     private String password;
 
     @NotNull(message = "Email cannot be null.")
     @Email(message = "Email should be valid.")
-    @Column(name = "email", nullable = false, unique = true, length = 100)  // Set max length to 100
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
     @NotNull(message = "Phone number cannot be null.")
     @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 digits.")
-    @Column(name = "phone", nullable = false, unique = true, length = 15)  // Set length to 15
+    @Column(name = "phone", nullable = false, unique = true, length = 15)
     private String phone;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
@@ -74,7 +75,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.fullName;
+        return this.email;
     }
 
     @Override

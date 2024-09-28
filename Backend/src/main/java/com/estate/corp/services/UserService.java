@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByFullName(username);
+        User user = userRepo.findByEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }

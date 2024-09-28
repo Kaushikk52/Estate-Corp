@@ -41,12 +41,12 @@ public class AuthController {
     // Store OTPs temporarily
     private Map<String, String> otpStorage = new HashMap<>();
 
-    private void doAuthenticate(String username,String password){
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,password);
+    private void doAuthenticate(String email,String password){
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email,password);
         try{
             manager.authenticate(authentication);
         }catch (Exception e){
-            throw new RuntimeException("Invalid user name or password...");
+            throw new RuntimeException("Invalid email or password...");
         }
     }
 
@@ -68,8 +68,8 @@ public class AuthController {
     @PostMapping(value = "/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
         try{
-            this.doAuthenticate(request.getName(), request.getPassword());
-            User userDetails = (User)userDetailsService.loadUserByUsername(request.getName());
+            this.doAuthenticate(request.getEmail(), request.getPassword());
+            User userDetails = (User)userDetailsService.loadUserByUsername(request.getEmail());
             String token = userService.checkAndRenewToken(userDetails);
             JwtResponse response = JwtResponse.builder()
                     .jwtToken(token)
