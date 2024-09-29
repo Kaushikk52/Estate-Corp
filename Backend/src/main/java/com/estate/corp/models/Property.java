@@ -13,27 +13,35 @@ import java.util.UUID;
 public class Property {
     @Id
     private String id;
+
     private Date createdAt;
+
     private Date updatedAt;
+
     private String name;
 
-    @Column(name = "image_name")
-    private String imageName;
+    @Column(name = "images")
+    private String[] images;
 
     @Enumerated(EnumType.STRING)
     private PropertyType type;
+
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
+
     @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
+
     @NotNull(message = "Owner cannot be null")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id",nullable = true)
     @JsonIgnore
     private User owner;
+
     @Embedded
     private PropertyDetails details;
+
     @ManyToOne
     @JoinColumn(name = "projectId")
     private Project project;

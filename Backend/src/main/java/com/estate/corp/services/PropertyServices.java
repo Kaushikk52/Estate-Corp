@@ -47,7 +47,7 @@ public class PropertyServices {
         property.setCreatedAt(new Date());
         property.setUpdatedAt(new Date());
         property.setAddress(savedAddress);
-        imageServ.saveImageToUrl(sourceUrl, destinationUrl, property.getImageName());
+//        imageServ.saveImageToUrl(sourceUrl, destinationUrl, property.getImage());
         Property savedProperty = propertyRepo.save(property);
         return savedProperty;
     }

@@ -132,9 +132,9 @@ public class PropertyController {
     @PostMapping(value = "/post")
     public ResponseEntity<Property> saveProperty(@RequestBody Property property, Principal principal) {
         try {
-            propertyServ.saveProperty(property,principal);
-            log.info("Property posted successfully : {}", property);
-            return ResponseEntity.status(HttpStatus.CREATED).body(null);
+            Property savedProperty = propertyServ.saveProperty(property,principal);
+            log.info("Property posted successfully : {}", savedProperty.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProperty);
         } catch (IllegalArgumentException e) {
             log.warn("An Error occurred : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
