@@ -122,7 +122,7 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 cursor-pointer">
             <a onClick={() => navigate('/dashboard/main')}>
               <User size={20} />
             </a>
