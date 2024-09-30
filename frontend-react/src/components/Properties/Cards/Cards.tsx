@@ -1,21 +1,64 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin } from 'lucide-react'
-import React from 'react'
+import axios from 'axios';
 
-const properties = [
-  { id: 1, name: "Sunset Villa", type: "House", price: 500000, bedrooms: 4, bathrooms: 3, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Malibu, CA", status: "Ready to Move", images: 12 },
-  { id: 2, name: "Urban Loft", type: "Apartment", price: 300000, bedrooms: 2, bathrooms: 2, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "New York, NY", status: "Under Construction", images: 8 },
-  { id: 3, name: "Seaside Cottage", type: "House", price: 450000, bedrooms: 3, bathrooms: 2, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Cape Cod, MA", status: "Ready to Move", images: 15 },
-  { id: 4, name: "Mountain Retreat", type: "Cabin", price: 350000, bedrooms: 2, bathrooms: 1, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Aspen, CO", status: "Ready to Move", images: 10 },
-  { id: 5, name: "Downtown Condo", type: "Apartment", price: 275000, bedrooms: 1, bathrooms: 1, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Chicago, IL", status: "Under Construction", images: 6 },
-  { id: 6, name: "Suburban Family Home", type: "House", price: 550000, bedrooms: 5, bathrooms: 3, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Austin, TX", status: "Ready to Move", images: 20 },
-]
 
 export default function PropertyCardsCarousel() {
+  const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const [properties,setProperties] = useState([{
+      id:"",
+      createdAt: "",
+      updatedAt: "",
+      name:"",
+      images : [],
+      type : "",
+      propertyVariant: "",
+      address: {
+        id:"",
+        street:"",
+        locality:"",
+        landmark:"",
+        zipCode:"",
+      },
+      details:{
+        bedrooms:0,
+        bathrooms:0,
+        balconies:0,
+        floorNo:0,
+        city:"",
+        ammenitites :[],
+        facing:"",
+        carpetArea:"",
+        areaUnit:"",
+        isApproved:false,
+        availability:"",
+        rent: 0,
+        price:0,
+        furnishedStatus:"",
+      },
+      project:{}
+    }
+  ]);
+
+  const getAllApprovedProperties = async () =>{
+    try{
+      const response = await axios.get(`${baseURL}/v1/api/properties/isApproved?isApproved=${true}`);
+      if(response.status === 200){
+        setProperties(response.data);
+        // console.log("all properties...",response.data);
+      }
+    }catch(err){
+      console.log("An error occurred : ",err);
+    }
+  }
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [visibleCards, setVisibleCards] = useState(3)
 
   useEffect(() => {
+
+    getAllApprovedProperties();
     const updateVisibleCards = () => {
       const width = window.innerWidth;
       let newVisibleCards;
@@ -64,31 +107,46 @@ export default function PropertyCardsCarousel() {
 
                 <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
                   <div className="relative">
-                    <img src={property.image} alt={property.name} className="w-full h-48 object-cover" />
+                    {
+                      property.images !== null ? 
+                      <img src={property.images[0]} alt={property.name} className="w-full h-48 object-cover" /> :
+                      <img src={defaultImg} alt={property.name} className="w-full h-48 object-cover" /> 
+                    }
+                    
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
                       <Camera className="h-3 w-3 mr-1" />
-                      {property.images}
+                      {property.images.length}
                     </div>
-                    <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${property.status === 'Ready to Move' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}>
-                      {property.status}
+
+                    <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${property.type === 'RENT' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'}`}>
+                     {property.type === "RENT" ? "Negotiable" : "Not Negotiable"}
+                    </div>
+                    
+                    <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.furnishedStatus === 'FURNISHED' ?'bg-green-500 text-white' 
+                    : property.details.furnishedStatus ===  "SEMIFURNISHED"?  'bg-yellow-500 text-white' : 'bg-red-500 text-white'}`}>
+                      {property.details.furnishedStatus}
                     </div>
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-purple-700 truncate">{property.name}</h3>
                     <p className="text-sm text-gray-600 mt-1 flex items-center">
                       <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                      {property.location}
+                      {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
                     </p>
-                    <p className="text-xl font-bold text-purple-600 mt-2">${property.price.toLocaleString()}</p>
+                    {property.type === "RENT" ? 
+                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.rent.toLocaleString()} /monthly</p> :
+                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.price.toLocaleString()}</p>
+                    }
+                    
                     <div className="flex flex-wrap gap-2 mt-3">
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                         <Home className="h-3 w-3 mr-1" /> {property.type}
                       </span>
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Bed className="h-3 w-3 mr-1" /> {property.bedrooms}
+                        <Bed className="h-3 w-3 mr-1" /> {property.details.bedrooms}
                       </span>
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Bath className="h-3 w-3 mr-1" /> {property.bathrooms}
+                        <Bath className="h-3 w-3 mr-1" /> {property.details.bathrooms}
                       </span>
                     </div>
                     <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-md transition-colors duration-300">
