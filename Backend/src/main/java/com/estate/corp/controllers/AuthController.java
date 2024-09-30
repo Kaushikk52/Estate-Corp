@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,25 +41,44 @@ public class AuthController {
     // Store OTPs temporarily
     private Map<String, String> otpStorage = new HashMap<>();
 
-    @PostMapping(value = "/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
-        this.doAuthenticate(request.getName(), request.getPassword());
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getName());
-        String token = this.helper.generateToken(userDetails);
-
-        JwtResponse response = JwtResponse.builder()
-                .jwtToken(token)
-                .name(userDetails.getUsername()).build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    private void doAuthenticate(String username,String password){
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,password);
+    private void doAuthenticate(String email,String password){
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email,password);
         try{
             manager.authenticate(authentication);
         }catch (Exception e){
-            throw new RuntimeException("Invalid user name or password...");
+            throw new RuntimeException("Invalid email or password...");
         }
+    }
+
+    @PostMapping(value = "/register")
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        try {
+            User savedUser = userService.addUser(user);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User registered successfully");
+            response.put("user", savedUser);
+            log.info("User added Successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            log.error("Error adding user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+    }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
+        try{
+            this.doAuthenticate(request.getEmail(), request.getPassword());
+            User userDetails = (User)userDetailsService.loadUserByUsername(request.getEmail());
+            String token = userService.checkAndRenewToken(userDetails);
+            JwtResponse response = JwtResponse.builder()
+                    .jwtToken(token)
+                    .name(userDetails.getUsername()).build();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     @PostMapping("/send-otp")
@@ -79,9 +97,11 @@ public class AuthController {
     public ResponseEntity<String> verifyOTP(@RequestParam String email, @RequestParam String otp, @RequestParam String newPass) {
         if (otpStorage.containsKey(email) && otpStorage.get(email).equals(otp)) {
             log.info("OTP verified Successfully");
+            otpStorage.remove(email,otp);
             User updatedUser = userService.resetPassword(email, newPass);
             return ResponseEntity.ok().body(updatedUser.getUsername());
         } else {
+            log.warn("Invalid OTP");
             return ResponseEntity.badRequest().body("Invalid OTP!");
         }
     }

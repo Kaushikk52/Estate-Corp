@@ -1,7 +1,5 @@
 package com.estate.corp.services;
 
-import com.estate.corp.models.Notification;
-import com.estate.corp.models.User;
 import com.estate.corp.repositories.NotificationRepo;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;

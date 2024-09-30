@@ -4,6 +4,7 @@ import com.estate.corp.security.JwtAuthenticationEntryPoint;
 import com.estate.corp.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
@@ -33,23 +34,42 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v1/api/users/add", "/v1/api/auth/login", "/v1/api/auth/send-otp",
-                                "/v1/api/auth/verify-otp", "/v1/api/users/reset-password","v1/api/*").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.POST,"/v1/api/auth/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/v1/api/users/all").hasRole("ADMIN")
+                        .requestMatchers( "/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/v1/api/users/removeProject/*").hasAnyRole("ADMIN","AGENT")
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/v1/api/users/removeProperty/*").hasAnyRole("ADMIN","AGENT","RESALER")
+                        .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN","AGENT")
+                        .requestMatchers(HttpMethod.GET,"/v1/api/projects/all",
+                                "/v1/api/projects/id/*",
+                                "/v1/api/projects/name/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter",
+                                "/v1/api/properties/all",
+                                "/v1/api/properties/isApproved",
+                                "/v1/api/properties/id/*",
+                                "/v1/api/properties/name/*").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/v1/api/properties/approvalStatus/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,
+                                "/v1/api/properties/post").hasAnyRole("ADMIN","AGENT","RESALER")
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-                .logout(LogoutConfigurer::permitAll);
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                .logout(LogoutConfigurer::permitAll)
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); // Adjust allowed origins as needed
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://estate-corp.netlify.app")); // Adjust allowed origins as needed
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // Add allowed headers if needed
         configuration.setAllowCredentials(true); // Allow credentials if needed

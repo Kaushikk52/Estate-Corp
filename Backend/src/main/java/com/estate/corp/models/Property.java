@@ -1,6 +1,8 @@
 package com.estate.corp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,23 +13,38 @@ import java.util.UUID;
 public class Property {
     @Id
     private String id;
-    private String name;
-    private String location;
-    private Double price;
+
     private Date createdAt;
+
     private Date updatedAt;
 
-    @Lob
-    private byte[] image;
+    private String name;
 
-    @Embedded
+    @Column(name = "images")
+    private String[] images;
+
+    @Enumerated(EnumType.STRING)
+    private PropertyType type;
+
+    @Enumerated(EnumType.STRING)
+    private Property.PropertyVariant propertyVariant;
+
+    @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
     private Address address;
+
+    @NotNull(message = "Owner cannot be null")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id",nullable = true)
+    @JsonIgnore
+    private User owner;
+
     @Embedded
     private PropertyDetails details;
 
-    @Enumerated(EnumType.STRING)
-    private Property.PropertyType propertyType;
-
+    @ManyToOne
+    @JoinColumn(name = "projectId")
+    private Project project;
 
     @PrePersist
     private void prePersist(){
@@ -37,32 +54,33 @@ public class Property {
     }
 
     public enum PropertyType{
-        RESIDENTIAL(SubCategory.RESIDENTIAL_SUBCATEGORY),
-        COMMERCIAL(SubCategory.COMMERCIAL_SUBCATEGORY);
+        RENT,BUY
+    }
 
-        private SubCategory subCategory;
+    public enum PropertyVariant{
+        RESIDENTIAL(SubVariant.RESIDENTIAL_SUBVARIANT),
+        COMMERCIAL(SubVariant.COMMERCIAL_SUBVARIANT);
 
-        PropertyType(SubCategory subCategory) {
-            this.subCategory = subCategory;
+        private SubVariant subVariant;
+
+        PropertyVariant(SubVariant subVariant) {
+            this.subVariant = subVariant;
         }
 
-        public SubCategory getSubCategory() {
-            return subCategory;
+        public SubVariant getSubVariant() {
+            return subVariant;
         }
 
-        public enum SubCategory {
-            RESIDENTIAL_SUBCATEGORY("Apartment", "Villa", "Townhouse"),
-            COMMERCIAL_SUBCATEGORY("Office", "Retail", "Warehouse");
+        public enum SubVariant {
+            RESIDENTIAL_SUBVARIANT("Apartment", "Villa", "Townhouse"),
+            COMMERCIAL_SUBVARIANT("Office", "Retail", "Warehouse");
 
-            private String[] subTypes;
+            private String[] subVariants;
 
-            SubCategory(String... subTypes) {
-                this.subTypes = subTypes;
+            SubVariant(String... subVariants) {
+                this.subVariants = subVariants;
             }
 
-            public String[] getSubTypes() {
-                return subTypes;
-            }
         }
     }
 }

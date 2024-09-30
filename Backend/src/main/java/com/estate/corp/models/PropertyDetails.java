@@ -1,34 +1,53 @@
 package com.estate.corp.models;
-import jakarta.persistence.*;
-import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Future;
+import lombok.Data;
+
+import java.util.Date;
+import java.util.List;
+
+@Data
 @Embeddable
 public class PropertyDetails {
-    @Id
-    private String id;
     private int bedrooms;
-    private int totalFloor;
+
+    private int bathrooms;
+
+    private int balconies;
+
     private int floorNo;
-    private String boundaryWall;
-    private String ammenities;
+
+    private String city;
+    //    private String boundaryWall;
+    private List<String> ammenities;
     private String facing;
+
     private String carpetArea;
-    private String coveredArea;
-    private String superArea;
-    private String plotArea;
+
     private String areaUnit;
-    private double rent;
-    @Column(name = "price", insertable = false, updatable = false)
-    private double price;
-    private boolean isApproved;
+
+    @Column(name = "is_approved")
+    private Boolean isApproved;
+
+    @Future
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date availability;
 
+    private double rent;
+
+    @Column(name = "price")
+    private double price;
 
     @Enumerated(EnumType.STRING)
     private PropertyDetails.FurnishedStatus furnishedStatus;
 
-    public enum FurnishedStatus{
-        FURNISHED , UNFURNISHED
+    public enum FurnishedStatus {
+        FURNISHED, UNFURNISHED, SEMIFURNISHED
     }
 
 }
