@@ -1,8 +1,9 @@
 package com.estate.corp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.Date;
 import java.util.UUID;
@@ -12,27 +13,48 @@ import java.util.UUID;
 public class Property {
     @Id
     private String id;
-    private String propertyOwner;
-    private String propertyName;
-    private String projectName;
-    private Double price;
+
     private Date createdAt;
+
     private Date updatedAt;
-    @Lob
-    private byte[] image;
-    @Embedded
-    private Address address;
-    @Embedded
-    private PropertyDetails details;
+
+    private String name;
+
+    @Column(name = "images")
+    private String[] images;
+
+    @Enumerated(EnumType.STRING)
+    private PropertyType type;
+
     @Enumerated(EnumType.STRING)
     private Property.PropertyVariant propertyVariant;
-    private String propertyType;
+
+    @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address", referencedColumnName = "id")
+    private Address address;
+
+    @NotNull(message = "Owner cannot be null")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id",nullable = true)
+    @JsonIgnore
+    private User owner;
+
+    @Embedded
+    private PropertyDetails details;
+
+    @ManyToOne
+    @JoinColumn(name = "projectId")
+    private Project project;
 
     @PrePersist
     private void prePersist(){
         if(this.id == null){
             this.id = UUID.randomUUID().toString();
         }
+    }
+
+    public enum PropertyType{
+        RENT,BUY
     }
 
     public enum PropertyVariant{

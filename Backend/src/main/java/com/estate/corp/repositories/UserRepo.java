@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepo extends JpaRepository<User,String> {
 
-    User findByName(String name);
+    User findByFullName(String fullName);
 
     User findByEmail(String email);
 }

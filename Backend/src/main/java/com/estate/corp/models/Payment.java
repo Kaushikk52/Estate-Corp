@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Data
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     @ManyToOne
     private Booking booking;
@@ -21,6 +21,13 @@ public class Payment {
 
     public enum PaymentStatus {
         PENDING, COMPLETED, FAILED, REFUNDED
+    }
+
+    @PrePersist
+    private void prePersist(){
+        if(this.id == null){
+            this.id = UUID.randomUUID().toString();
+        }
     }
 
 }

@@ -1,11 +1,10 @@
 package com.estate.corp.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -13,49 +12,73 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
+    @Column(name = "id", nullable = false, updatable = false, length = 36)
     private String id;
-    @Size(min=3, max=30)
-    private String firstName;
-    @Size(min=3, max=30)
-    private String lastName;
+
+    @Column(name="token",nullable = false,updatable = true)
+    private String token;
+
+    @NotNull(message = "Full name cannot be null.")
+    @Size(min = 5, max = 30, message = "Full name must be between 5 and 30 characters.")
+    @Column(name = "full_name", nullable = false, length = 30)
     private String fullName;
-    @NotNull
-    @Min(7)
+
+    @NotNull(message = "Password cannot be null.")
+    @Size(min = 6, message = "Password must be at least 6 characters long.")
+    @Column(name = "password", nullable = false)
     private String password;
-    @NotNull
-    @Min(7)
+
+    @NotNull(message = "Email cannot be null.")
+    @Email(message = "Email should be valid.")
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
-    @Size(min=10)
-    private long phone;
+
+    @NotNull(message = "Phone number cannot be null.")
+    @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 digits.")
+    @Column(name = "phone", nullable = false, unique = true, length = 15)
+    private String phone;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Project> projects;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
+    @Column(nullable = true)
+    private List<Property> properties;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 10)
     private UserRole role;
 
-    public enum UserRole{
-        USER,ADMIN
+    public enum UserRole {
+        ROLE_USER, ROLE_RESALER, ROLE_AGENT, ROLE_ADMIN;
     }
 
     @PrePersist
-    private void prePersist(){
-        if(this.id == null){
-            this.id = UUID.randomUUID().toString();
+    private void prePersist() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();  // Generate UUID for ID
         }
-        if(this.role == null){
-            this.role = UserRole.USER;
+        if (this.role == null) {
+            this.role = UserRole.ROLE_USER;  // Default role to USER
         }
     }
 
+    // Override methods from UserDetails interface
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
     public String getUsername() {
-        return this.firstName +" "+ this.lastName;
+        return this.email;
     }
 
     @Override
@@ -77,5 +100,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }
