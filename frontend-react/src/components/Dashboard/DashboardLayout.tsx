@@ -1,7 +1,8 @@
-import { useState } from "react"
-import React from "react"
+import { useState,useEffect } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { ArrowUpRight, DollarSign, Users, Package, Activity, Printer } from "lucide-react"
+import axios from "axios"
+import toast, { Toaster } from "react-hot-toast";
 
 const data = [
   { name: 'Jan', value: 400 },
@@ -9,12 +10,6 @@ const data = [
   { name: 'Mar', value: 200 },
   { name: 'Apr', value: 278 },
   { name: 'May', value: 189 },
-]
-
-const paymentTrackerData = [
-  { clientName: "Orlando Diggs", propertyName: "Madura Cabin & Residences", purchaseType: "Property Rental", amount: "$2870.00", dueDate: "18/01/2024", status: "Paid" },
-  { clientName: "Mario Hernandez", propertyName: "Davila Residences Batu", purchaseType: "Paid Property", amount: "$5640.00", dueDate: "19/01/2024", status: "Unpaid" },
-  { clientName: "Kenny Olumas", propertyName: "Aubert & Collins Villas", purchaseType: "Property Rental", amount: "$3600.00", dueDate: "24/01/2024", status: "Pending" },
 ]
 
 const CardBackground = ({ color }: { color: string }) => (
@@ -25,14 +20,82 @@ const CardBackground = ({ color }: { color: string }) => (
 )
 
 export default function Dashboard() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
+  const [searchTerm, setSearchTerm] = useState("")
+  const [mssg,setMssg] = useState("status changed");
+  const [properties,setProperties] = useState([{
+    id:"",
+    createdAt: "",
+    updatedAt: "",
+    name:"",
+    images : [],
+    type : "",
+    propertyVariant: "",
+    address: {
+      id:"",
+      street:"",
+      locality:"",
+      landmark:"",
+      zipCode:"",
+    },
+    details:{
+      bedrooms:0,
+      bathrooms:0,
+      balconies:0,
+      floorNo:0,
+      city:"",
+      ammenitites :[],
+      facing:"",
+      carpetArea:"",
+      areaUnit:"",
+      isApproved:false,
+      availability:"",
+      rent: 0,
+      price:0,
+      furnishedStatus:"",
+    },
+    project:{}
+  }
+]);
   const cards = [
     { title: "Total Revenue", icon: DollarSign, value: "$45,231.89", change: "+20.1% from last month", color: "bg-blue-500", textColor: "text-blue-700" },
     { title: "New Customers", icon: Users, value: "+2350", change: "+180.1% from last month", color: "bg-green-500", textColor: "text-green-700" },
     { title: "Total Products", icon: Package, value: "12,234", change: "+19 added today", color: "bg-purple-500", textColor: "text-purple-700" },
     { title: "Active Now", icon: Activity, value: "+573", change: "+201 since last hour", color: "bg-yellow-500", textColor: "text-yellow-700" },
   ]
+
+  useEffect(()=>{
+    getAllProperties();
+  },[mssg])
+
+  const getAllProperties = async () =>{
+    try{
+      const response = await axios.get(`${baseURL}/v1/api/properties/all`);
+      if(response.status === 200){
+        setProperties(response.data);
+        // console.log("all properties...",response.data);
+      }
+    }catch(err){
+      console.log("An error occurred : ",err);
+    }
+  }
+
+  const changeApprovalStatus = async (id : any,isPropertyApproved:any) => {
+    try{
+      const token = localStorage.getItem("token");
+      const response = await axios.put(`${baseURL}/v1/api/properties/approvalStatus/${id}`,{},{ headers: { Authorization: `Bearer ${token}` } });
+      isPropertyApproved === false ? setMssg("Unapproved")  : setMssg("Approved");
+      if(response.status === 200){
+        toast.success(`Property ${mssg} !`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    }catch(err){
+      console.log("An error occurred : ",err);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -79,42 +142,40 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Payment Tracker</h2>
+          <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purchase Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Invoice</th> */}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {paymentTrackerData.map((item, index) => (
+                {properties.map((property, index) => (
                   <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.clientName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.propertyName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.purchaseType}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.amount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.dueDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{property.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.type}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.details.city}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.address.locality}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        item.status === 'Paid' ? 'bg-green-100 text-green-800' :
-                        item.status === 'Unpaid' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {item.status}
-                      </span>
+                      {
+                        property.details.isApproved === false ?
+                        <button className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800" onClick={() => changeApprovalStatus(property.id,property.details.isApproved)}>Unapproved</button>
+                        : <button className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" onClick={() => changeApprovalStatus(property.id,property.details.isApproved)}>Approved</button>
+                      }
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <button className="text-blue-600 hover:text-blue-900">
                         <Printer className="h-5 w-5" />
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -139,6 +200,7 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+      <Toaster />
     </div>
   )
 }

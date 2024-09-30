@@ -61,7 +61,6 @@ export default function AuthPopup(props:any) {
       );
       if (response.status === 201) {
         setUser(response.data.user);
-        localStorage.setItem("token", response.data.user.token);
         setActiveTab("login");
         console.log("User registered Successfully", user);
       }

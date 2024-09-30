@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState,useEffect} from "react";
 import {useNavigate } from 'react-router-dom';
 import { Search, User, Menu, X, ChevronDown, PlusSquare } from "lucide-react";
 import AuthPopup from "./AuthPopup";
@@ -40,6 +40,10 @@ export default function Navbar() {
   const [isCommercialsOpen, setIsCommercialsOpen] = useState(false);
   const [toggle,setToggle] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    setToggle(false);
+  });
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
