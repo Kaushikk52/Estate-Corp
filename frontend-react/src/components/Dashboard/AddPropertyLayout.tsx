@@ -775,6 +775,8 @@ export default function AddPropertyLayout() {
                             name="details.amtUnit"
                             className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
                           >
+                            <option value="">Select Rent Unit</option>
+                            <option value="K">Thousand</option>
                             <option value="L">Lakh</option>
                             <option value="Cr">Cr</option>
                           </Field>
@@ -812,6 +814,8 @@ export default function AddPropertyLayout() {
                             name="details.amtUnit"
                             className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
                           >
+                            <option value="">Select Price Unit</option>
+                            <option value="K">Thousand</option>
                             <option value="L">Lakh</option>
                             <option value="Cr">Cr</option>
                           </Field>
