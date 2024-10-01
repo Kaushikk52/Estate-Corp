@@ -43,11 +43,20 @@ public class PropertyDetails {
     @Column(name = "price")
     private double price;
 
+    private String amtUnit;
+
+    @Enumerated(EnumType.STRING)
+    private PropertyDetails.IsNegotiable isNegotiable;
+
     @Enumerated(EnumType.STRING)
     private PropertyDetails.FurnishedStatus furnishedStatus;
 
     public enum FurnishedStatus {
         FURNISHED, UNFURNISHED, SEMIFURNISHED
+    }
+
+    public enum IsNegotiable {
+        YES,NO
     }
 
 }
