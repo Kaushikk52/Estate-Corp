@@ -11,13 +11,13 @@ const NavLink = ({
   children: React.ReactNode;
 }) => (
 
-  <a
-    href={href}
+  <Link
+    to={href}
     className="group relative text-base font-semibold text-gray-800 hover:text-gray-900"
   >
     {children}
     <span className="absolute left-0 bottom-0 h-0.5 w-0 bg-gray-800 transition-all duration-300 group-hover:w-full"></span>
-  </a>
+  </Link>
 );
 
 const DropdownLink = ({
@@ -33,12 +33,6 @@ const DropdownLink = ({
   >
   {children}
   </Link>
-  // <a
-  //   href={href}
-  //   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
-  // >
-  //   {children}
-  // </a>
 );
 
 export default function Navbar() {
@@ -89,8 +83,8 @@ export default function Navbar() {
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <a
-              href="/"
+            <Link
+              to={"/"}
               className="text-xl font-semibold text-gray-800 uppercase flex items-center"
             >
               <img
@@ -100,7 +94,7 @@ export default function Navbar() {
                 width={70}
               />
               Estatecorp
-            </a>
+            </Link>
           </div>
           <div className="hidden md:flex items-center space-x-6">
             <NavLink href="/">Home</NavLink>
@@ -171,12 +165,12 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute left-0 right-0 top-full bg-white shadow-lg z-40">
           <div className="py-2">
-            <a
-              href="/"
+            <Link
+              to={"/"}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
             >
               Home
-            </a>
+            </Link>
             <button
               onClick={toggleResidentials}
               className="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
@@ -191,18 +185,18 @@ export default function Navbar() {
             </button>
             {isResidentialsOpen && (
               <div className="bg-gray-50 py-2">
-                <a
-                  href="/residential/rent"
+                <Link
+                  to={"/residential/rent"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Rent
-                </a>
-                <a
-                  href="/residential/buy"
+                </Link>
+                <Link
+                  to={"/residential/buy"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Buy
-                </a>
+                </Link>
               </div>
             )}
             <button
@@ -219,18 +213,18 @@ export default function Navbar() {
             </button>
             {isCommercialsOpen && (
               <div className="bg-gray-50 py-2">
-                <a
-                  href="/commercial/rent"
+                <Link
+                  to={"/commercial/rent"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Rent
-                </a>
-                <a
-                  href="/commercial/buy"
+                </Link>
+                <Link
+                  to={"/commercial/buy"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Buy
-                </a>
+                </Link>
               </div>
             )}
             <button
