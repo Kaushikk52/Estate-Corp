@@ -56,7 +56,7 @@ public class SecurityConfig {
                                 "/v1/api/properties/name/*").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/v1/api/properties/approvalStatus/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,
-                                "/v1/api/properties/post").hasAnyRole("ADMIN","AGENT","RESALER")
+                                "/v1/api/properties/post").authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
