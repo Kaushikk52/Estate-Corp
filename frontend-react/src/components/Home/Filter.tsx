@@ -62,7 +62,7 @@ export default function Component() {
           <div className="md:hidden  flex items-center justify-between sm:mb-0">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="w-3/4 bg-gray-100 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center"
+              className="w-3/4 bg-gray-100 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center mb-2"
             >
               <FilterIcon className="h-5 w-5 mr-2" />
               {isFilterOpen ? 'Hide Filters' : 'Show Filters'}

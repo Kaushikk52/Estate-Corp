@@ -227,18 +227,6 @@ export default function Navbar() {
                 </Link>
               </div>
             )}
-            <button
-                className="group inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-md hover:bg-blue-600 transition-colors duration-200"
-                onClick={() => checkIfLogin()}
-              >
-                <PlusSquare size={16} className="mr-2" />
-                Add Property
-                <span className="ml-1 text-xs bg-white px-1 rounded">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-300">
-                    FREE
-                  </span>
-                </span>
-              </button>
           </div>
         </div>
       )}

@@ -1,57 +1,55 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
-import axios from 'axios';
-
+import axios from 'axios'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function PropertyCardsCarousel() {
-  const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
-  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-  const [properties,setProperties] = useState([{
-      id:"",
-      createdAt: "",
-      updatedAt: "",
-      name:"",
-      images : [],
-      type : "",
-      propertyVariant: "",
-      address: {
-        id:"",
-        street:"",
-        locality:"",
-        landmark:"",
-        zipCode:"",
-      },
-      details:{
-        bedrooms:0,
-        bathrooms:0,
-        balconies:0,
-        floorNo:0,
-        city:"",
-        ammenitites :[],
-        facing:"",
-        carpetArea:"",
-        areaUnit:"",
-        isApproved:false,
-        availability:"",
-        rent: 0,
-        price:0,
-        amtUnit:"",
-        isNegotiable:"",
-        furnishedStatus:"",
-      },
-      project:{}
-    }
-  ]);
+  const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
+  const [properties, setProperties] = useState([{
+    id: "",
+    createdAt: "",
+    updatedAt: "",
+    name: "",
+    images: [],
+    type: "",
+    propertyVariant: "",
+    address: {
+      id: "",
+      street: "",
+      locality: "",
+      landmark: "",
+      zipCode: "",
+    },
+    details: {
+      bedrooms: 0,
+      bathrooms: 0,
+      balconies: 0,
+      floorNo: 0,
+      city: "",
+      ammenitites: [],
+      facing: "",
+      carpetArea: "",
+      areaUnit: "",
+      isApproved: false,
+      availability: "",
+      rent: 0,
+      price: 0,
+      amtUnit: "",
+      isNegotiable: "",
+      furnishedStatus: "",
+    },
+    project: {}
+  }])
 
-  const getAllApprovedProperties = async () =>{
-    try{
-      const response = await axios.get(`${baseURL}/v1/api/properties/isApproved?isApproved=${true}`);
-      if(response.status === 200){
-        setProperties(response.data);
-        // console.log("all properties...",response.data);
+  const getAllApprovedProperties = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/v1/api/properties/isApproved?isApproved=${true}`)
+      if (response.status === 200) {
+        setProperties(response.data)
       }
-    }catch(err){
-      console.log("An error occurred : ",err);
+    } catch (err) {
+      console.error("An error occurred: ", err)
     }
   }
 
@@ -59,26 +57,24 @@ export default function PropertyCardsCarousel() {
   const [visibleCards, setVisibleCards] = useState(3)
 
   useEffect(() => {
-
-    getAllApprovedProperties();
+    getAllApprovedProperties()
     const updateVisibleCards = () => {
-      const width = window.innerWidth;
-      let newVisibleCards;
-      if (width < 640) newVisibleCards = 1;
-      else if (width < 1024) newVisibleCards = 2;
-      else newVisibleCards = 3;
+      const width = window.innerWidth
+      let newVisibleCards
+      if (width < 640) newVisibleCards = 1
+      else if (width < 1024) newVisibleCards = 2
+      else newVisibleCards = 3
       
       if (newVisibleCards !== visibleCards) {
-        setVisibleCards(newVisibleCards);
-        setCurrentIndex(0); 
+        setVisibleCards(newVisibleCards)
+        setCurrentIndex(0)
       }
-    };
+    }
   
-    updateVisibleCards();
-    window.addEventListener('resize', updateVisibleCards);
-    return () => window.removeEventListener('resize', updateVisibleCards);
-  }, [visibleCards]);
-  
+    updateVisibleCards()
+    window.addEventListener('resize', updateVisibleCards)
+    return () => window.removeEventListener('resize', updateVisibleCards)
+  }, [visibleCards])
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
@@ -92,86 +88,117 @@ export default function PropertyCardsCarousel() {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
-      
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-purple-700">Featured Properties</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Featured Properties</h2>
       <div className="relative">
-        <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md"
-          onClick={prevSlide}
-          disabled={currentIndex === 0}
-          aria-label="Previous property"
-        >
-          <ChevronLeft className="h-6 w-6 text-purple-700" />
-        </button>
-        <div className="overflow-hidden">
-          <div className="flex gap-4 transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * (107 / visibleCards)}%)` }}>
-            {properties.map((property) => (
-              <div key={property.id} className={`w-full flex-shrink-0 ${visibleCards === 1 ? 'w-full' : visibleCards === 2 ? 'sm:w-3/5' : 'sm:w-3/5 lg:w-1/3'}`}>
-
-                <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-                  <div className="relative">
-                    {
-                      property.images !== null ? 
-                      <img src={property.images[0]} alt={property.name} className="w-full h-48 object-cover" /> :
-                      <img src={defaultImg} alt={property.name} className="w-full h-48 object-cover" /> 
-                    }
-                    
-                    <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
-                      <Camera className="h-3 w-3 mr-1" />
-                      {property.images.length}
+        <div className="overflow-hidden w-full">
+          <div className="relative">
+            <motion.div 
+              className="flex"
+              initial={false}
+              animate={{ x: `-${currentIndex * (100 / visibleCards)}%` }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <AnimatePresence>
+                {properties.map((property) => (
+                  <motion.div
+                    key={property.id}
+                    className={`flex-shrink-0 w-full px-2 ${
+                      visibleCards === 1 ? 'w-full' : 
+                      visibleCards === 2 ? 'md:w-1/2' : 
+                      'md:w-1/2 lg:w-1/3'
+                    }`}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -50 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full">
+                      <div className="relative">
+                        <img 
+                          src={property.images.length > 0 ? property.images[0] : defaultImg} 
+                          alt={property.name} 
+                          className="w-full h-48 object-cover"
+                        />
+                        <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
+                          <Camera className="h-3 w-3 mr-1" />
+                          {property.images.length}
+                        </div>
+                        <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.isNegotiable === 'YES' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                          {property.details.isNegotiable === "YES" ? "Negotiable" : "Not Negotiable"}
+                        </div>
+                        <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                          property.details.furnishedStatus === 'FURNISHED' ? 'bg-green-500 text-white' : 
+                          property.details.furnishedStatus === "SEMIFURNISHED" ? 'bg-yellow-500 text-white' : 
+                          'bg-red-500 text-white'
+                        }`}>
+                          {property.details.furnishedStatus}
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-blue-700 truncate">{property.name}</h3>
+                        <p className="text-sm text-gray-600 mt-1 flex items-center line-clamp-1">
+                          <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
+                          <span className="truncate">
+                            {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
+                          </span>
+                        </p>
+                        {property.type === "RENT" ? 
+                          <p className="text-xl font-bold text-blue-600 mt-2">Rs. {property.details.rent.toLocaleString()} {property.details.amtUnit} /monthly</p> :
+                          <p className="text-xl font-bold text-blue-600 mt-2">Rs. {property.details.price.toLocaleString()} {property.details.amtUnit}</p>
+                        }
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <Home className="h-3 w-3 mr-1" /> {property.type}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <Scaling className="h-3 w-3 mr-1" /> {property.details.carpetArea} {property.details.areaUnit}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <Bed className="h-3 w-3 mr-1" /> {property.details.bedrooms}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <Bath className="h-3 w-3 mr-1" /> {property.details.bathrooms}
+                          </span>
+                        </div>
+                        <motion.button 
+                          className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-md transition-colors duration-300"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          View Details
+                        </motion.button>
+                      </div>
                     </div>
-
-                    <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.isNegotiable === 'YES' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
-                     {property.details.isNegotiable === "YES" ? "Negotiable" : "Not Negotiable"}
-                    </div>
-                    
-                    <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.furnishedStatus === 'FURNISHED' ?'bg-green-500 text-white' 
-                    : property.details.furnishedStatus ===  "SEMIFURNISHED"?  'bg-yellow-500 text-white' : 'bg-red-500 text-white'}`}>
-                      {property.details.furnishedStatus}
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-purple-700 truncate">{property.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex items-center lineclamp1">
-                      <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                      {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
-                    </p>
-                    {property.type === "RENT" ? 
-                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.rent.toLocaleString()} {property.details.amtUnit} /monthly</p> :
-                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.price.toLocaleString()} {property.details.amtUnit}</p>
-                    }
-                    
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Home className="h-3 w-3 mr-1" /> {property.type}
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Scaling className="h-3 w-3 mr-1" /> {property.details.carpetArea} {property.details.areaUnit}
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Bed className="h-3 w-3 mr-1" /> {property.details.bedrooms}
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Bath className="h-3 w-3 mr-1" /> {property.details.bathrooms}
-                      </span>
-                    </div>
-                    <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-md transition-colors duration-300">
-                      View Details
-                    </button>
-                  </div>
-                </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+            <div className="absolute top-0 left-0 bottom-0 right-0 pointer-events-none">
+              <div className="flex justify-between items-center h-full">
+                <motion.button
+                  className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
+                  onClick={prevSlide}
+                  disabled={currentIndex === 0}
+                  aria-label="Previous property"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <ChevronLeft className="h-6 w-6 text-blue-700" />
+                </motion.button>
+                <motion.button
+                  className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
+                  onClick={nextSlide}
+                  disabled={currentIndex >= properties.length - visibleCards}
+                  aria-label="Next property"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <ChevronRight className="h-6 w-6 text-blue-700" />
+                </motion.button>
               </div>
-            ))}
+            </div>
           </div>
         </div>
-        <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md"
-          onClick={nextSlide}
-          disabled={currentIndex >= properties.length - visibleCards}
-          aria-label="Next property"
-        >
-          <ChevronRight className="h-6 w-6 text-purple-700" />
-        </button>
       </div>
     </div>
   )
