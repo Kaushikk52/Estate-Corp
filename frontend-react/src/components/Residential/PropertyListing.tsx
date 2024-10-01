@@ -3,6 +3,7 @@ import { Search, Bed, Bath, Home, MapPin, ChevronUp, ChevronDown } from 'lucide-
 import BlogSidebar from './BlogSidebar'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import Filter from '../Home/Filter'
 
 export default function PropertyListing() {
   const navigate = useNavigate()
@@ -63,6 +64,7 @@ export default function PropertyListing() {
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">Find Your Dream Home</h1>
 
         {/* Search and Filters */}
+        {/* <Filter/> */}
         <div className="bg-white bg-opacity-90 rounded-lg shadow-lg p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
@@ -117,7 +119,7 @@ export default function PropertyListing() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="space-y-8"
+          className="space-y-8 mt-5"
         >
           <AnimatePresence>
             {filteredProperties.map((property, index) => (

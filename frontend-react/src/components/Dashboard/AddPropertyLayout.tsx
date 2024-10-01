@@ -261,12 +261,12 @@ export default function AddPropertyLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-2 sm:px-3 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg"
+        className="max-w-4xl w-full space-y-8 bg-white p-10  rounded-xl shadow-lg"
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -277,7 +277,7 @@ export default function AddPropertyLayout() {
           </p>
         </div>
 
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 flex-wrap">
           {steps.map((s, index) => (
             <React.Fragment key={s}>
               <div className="flex flex-col items-center">
@@ -361,7 +361,7 @@ export default function AddPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 gap-5">
                       <div>
                         <label className=" text-sm font-medium text-gray-700">
                           Property Type

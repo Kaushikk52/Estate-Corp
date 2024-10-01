@@ -75,3 +75,20 @@
 input:focus { 
   outline: none !important;
 }
+
+/* phone view strat  */
+
+@media screen and (max-width: 600px){
+
+  .nav{
+    border: 2px solid red;
+  }
+
+  .phone-non{
+    display: none;
+  }
+
+}
+
+
+/* phone view end  */

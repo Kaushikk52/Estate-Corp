@@ -91,7 +91,8 @@ export default function PropertyCardsCarousel() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+      
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-purple-700">Featured Properties</h2>
       <div className="relative">
         <button

@@ -93,7 +93,7 @@ export default function Navbar() {
                 height={70}
                 width={70}
               />
-              Estatecorp
+             <span className="phone-non"> Estatecorp</span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-6">
@@ -140,7 +140,7 @@ export default function Navbar() {
                 onClick={() => checkIfLogin()}
               >
                 <PlusSquare size={16} className="mr-2" />
-                Add Property
+               <span className="phone-non"> Add </span>Property
                 <span className="ml-1 text-xs bg-white px-1 rounded">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-300">
                     FREE
