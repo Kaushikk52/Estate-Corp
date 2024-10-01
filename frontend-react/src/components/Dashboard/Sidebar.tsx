@@ -9,14 +9,14 @@ import {
   Menu,
   User,
   LogOut,
+  Building2
 } from "lucide-react";
 
 const navItems = [
   { icon: Home, label: "Home", href: "/" },
-  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: ShoppingCart, label: "Products", href: "/products" },
-  { icon: Users, label: "Customers", href: "/customers" },
-  { icon: Settings, label: "Settings", href: "/settings" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/main" },
+  { icon: Building2, label: "Projects", href: "/projects" },
+  { icon: Users, label: "Users", href: "/users" },
 ];
 
 export default function SidebarNavigation() {

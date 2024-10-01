@@ -4,8 +4,7 @@ import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
-import axios, { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Property Name is required"),
@@ -63,9 +62,7 @@ export default function AddPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [imgUrls, setImgUrls] = useState<any>([]);
 
   const initialValues = {
     name: "",
