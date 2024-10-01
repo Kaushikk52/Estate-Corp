@@ -60,10 +60,10 @@ export default function Navbar() {
     if (isResidentialsOpen) setIsResidentialsOpen(false);
   };
 
-  const checkIfLogin = () => {
+  const checkIfLogin = (route:string) => {
     const token = localStorage.getItem('token')
     if(token !== null && toggle === false){//user logged in and no popup
-      navigate('/dashboard/add-property')
+      navigate(route)
     }else if(token !== null && toggle === true){//user logged in and still popup
       setToggle(false);
     }else if(token === null){//user not logged in 
@@ -128,7 +128,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-4 cursor-pointer">
-            <button onClick={() => checkIfLogin()}>
+            <button onClick={() => checkIfLogin('/dashboard/main')}>
               <User size={20} />
             </button>
 
@@ -137,7 +137,7 @@ export default function Navbar() {
             <div className="space-x-4">
               <button
                 className="group inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-md hover:bg-blue-600 transition-colors duration-200"
-                onClick={() => checkIfLogin()}
+                onClick={() => checkIfLogin('/dashboard/add-property')}
               >
                 <PlusSquare size={16} className="mr-2" />
                <span className="phone-non"> Add </span>Property
