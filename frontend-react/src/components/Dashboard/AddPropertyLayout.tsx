@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Property Name is required"),
@@ -36,6 +37,8 @@ const validationSchema = Yup.object().shape({
       .required("Carpet area is required")
       .positive("Must be a positive number"),
     areaUnit: Yup.string().required("Carpet area unit is required"),
+    amtUnit: Yup.string().required("This field is required"),
+    isNegotiable: Yup.string().required("Is Negotiable is required"),
     availability: Yup.date().required("Availability date is required"),
     furnishedStatus: Yup.string().required("Furnished status is required"),
     ammenities: Yup.array()
@@ -60,6 +63,7 @@ export default function AddPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [imgUrls, setImgUrls] = useState<any>([]);
 
@@ -86,11 +90,23 @@ export default function AddPropertyLayout() {
       availability: "",
       rent: 0,
       price: 0,
+      amtUnit: "",
+      isNegotiable: "",
       furnishedStatus: "",
       ammenities: [] as string[],
     },
     images: [] as File[],
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please Login", {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+  });
 
   async function uploadImages(images: any) {
     if (!images || images.length === 0) {
@@ -100,9 +116,9 @@ export default function AddPropertyLayout() {
       });
       return [];
     }
-  
+
     const imgUrls: string[] = [];
-  
+
     try {
       // Use Promise.all to ensure all uploads complete before proceeding
       await Promise.all(
@@ -110,19 +126,19 @@ export default function AddPropertyLayout() {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
-  
+
           const res = await axios.post(
             `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
             formData
           );
-  
+
           if (res && res.data && res.data.secure_url) {
             console.log("Image uploaded...", res.data.secure_url);
             imgUrls.push(res.data.secure_url);
           }
         })
       );
-  
+
       return imgUrls; // Return only after all uploads are done
     } catch (err) {
       toast.error(`Upload failed: ${err}`, {
@@ -132,28 +148,37 @@ export default function AddPropertyLayout() {
       return [];
     }
   }
-  
 
   async function handleSubmit(
     values: typeof initialValues,
-    { setSubmitting }: FormikHelpers<typeof initialValues>
+    { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
+
+    if (step !== 4) {
+      setSubmitting(false);
+      return;
+    }
+
     if (values.type === "RENT") {
       values.details.price = 0;
     } else if (values.type === "BUY") {
       values.details.rent = 0;
     }
 
-    try{
-      const urls:any = await uploadImages(values.images);
-        if(urls.length > 0){
-          console.log("uploaded urls",urls);
-          values.images = [...urls]
-          console.log("values.images : ", values.images);
-        }
-    }catch(err){
-      console.log(err)
-    }finally{
+    try {
+      const urls: any = await uploadImages(values.images);
+      if (urls.length > 0) {
+        console.log("uploaded urls", urls);
+        values.images = [...urls];
+        console.log("values.images : ", values.images);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(`An Error Occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    } finally {
       Object.assign(values.details, { isApproved: false });
       const token = localStorage.getItem("token");
       try {
@@ -167,8 +192,7 @@ export default function AddPropertyLayout() {
             position: "bottom-right",
             duration: 3000,
           });
-          values.images = initialValues.images;
-          values = initialValues;
+          resetForm();
           setSubmitting(false);
         }
       } catch (err: any) {
@@ -210,6 +234,7 @@ export default function AddPropertyLayout() {
           "details.availability",
           "details.rent",
           "details.price",
+          "details.amtUnit",
           "details.furnishedStatus",
         ];
       case 3:
@@ -336,35 +361,67 @@ export default function AddPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Property Type
-                      </label>
-                      <div className="mt-2 space-x-4">
-                        <label className="inline-flex items-center">
-                          <Field
-                            type="radio"
-                            name="type"
-                            value="RENT"
-                            className="form-radio h-4 w-4 text-blue-600"
-                          />
-                          <span className="ml-2">Rent</span>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label className=" text-sm font-medium text-gray-700">
+                          Property Type
                         </label>
-                        <label className="inline-flex items-center">
-                          <Field
-                            type="radio"
-                            name="type"
-                            value="BUY"
-                            className="form-radio h-4 w-4 text-blue-600"
-                          />
-                          <span className="ml-2">Sell</span>
-                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="type"
+                              value="RENT"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Rent</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="type"
+                              value="BUY"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Sell</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="type"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
                       </div>
-                      <ErrorMessage
-                        name="type"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
+                      <div>
+                        <label className=" text-sm font-medium text-gray-700">
+                          Is Negotiable
+                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.isNegotiable"
+                              value="YES"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Yes</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.isNegotiable"
+                              value="NO"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">No</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="details.isNegotiable"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div>
@@ -705,14 +762,30 @@ export default function AddPropertyLayout() {
                         >
                           Rent (per month)
                         </label>
-                        <Field
-                          id="details.rent"
-                          name="details.rent"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
+                        <div className="mt-1 flex rounded-md shadow-sm">
+                          <Field
+                            id="details.rent"
+                            name="details.rent"
+                            type="number"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter rent per month"
+                          />
+                          <Field
+                            as="select"
+                            name="details.amtUnit"
+                            className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="L">Lakh</option>
+                            <option value="Cr">Cr</option>
+                          </Field>
+                        </div>
                         <ErrorMessage
                           name="details.rent"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                        <ErrorMessage
+                          name="details.amtUnit"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
@@ -726,14 +799,30 @@ export default function AddPropertyLayout() {
                         >
                           Price
                         </label>
-                        <Field
-                          id="details.price"
-                          name="details.price"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
+                        <div className="mt-1 flex rounded-md shadow-sm">
+                          <Field
+                            id="details.price"
+                            name="details.price"
+                            type="number"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter property price"
+                          />
+                          <Field
+                            as="select"
+                            name="details.amtUnit"
+                            className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="L">Lakh</option>
+                            <option value="Cr">Cr</option>
+                          </Field>
+                        </div>
                         <ErrorMessage
                           name="details.price"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                        <ErrorMessage
+                          name="details.amtUnit"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
@@ -924,7 +1013,7 @@ export default function AddPropertyLayout() {
                 )}
                 {step < 4 ? (
                   <button
-                    type="button"
+                    type="button" // Add this line
                     onClick={() => setStep((prev) => prev + 1)}
                     disabled={hasStepErrors(errors, touched, step)}
                     className={`ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center ${

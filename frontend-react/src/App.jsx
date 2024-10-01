@@ -21,7 +21,7 @@ function App() {
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
             </Route>
             <Route path="/residential/buy"  element={<Residential />}>
-              <Route path="/residential/buy/:id" element={<PropertyDetails />} />
+              
             </Route>
           </Route>
         </Routes>

@@ -35,6 +35,8 @@ export default function PropertyCardsCarousel() {
         availability:"",
         rent: 0,
         price:0,
+        amtUnit:"",
+        isNegotiable:"",
         furnishedStatus:"",
       },
       project:{}
@@ -118,8 +120,8 @@ export default function PropertyCardsCarousel() {
                       {property.images.length}
                     </div>
 
-                    <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${property.type === 'RENT' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'}`}>
-                     {property.type === "RENT" ? "Negotiable" : "Not Negotiable"}
+                    <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.isNegotiable === 'YES' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                     {property.details.isNegotiable === "YES" ? "Negotiable" : "Not Negotiable"}
                     </div>
                     
                     <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.furnishedStatus === 'FURNISHED' ?'bg-green-500 text-white' 
@@ -134,8 +136,8 @@ export default function PropertyCardsCarousel() {
                       {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
                     </p>
                     {property.type === "RENT" ? 
-                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.rent.toLocaleString()} /monthly</p> :
-                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.price.toLocaleString()}</p>
+                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.rent.toLocaleString()} {property.details.amtUnit} /monthly</p> :
+                    <p className="text-xl font-bold text-purple-600 mt-2">Rs. {property.details.price.toLocaleString()} {property.details.amtUnit}</p>
                     }
                     
                     <div className="flex flex-wrap gap-2 mt-3">

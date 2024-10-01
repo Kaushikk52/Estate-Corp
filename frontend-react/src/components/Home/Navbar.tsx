@@ -1,5 +1,5 @@
 import React, { useState,useEffect} from "react";
-import {useNavigate } from 'react-router-dom';
+import {Link,useNavigate } from 'react-router-dom';
 import { Search, User, Menu, X, ChevronDown, PlusSquare } from "lucide-react";
 import AuthPopup from "./AuthPopup";
 
@@ -10,6 +10,7 @@ const NavLink = ({
   href: string;
   children: React.ReactNode;
 }) => (
+
   <a
     href={href}
     className="group relative text-base font-semibold text-gray-800 hover:text-gray-900"
@@ -26,12 +27,18 @@ const DropdownLink = ({
   href: string;
   children: React.ReactNode;
 }) => (
-  <a
-    href={href}
-    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+
+  <Link to={href}
+  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
   >
-    {children}
-  </a>
+  {children}
+  </Link>
+  // <a
+  //   href={href}
+  //   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+  // >
+  //   {children}
+  // </a>
 );
 
 export default function Navbar() {
