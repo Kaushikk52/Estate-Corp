@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from "react";
-import { Link,useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Github, PlusSquare, Phone } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Mail, Lock, User, Phone } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 
-export default function AuthPopup(props:any) {
+export default function AuthPopup(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const roles = ["ROLE_AGENT", "ROLE_RESALER", "ROLE_USER"];
 
@@ -14,15 +14,15 @@ export default function AuthPopup(props:any) {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    const token = localStorage.getItem('token')
-    if(props.popup ===true){
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (props.popup === true) {
       setIsOpen(true);
     }
-    if(token !== null && props.popup === true){
+    if (token !== null && props.popup === true) {
       setIsOpen(false);
     }
-  })
+  }, [props.popup]);
 
   const registerSchema = Yup.object({
     fullName: Yup.string()
@@ -78,7 +78,7 @@ export default function AuthPopup(props:any) {
           localStorage.setItem("token", response.data.jwtToken);
         }
         setIsOpen(false);
-        navigate('/dashboard/add-property');
+        navigate("/dashboard/add-property");
         console.log("User Logged in Successfully");
       }
     } catch (err) {
@@ -87,12 +87,14 @@ export default function AuthPopup(props:any) {
   }
 
   return (
-    <div className="">
+    <div className="relative">
       {isOpen && (
-        <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Welcome</h2>
+        <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                Welcome
+              </h2>
               <button
                 className="text-gray-500 hover:text-gray-700"
                 onClick={() => setIsOpen(false)}
@@ -100,18 +102,14 @@ export default function AuthPopup(props:any) {
                 ✕
               </button>
             </div>
-            {activeTab === "login" ? (
-              <p className="text-center text-gray-600 mb-6">
-                Sign in to your account
-              </p>
-            ) : (
-              <p className="text-center text-gray-600 mb-6">
-                Sign Up to create a new account
-              </p>
-            )}
-            <div className="flex mb-4">
+            <p className="text-center text-gray-600 mb-4">
+              {activeTab === "login"
+                ? "Sign in to your account"
+                : "Sign Up to create a new account"}
+            </p>
+            <div className="flex mb-2">
               <button
-                className={`flex-1 py-2 ${
+                className={`flex-1 py-2 text-sm sm:text-base ${
                   activeTab === "register"
                     ? "border-b-2 border-pink-500 text-pink-500"
                     : "text-gray-500"
@@ -121,7 +119,7 @@ export default function AuthPopup(props:any) {
                 Register
               </button>
               <button
-                className={`flex-1 py-2 ${
+                className={`flex-1 py-2 text-sm sm:text-base ${
                   activeTab === "login"
                     ? "border-b-2 border-purple-500 text-purple-500"
                     : "text-gray-500"
@@ -147,19 +145,19 @@ export default function AuthPopup(props:any) {
                       >
                         Email
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Mail className="h-5 w-5 text-gray-400" />
                         </div>
                         <Field
                           name="email"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          className="block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
                         />
                       </div>
                       <ErrorMessage
                         name="email"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
@@ -170,20 +168,20 @@ export default function AuthPopup(props:any) {
                       >
                         Password
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Lock className="h-5 w-5 text-gray-400" />
                         </div>
                         <Field
                           name="password"
                           type="password"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          className="block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
                         />
                       </div>
                       <ErrorMessage
                         name="password"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
                     <button
@@ -217,143 +215,120 @@ export default function AuthPopup(props:any) {
                       >
                         Name
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <User className="h-5 w-5 text-gray-400" />
                         </div>
                         <Field
                           name="fullName"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          className="block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500"
                         />
                       </div>
                       <ErrorMessage
                         name="fullName"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Email
-                      </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="email"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Email
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Mail className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <Field
+                            name="email"
+                            className="block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500"
+                          />
                         </div>
-                        <Field
+                        <ErrorMessage
                           name="email"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          component="div"
+                          className="mt-1 text-sm text-red-500"
                         />
                       </div>
-                      <ErrorMessage
-                        name="email"
-                        component="div"
-                        className="error text-red-500"
-                      />
-                    </div>
 
-                    <div>
-                      <label
-                        htmlFor="phone"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Phone
-                      </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Phone className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <label
+                          htmlFor="phone"
+                          className=" text-sm font-medium text-gray-700"
+                        >
+                          Phone
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Phone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <Field
+                            name="phone"
+                            className="block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500"
+                          />
                         </div>
-                        <Field
+                        <ErrorMessage
                           name="phone"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          component="div"
+                          className="mt-1 text-sm text-red-500"
                         />
                       </div>
-                      <ErrorMessage
-                        name="phone"
-                        component="div"
-                        className="error text-red-500"
-                      />
                     </div>
 
                     <div>
                       <label
                         htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
+                        className="text-sm font-medium text-gray-700"
                       >
                         Password
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Lock className="h-5 w-5 text-gray-400" />
                         </div>
                         <Field
                           name="password"
                           type="password"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          className="block w-full pl-10 pr-3 py-2 sm:text-sm border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500"
                         />
                       </div>
                       <ErrorMessage
                         name="password"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
                     <div>
-                      <div className="mt-6">
-                        <div className="relative">
-                          <div className="relative flex justify-center text-sm">
-                            <label className="block text-sm font-medium text-gray-700">
-                              Select Roles
-                            </label>
-                          </div>
-                          <div className="w-full border-t border-gray-300 mt-2"></div>
-                          <div className="flex justify-around mt-2">
-                            {/* Option 1 */}
-                            <div className="mb-4">
-                              <Field
-                                name="role"
-                                type="radio"
-                                value="ROLE_AGENT"
-                                className="form-radio h-5 w-5 text-blue-600"
-                              />
-                              <label className="ml-2 text-gray-700">
-                                Agent
-                              </label>
-                            </div>
-                            {/* Option 2 */}
-                            <div className="mb-4">
-                              <Field
-                                name="role"
-                                type="radio"
-                                value="ROLE_RESALER"
-                                className="form-radio h-5 w-5 text-blue-600"
-                              />
-                              <label className="ml-2 text-gray-700">
-                                Resaler
-                              </label>
-                            </div>
-                            {/* Option 3 */}
-                            <div className="mb-4">
-                              <Field
-                                name="role"
-                                type="radio"
-                                value="ROLE_RESALER"
-                                className="form-radio h-5 w-5 text-blue-600"
-                              />
-                              <label className="ml-2 text-gray-700">User</label>
-                            </div>
-                          </div>
-                        </div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Select Role
+                      </label>
+                      <div className="flex flex-wrap justify-around gap-2">
+                        {roles.map((role) => (
+                          <label
+                            key={role}
+                            className="inline-flex items-center"
+                          >
+                            <Field
+                              type="radio"
+                              name="role"
+                              value={role}
+                              className="form-radio h-4 w-4 text-pink-600"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {role.replace("ROLE_", "")}
+                            </span>
+                          </label>
+                        ))}
                       </div>
                       <ErrorMessage
                         name="role"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 

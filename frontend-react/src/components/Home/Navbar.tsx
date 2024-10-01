@@ -128,9 +128,9 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-4 cursor-pointer">
-            <a onClick={() => navigate('/dashboard/main')}>
+            <button onClick={() => checkIfLogin()}>
               <User size={20} />
-            </a>
+            </button>
 
             <AuthPopup popup={toggle} />
             
@@ -148,15 +148,6 @@ export default function Navbar() {
                 </span>
               </button>
             </div>
-
-            {/* <button
-              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
-              aria-label="Account"
-            >
-              <a href="/dashboard">
-                <User size={20} />
-              </a>
-            </button> */}
           </div>
         </div>
       </nav>

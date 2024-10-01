@@ -6,7 +6,6 @@ import DashBoard from './components/Dashboard/Dashboard.tsx'
 import DashboardLayout from './components/Dashboard/DashboardLayout.tsx'
 import AddPropertyLayout from './components/Dashboard/AddPropertyLayout.tsx'
 import Residential from './components/Residential/Residential.tsx'
-import PropertyDetails from './components/Properties/PropertyDetails.tsx'
 
 function App() {
 
