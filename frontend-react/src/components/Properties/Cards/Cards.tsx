@@ -91,7 +91,7 @@ export default function PropertyCardsCarousel() {
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Featured Properties</h2>
       <div className="relative">
         <div className="overflow-hidden w-full">
-          <div className="relative">
+          <div className="relative p-4">
             <motion.div 
               className="flex"
               initial={false}
