@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
 import axios from 'axios';
 
 
@@ -129,7 +129,7 @@ export default function PropertyCardsCarousel() {
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-purple-700 truncate">{property.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex items-center">
+                    <p className="text-sm text-gray-600 mt-1 flex items-center lineclamp1">
                       <MapPin className="h-4 w-4 mr-1 text-gray-400" />
                       {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
                     </p>
@@ -141,6 +141,9 @@ export default function PropertyCardsCarousel() {
                     <div className="flex flex-wrap gap-2 mt-3">
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                         <Home className="h-3 w-3 mr-1" /> {property.type}
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        <Scaling className="h-3 w-3 mr-1" /> {property.details.carpetArea} {property.details.areaUnit}
                       </span>
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                         <Bed className="h-3 w-3 mr-1" /> {property.details.bedrooms}

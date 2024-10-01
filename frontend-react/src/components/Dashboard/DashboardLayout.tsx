@@ -75,6 +75,12 @@ export default function Dashboard() {
       if(response.status === 200){
         setProperties(response.data);
         // console.log("all properties...",response.data);
+      }else if (response.status === 204){
+        setProperties([]);
+        toast.error("No properties found", {
+          position: "bottom-right",
+          duration: 3000,
+        });
       }
     }catch(err){
       console.log("An error occurred : ",err);
@@ -166,9 +172,10 @@ export default function Dashboard() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.address.locality}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {
-                        property.details.isApproved === false ?
+                         (property.details.hasOwnProperty('isApproved') !== null && property.details.isApproved === false) ?
                         <button className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800" onClick={() => changeApprovalStatus(property.id,property.details.isApproved)}>Unapproved</button>
-                        : <button className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" onClick={() => changeApprovalStatus(property.id,property.details.isApproved)}>Approved</button>
+                        :<button className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800" onClick={() => changeApprovalStatus(property.id,property.details.isApproved)}>Approved</button>
+                        
                       }
                     </td>
                     {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
