@@ -78,7 +78,7 @@ export default function AuthPopup(props: any) {
           localStorage.setItem("token", response.data.jwtToken);
         }
         setIsOpen(false);
-        navigate("/dashboard/add-property");
+        navigate(props.navigateTo);
         console.log("User Logged in Successfully");
       }
     } catch (err) {

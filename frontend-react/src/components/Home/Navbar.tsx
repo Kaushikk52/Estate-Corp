@@ -40,6 +40,7 @@ export default function Navbar() {
   const [isResidentialsOpen, setIsResidentialsOpen] = useState(false);
   const [isCommercialsOpen, setIsCommercialsOpen] = useState(false);
   const [toggle,setToggle] = useState(false);
+  const [navigateTo,setNavigateTo] = useState("");
   const navigate = useNavigate();
 
   useEffect(()=>{
@@ -62,6 +63,7 @@ export default function Navbar() {
 
   const checkIfLogin = (route:string) => {
     const token = localStorage.getItem('token')
+    setNavigateTo(route)
     if(token !== null && toggle === false){//user logged in and no popup
       navigate(route)
     }else if(token !== null && toggle === true){//user logged in and still popup
@@ -132,7 +134,7 @@ export default function Navbar() {
               <User size={20} />
             </button>
 
-            <AuthPopup popup={toggle} />
+            <AuthPopup popup={toggle} navigateTo={navigateTo} />
             
             <div className="space-x-4">
               <button

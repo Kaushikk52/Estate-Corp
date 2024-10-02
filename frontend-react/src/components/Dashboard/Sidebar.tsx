@@ -63,7 +63,7 @@ export default function SidebarNavigation() {
         </button>
       </div>
       <nav className="flex-grow overflow-y-auto">
-        <ul className="space-y-2 p-2">
+        <ul className="space-y-2 p-4">
           {navItems.map((item, index) => (
             <li key={index}>
               <Link
