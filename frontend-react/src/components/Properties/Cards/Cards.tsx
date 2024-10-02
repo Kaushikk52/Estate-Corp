@@ -74,7 +74,7 @@ export default function PropertyCardsCarousel() {
     updateVisibleCards()
     window.addEventListener('resize', updateVisibleCards)
     return () => window.removeEventListener('resize', updateVisibleCards)
-  }, [visibleCards])
+  }, [setProperties])
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
