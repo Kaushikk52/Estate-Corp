@@ -60,25 +60,16 @@ export default function PropertyListing() {
   },[])
 
   const getAllProperties = async () => {
-    const token = localStorage.getItem('token');
-    const getPropertiesURL=`${baseURL}/v1/api/properties/all`;
-  
     try {
-      const response = await axios.get(getPropertiesURL);   
-      if(response.status === 200){
-        setProperties(response.data.properties);
-        // console.log("all properties...",response.data);
-      }else if (response.status === 204){
-        setProperties([]);
-        toast.error("No properties found", {
-          position: "bottom-right",
-          duration: 3000,
-        });
-      }  
+      const response = await axios.get(`${baseURL}/v1/api/properties/isApproved?isApproved=${true}`)
+      if (response.status === 200) {
+        setProperties(response.data)
+      }
     } catch (err) {
-      console.log("An error occurred : ", err);
+      console.error("An error occurred: ", err)
     }
-  };
+  }
+
 
   const blogs = [
     { id: 1, title: "Top 10 Home Decor Tips", excerpt: "Transform your space with these simple ideas..." },
