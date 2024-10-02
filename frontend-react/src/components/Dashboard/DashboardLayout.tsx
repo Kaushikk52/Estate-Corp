@@ -124,13 +124,6 @@ export default function Dashboard() {
     getCurrentUser();
   }, []);
 
-  useEffect(() => {
-    // if(currentUser.role === "ROLE_ADMIN" || currentUser.role === "ROLE_AGENT")
-      getProperties();
-  }, [mssg]);
-
-  
-
   const getCurrentUser = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -146,6 +139,7 @@ export default function Dashboard() {
         console.log("Principal user : ", response);
         setCurrentUser({userId:response.data.userId,role:response.data.role});
       }
+      getProperties(response.data.role);
     } catch (err) {
       console.log("An error occured : ", err);
       toast.error(`An error occurred : ${err}`, {
@@ -155,13 +149,15 @@ export default function Dashboard() {
     }
   };
 
-  const getProperties = async () => {
+  const getProperties = async (role:any) => {
     const token = localStorage.getItem('token');
 
     let getPropertiesURL;
-    currentUser.role === "ROLE_ADMIN" ? 
-    getPropertiesURL = `${baseURL}/v1/api/properties/all`
-    : getPropertiesURL = `${baseURL}/v1/api/users/properties`
+    if(role === "ROLE_ADMIN"){
+      getPropertiesURL = `${baseURL}/v1/api/properties/all`
+    }else{
+      getPropertiesURL = `${baseURL}/v1/api/users/properties`
+    }
     
     try {
       const response = await axios.get(getPropertiesURL,{ headers: { Authorization: `Bearer ${token}` } });   
@@ -197,6 +193,7 @@ export default function Dashboard() {
           duration: 3000,
         });
       }
+      getProperties(currentUser.role)
     } catch (err) {
       console.log("An error occurred : ", err);
     }
