@@ -1,5 +1,6 @@
 package com.estate.corp.controllers;
 
+import com.estate.corp.models.Property;
 import com.estate.corp.models.User;
 import com.estate.corp.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,37 @@ public class UserController {
         }
         log.info("Retrieved all users :{}", users);
         return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
+
+    @GetMapping(value = "/getCurrentUser")
+    public ResponseEntity<?> getCurrentUser(Principal principal){
+        try{
+            User currentUser = userServ.getCurrentUserRole(principal);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Current User details retrieved");
+            response.put("userId",currentUser.getId());
+            response.put("role",currentUser.getRole());
+            log.info("Retrieved current user : {}",currentUser.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+    @GetMapping(value ="/properties")
+    public ResponseEntity<?> getUserProperties(Principal principal){
+        try{
+            List<Property> propertyList = userServ.getUserProperties(principal);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User properties retrieved");
+            response.put("properties",propertyList);
+            log.info("Retrieved user properties");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @GetMapping(value = "/get/{id}")

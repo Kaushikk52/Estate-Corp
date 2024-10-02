@@ -24,14 +24,17 @@ public class PropertyController {
     private PropertyServices propertyServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<Property>> getAllProperties() {
+    public ResponseEntity<?> getAllProperties() {
         List<Property> properties = propertyServ.getAllProperties();
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "All properties retrieved");
+        response.put("properties",properties);
         if (properties.isEmpty()) {
             log.warn("Property Repository is Empty");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(properties);
         }
-        log.info("Retrieved all products :{}", properties);
-        return ResponseEntity.status(HttpStatus.OK).body(properties);
+        log.info("Retrieved all properties :{}", properties);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/filter")
