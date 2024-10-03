@@ -57,21 +57,27 @@ export default function PropertyListing() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem("token");
       let url = `${baseURL}/v1/api/properties/filter?`;
       if (filters) {
-        if (filters.cities.length > 0) url += `cities=${filters.cities.join(',')}&`;
-        if (filters.bedrooms.length > 0) url += `bedrooms=${filters.bedrooms.join(',')}&`;
+        if (filters.cities.length > 0)
+          url += `cities=${filters.cities.join(",")}&`;
+        if (filters.bedrooms.length > 0)
+          url += `bedrooms=${filters.bedrooms.join(",")}&`;
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
         if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
         if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
-        if (filters.minCarpetArea) url += `minCarpetArea=${filters.minCarpetArea}&`;
-        if (filters.maxCarpetArea) url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        if (filters.minCarpetArea)
+          url += `minCarpetArea=${filters.minCarpetArea}&`;
+        if (filters.maxCarpetArea)
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
         if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       } else {
         url = `${baseURL}/v1/api/properties/all`;
       }
-      const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setProperties(response.data.properties);
     } catch (err) {
       console.error("An error occurred: ", err);
@@ -104,7 +110,10 @@ export default function PropertyListing() {
           </div>
         )}
         {error && (
-          <div className="text-center mt-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            className="text-center mt-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <strong className="font-bold">Error!</strong>
             <span className="block sm:inline"> {error}</span>
           </div>
@@ -128,11 +137,14 @@ export default function PropertyListing() {
               >
                 <div className="flex flex-col md:flex-row">
                   <div className="w-full md:w-2/5 lg:w-1/3 relative">
-                  <img
-  src={property.images[0] || "/placeholder.svg?height=400&width=600"}
-  alt={property.name}
-  className="w-full h-64 object-cover" // Fixed height, object-fit cover
-/>
+                    <img
+                      src={
+                        property.images[0] ||
+                        "/placeholder.svg?height=400&width=600"
+                      }
+                      alt={property.name}
+                      className="w-full h-64 object-cover" // Fixed height, object-fit cover
+                    />
                     <div
                       className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
                         property.details.isNegotiable === "YES"
@@ -153,18 +165,20 @@ export default function PropertyListing() {
                         </h3>
                         {property.type === "RENT" ? (
                           <p className="text-xl font-semibold text-blue-600">
-                            {property.details.rent.toLocaleString()} {property.details.amtUnit} /monthly
+                            {property.details.rent.toLocaleString()}{" "}
+                            {property.details.amtUnit} /monthly
                           </p>
                         ) : (
                           <p className="text-xl font-semibold text-blue-600">
-                            {property.details.price.toLocaleString()} {property.details.amtUnit}
+                            {property.details.price.toLocaleString()}{" "}
+                            {property.details.amtUnit}
                           </p>
                         )}
                       </div>
                       <p className="text-gray-600 mb-4 flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />{" "}
-                        {property.address.landmark}, {property.address.locality},{" "}
-                        {property.address.street} - {property.address.zipCode}
+                        {property.address.landmark}, {property.address.locality}
+                        , {property.address.street} - {property.address.zipCode}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-3">
                         <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-blue-100 text-blue-800">
@@ -203,9 +217,15 @@ export default function PropertyListing() {
           </AnimatePresence>
         </motion.div>
         {!loading && properties.length === 0 && (
-          <div className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <strong className="font-bold">No properties found!</strong>
-            <span className="block sm:inline"> Please try adjusting your filters.</span>
+            <span className="block sm:inline">
+              {" "}
+              Please try adjusting your filters.
+            </span>
           </div>
         )}
       </main>

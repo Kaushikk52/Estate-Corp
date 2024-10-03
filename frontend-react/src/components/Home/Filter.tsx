@@ -316,7 +316,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                 className="bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
               >
                 <RefreshCw className="h-5 w-5 mr-2" />
-                Clear Filters
+                Clear
               </button>
             </div>
           </div>
