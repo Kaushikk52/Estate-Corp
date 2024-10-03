@@ -254,7 +254,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                   onClick={() => setIsCarpetAreaDropdownOpen(!isCarpetAreaDropdownOpen)}
                   className="flex items-center text-gray-700 focus:outline-none"
                 >
-                  {minCarpetArea && maxCarpetArea ? `${minCarpetArea} - ${maxCarpetArea} ${areaUnit}` : minCarpetArea ? `${minCarpetArea}+ ${areaUnit}` : 'Carpet Area'}
+                  {minCarpetArea && maxCarpetArea ? `${minCarpetArea} - ${maxCarpetArea} ${areaUnit}` : minCarpetArea ? `${minCarpetArea}+ ${areaUnit}` : 'Area'}
                   <ChevronDownIcon className="h-4 w-4 ml-1" />
                 </button>
                 {isCarpetAreaDropdownOpen && (
