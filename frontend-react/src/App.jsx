@@ -5,7 +5,7 @@ import Layout from './components/Layout.tsx'
 import DashBoard from './components/Dashboard/Dashboard.tsx'
 import DashboardLayout from './components/Dashboard/DashboardLayout.tsx'
 import AddPropertyLayout from './components/Dashboard/AddPropertyLayout.tsx'
-import Residential from './components/Residential/Residential.tsx'
+import Residential from './components/ListingPage/Residential.tsx'
 
 function App() {
 
