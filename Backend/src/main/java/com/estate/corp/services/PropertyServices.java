@@ -73,6 +73,10 @@ public class PropertyServices {
         return propertyRepo.findByDetailsCityAndDetailsBedrooms(city,bedrooms);
     }
 
+    public List<Property> getApprovedPropertiesByCityAndBedrooms(boolean isApproved,String city,int bedrooms){
+        return propertyRepo.findByDetailsIsApprovedAndDetailsCityAndDetailsBedrooms(isApproved,city,bedrooms);
+    }
+
     public List<Property> getPropertiesByApprovalStatus(boolean isApproved){
         return propertyRepo.findByDetailsIsApproved(isApproved);
     }

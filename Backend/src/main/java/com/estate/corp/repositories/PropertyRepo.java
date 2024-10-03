@@ -16,4 +16,5 @@ public interface PropertyRepo extends JpaRepository<Property,String> , JpaSpecif
 
     List<Property> findByDetailsIsApproved(boolean isApproved);
 
+    List<Property> findByDetailsIsApprovedAndDetailsCityAndDetailsBedrooms(boolean isApproved, String city, int bedrooms);
 }

@@ -27,7 +27,7 @@ public class PropertyDetails {
     private List<String> ammenities;
     private String facing;
 
-    private String carpetArea;
+    private Double carpetArea;
 
     private String areaUnit;
 
