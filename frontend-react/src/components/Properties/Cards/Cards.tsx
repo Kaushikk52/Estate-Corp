@@ -49,17 +49,6 @@ export default function PropertyCardsCarousel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getAllApprovedProperties = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/v1/api/properties/isApproved?isApproved=${true}`)
-      if (response.status === 200) {
-        setProperties(response.data)
-      }
-    } catch (err) {
-      console.error("An error occurred: ", err)
-    }
-  }
-
   useEffect(() => {
     fetchProperties();
   }, []);
@@ -68,7 +57,6 @@ export default function PropertyCardsCarousel() {
   const [visibleCards, setVisibleCards] = useState(3)
 
   useEffect(() => {
-    getAllApprovedProperties()
     const updateVisibleCards = () => {
       const width = window.innerWidth
       let newVisibleCards
