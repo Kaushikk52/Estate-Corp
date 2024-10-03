@@ -123,7 +123,7 @@ export default function PropertyCardsCarousel() {
   };
 
   const handlePropertyClick = (propertyId: string) => {
-    navigate(`/residential/buy/${propertyId}`);
+    navigate(`/property/${propertyId}`);
   };
 
   const handleFilterChange = (filters: FilterState) => {

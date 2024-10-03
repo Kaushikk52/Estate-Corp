@@ -89,7 +89,7 @@ export default function PropertyListing() {
   };
 
   const handlePropertyClick = (propertyId: string) => {
-    navigate(`/residential/buy/${propertyId}`);
+    navigate(`/property/${propertyId}`);
   };
 
   const handleFilterChange = (filters: FilterState) => {
