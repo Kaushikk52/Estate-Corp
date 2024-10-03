@@ -128,11 +128,11 @@ export default function PropertyListing() {
               >
                 <div className="flex flex-col md:flex-row">
                   <div className="w-full md:w-2/5 lg:w-1/3 relative">
-                    <img
-                      src={property.images[0] || "/placeholder.svg?height=400&width=600"}
-                      alt={property.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <img
+  src={property.images[0] || "/placeholder.svg?height=400&width=600"}
+  alt={property.name}
+  className="w-full h-64 object-cover" // Fixed height, object-fit cover
+/>
                     <div
                       className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
                         property.details.isNegotiable === "YES"

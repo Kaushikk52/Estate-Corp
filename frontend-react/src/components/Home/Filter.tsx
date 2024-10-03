@@ -1,5 +1,5 @@
 import React, { useState, KeyboardEvent } from 'react'
-import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon, FilterIcon, Scaling } from 'lucide-react'
+import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon, FilterIcon, Scaling, RefreshCw } from 'lucide-react'
 
 interface FilterProps {
   onFilterChange: (filters: FilterState) => void;
@@ -88,6 +88,28 @@ export default function Filter({ onFilterChange }: FilterProps) {
     onFilterChange(filters)
   }
 
+  const clearFilters = () => {
+    setCities([])
+    setCurrentCity('')
+    setBedrooms([])
+    setMinPrice('')
+    setMaxPrice('')
+    setAmtUnit('K')
+    setMinCarpetArea('')
+    setMaxCarpetArea('')
+    setAreaUnit('sqft')
+    onFilterChange({
+      cities: [],
+      bedrooms: [],
+      minPrice: '',
+      maxPrice: '',
+      amtUnit: 'K',
+      minCarpetArea: '',
+      maxCarpetArea: '',
+      areaUnit: 'sqft'
+    })
+  }
+
   return (
     <div className="max-w-6xl mx-auto mt-5">
       <div className="mx-auto mt-10 px-4">
@@ -106,6 +128,13 @@ export default function Filter({ onFilterChange }: FilterProps) {
             >
               <SearchIcon className="h-5 w-5" />
             </button>
+
+            <button 
+                onClick={clearFilters}
+                className="w-1/5 bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center"
+              >
+                <RefreshCw className="h-5 w-5 mr-2" />
+              </button>
           </div>
           <div className={`md:flex md:items-center md:space-x-4 ${isFilterOpen ? '' : 'hidden md:flex'}`}>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
@@ -274,13 +303,20 @@ export default function Filter({ onFilterChange }: FilterProps) {
                 )}
               </div>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden md:flex space-x-2">
               <button 
                 onClick={applyFilters}
                 className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
               >
                 <SearchIcon className="h-5 w-5 mr-2" />
                 Search
+              </button>
+              <button 
+                onClick={clearFilters}
+                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
+              >
+                <RefreshCw className="h-5 w-5 mr-2" />
+                Clear Filters
               </button>
             </div>
           </div>
