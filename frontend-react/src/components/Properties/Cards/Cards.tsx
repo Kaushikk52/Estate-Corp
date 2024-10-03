@@ -2,45 +2,52 @@ import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
+import Filter from '../../Home/Filter'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+
+interface Property {
+  id: string;
+  name: string;
+  images: string[];
+  type: string;
+  address: {
+    street: string;
+    locality: string;
+    landmark: string;
+    zipCode: string;
+  };
+  details: {
+    bedrooms: number;
+    bathrooms: number;
+    carpetArea: string;
+    areaUnit: string;
+    rent: number;
+    price: number;
+    amtUnit: string;
+    isNegotiable: string;
+    furnishedStatus: string;
+  };
+}
+
+interface FilterState {
+  cities: string[];
+  bedrooms: number[];
+  minPrice: string;
+  maxPrice: string;
+  amtUnit: string;
+  minCarpetArea: string;
+  maxCarpetArea: string;
+  areaUnit: string;
+}
 
 export default function PropertyCardsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
-  const [properties, setProperties] = useState([{
-    id: "",
-    createdAt: "",
-    updatedAt: "",
-    name: "",
-    images: [],
-    type: "",
-    propertyVariant: "",
-    address: {
-      id: "",
-      street: "",
-      locality: "",
-      landmark: "",
-      zipCode: "",
-    },
-    details: {
-      bedrooms: 0,
-      bathrooms: 0,
-      balconies: 0,
-      floorNo: 0,
-      city: "",
-      ammenitites: [],
-      facing: "",
-      carpetArea: "",
-      areaUnit: "",
-      isApproved: false,
-      availability: "",
-      rent: 0,
-      price: 0,
-      amtUnit: "",
-      isNegotiable: "",
-      furnishedStatus: "",
-    },
-    project: {}
-  }])
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const getAllApprovedProperties = async () => {
     try {
@@ -52,6 +59,10 @@ export default function PropertyCardsCarousel() {
       console.error("An error occurred: ", err)
     }
   }
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [visibleCards, setVisibleCards] = useState(3)
@@ -76,6 +87,49 @@ export default function PropertyCardsCarousel() {
     return () => window.removeEventListener('resize', updateVisibleCards)
   }, [setProperties])
 
+  const fetchProperties = async (filters?: FilterState) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("token");
+      let url = `${baseURL}/v1/api/properties/filter?`;
+      if (filters) {
+        if (filters.cities.length > 0)
+          url += `cities=${filters.cities.join(",")}&`;
+        if (filters.bedrooms.length > 0)
+          url += `bedrooms=${filters.bedrooms.join(",")}&`;
+        if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
+        if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
+        if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
+        if (filters.minCarpetArea)
+          url += `minCarpetArea=${filters.minCarpetArea}&`;
+        if (filters.maxCarpetArea)
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
+      } else {
+        url = `${baseURL}/v1/api/properties/all`;
+      }
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProperties(response.data.properties);
+    } catch (err) {
+      console.error("An error occurred: ", err);
+      setError("Failed to fetch properties. Please try again.");
+      toast.error("Failed to fetch properties");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePropertyClick = (propertyId: string) => {
+    navigate(`/residential/buy/${propertyId}`);
+  };
+
+  const handleFilterChange = (filters: FilterState) => {
+    fetchProperties(filters);
+  };
+
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => 
       Math.min(prevIndex + 1, properties.length - visibleCards)
@@ -87,6 +141,8 @@ export default function PropertyCardsCarousel() {
   }
 
   return (
+    <>
+    <Filter onFilterChange={handleFilterChange}/>
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Featured Properties</h2>
       <div className="relative">
@@ -201,5 +257,6 @@ export default function PropertyCardsCarousel() {
         </div>
       </div>
     </div>
+    </>
   )
 }

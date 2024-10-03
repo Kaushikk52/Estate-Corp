@@ -2,7 +2,6 @@ import React from 'react';
 import BentoGrid from './BentoGrid';
 import Carousel from './Carousel';
 import Cards from '../Properties/Cards/Cards';
-import Filter from './Filter';
 import { motion } from 'framer-motion'
 function Home() {
 
@@ -67,7 +66,6 @@ function Home() {
           </div>
         </div>
       </div>
-        <Filter />
         <Cards />
         <BentoGrid />
 
