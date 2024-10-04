@@ -175,6 +175,10 @@ export default function PropertyDetails() {
                 <h2 className="text-2xl font-semibold mb-4">
                   Property Details
                 </h2>
+                <div className="flex items-center mb-4">
+                  <span className="text-yellow-500 mr-1">★</span>
+                  <span className="font-semibold">4.5 Review</span>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center">
                     <Home className="w-5 h-5 mr-2 text-gray-600" />
@@ -215,6 +219,83 @@ export default function PropertyDetails() {
                     </li>
                   ))}
                 </ul>
+                {/* Address Section */}
+                <motion.div
+                  className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <h2 className="text-lg font-semibold mb-4">
+                    Address
+                    <hr />
+                  </h2>
+                  <table className="grid grid-cols-2 gap-4">
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">City</td>
+                        <td className="text-gray-600">{property.address.locality}</td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Country</td>
+                        <td className="text-gray-600">India</td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">State / Country</td>
+                        <td className="text-gray-600">{property.address.street}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </motion.div>
+
+                {/* Details Section */}
+                <motion.div
+                  className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  <h2 className="text-lg font-semibold mb-4">
+                    Details
+                    <hr />
+                  </h2>
+                  <table className="grid grid-cols-2 gap-4">
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Property ID:</td>
+                        <td className="text-gray-600">{property.id}</td>
+                        <td className="font-medium">Bedrooms:</td>
+                        <td className="text-gray-600">{property.details.bedrooms}</td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Price:</td>
+                        <td className="text-gray-600">
+                          Rs. {property.details.price.toLocaleString()}{" "}
+                          {property.details.amtUnit}
+                        </td>
+                        <td className="font-medium">Bathrooms:</td>
+                        <td className="text-gray-600">{property.details.bathrooms}</td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                    <tr className="flex flex-col">
+                        <td className="font-medium">Property Size:</td>
+                        <td className="text-gray-600">
+                          {property.details.carpetArea}{" "}
+                          {property.details.areaUnit}
+                        </td>
+                        <td className="font-medium">Year Built:</td>
+                        <td className="text-gray-600">{property.details.availability}</td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Property Type:</td>
+                        <td className="text-gray-600">{property.type}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </motion.div>
               </div>
             </div>
           </div>
