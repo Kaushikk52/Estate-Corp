@@ -129,7 +129,7 @@ public class PropertyController {
                 }else{
                     response.put("message","Retrieved all unapproved Properties");
                     response.put("properties",unApprovedProperties);
-                    log.info("Retrieved all unapproved properties :{}", unApprovedProperties);
+                    log.info("Retrieved all unapproved properties :{}", unApprovedProperties.size());
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
@@ -143,7 +143,7 @@ public class PropertyController {
                 }else{
                     response.put("message","Retrieved all approved Properties");
                     response.put("properties",approvedProperties);
-                    log.info("Retrieved all approved properties :{}", approvedProperties);
+                    log.info("Retrieved all approved properties :{}", approvedProperties.size());
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
