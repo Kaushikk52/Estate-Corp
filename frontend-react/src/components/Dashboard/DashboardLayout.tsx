@@ -189,9 +189,9 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       isPropertyApproved === false
-        ? setMssg("Unapproved") :
+        ? setMssg("Approved") :
        isPropertyApproved=== true ? 
-       setMssg("Approved") : 
+       setMssg("Unapproved") : 
        setMssg("status changed");
       if (response.status === 200) {
         toast.success(`Property ${mssg} !`, {
@@ -318,7 +318,7 @@ export default function Dashboard() {
                             onClick={() =>
                               changeApprovalStatus(
                                 property.id,
-                                property.details.isApproved
+                                false
                               )
                             }
                           >
@@ -330,7 +330,7 @@ export default function Dashboard() {
                             onClick={() =>
                               changeApprovalStatus(
                                 property.id,
-                                property.details.isApproved
+                                true
                               )
                             }
                           >
