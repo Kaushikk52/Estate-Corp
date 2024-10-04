@@ -5,6 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode"
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Property Name is required"),
@@ -96,12 +97,24 @@ export default function AddPropertyLayout() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token:any = localStorage.getItem("token");
     if (!token) {
       toast.error("Please Login", {
         position: "bottom-right",
         duration: 3000,
       });
+    }
+    try{
+    const decodedToken:any = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    if(decodedToken.exp < currentTime){
+      toast.error("Please Login", {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+    }catch(err){
+      console.log(err);
     }
   });
 

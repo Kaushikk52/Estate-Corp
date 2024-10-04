@@ -189,8 +189,10 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       isPropertyApproved === false
-        ? setMssg("Unapproved")
-        : setMssg("Approved");
+        ? setMssg("Unapproved") :
+       isPropertyApproved=== true ? 
+       setMssg("Approved") : 
+       setMssg("status changed");
       if (response.status === 200) {
         toast.success(`Property ${mssg} !`, {
           position: "bottom-right",
