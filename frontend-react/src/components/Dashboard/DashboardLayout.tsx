@@ -136,12 +136,16 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.status === 201 || response.status === 200) {
-        console.log("Principal user : ", response);
+        // console.log("Principal user : ", response);
         setCurrentUser({userId:response.data.userId,role:response.data.role});
       }
       getProperties(response.data.role);
-    } catch (err) {
+    } catch (err : any) {
       console.log("An error occured : ", err);
+      if(err.status === 401){
+        localStorage.removeItem('token');
+        navigate('/');
+      }
       toast.error(`An error occurred : ${err}`, {
         position: "bottom-right",
         duration: 3000,
@@ -170,9 +174,9 @@ export default function Dashboard() {
           position: "bottom-right",
           duration: 3000,
         });
-      }  
-    } catch (err) {
-      console.log("An error occurred : ", err);
+      }
+    } catch (err:any) {
+      console.log("An error occurred : ", err.message);
     }
   };
 
