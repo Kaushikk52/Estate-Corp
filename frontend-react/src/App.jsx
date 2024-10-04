@@ -6,6 +6,7 @@ import DashBoard from './components/Dashboard/Dashboard.tsx'
 import DashboardLayout from './components/Dashboard/DashboardLayout.tsx'
 import AddPropertyLayout from './components/Dashboard/AddPropertyLayout.tsx'
 import Residential from './components/ListingPage/Residential.tsx'
+import PropertyDetails from './components/Properties/PropertyDetails.tsx'
 
 function App() {
 
@@ -15,12 +16,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="/property/:id" element={ <PropertyDetails/> }/>
             <Route path='/dashboard' element={<DashBoard />}>
               <Route path='/dashboard/main' element={<DashboardLayout />} />
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
             </Route>
-            <Route path="/residential/buy"  element={<Residential />}>
-              
+            <Route path="/residential/buy"  element={<Residential />}>  
             </Route>
           </Route>
         </Routes>
