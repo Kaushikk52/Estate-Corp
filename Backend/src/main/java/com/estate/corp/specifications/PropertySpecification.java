@@ -62,7 +62,7 @@ public class PropertySpecification {
             if (filters.containsKey("areaUnit")) {
                 String areaUnit = (String) filters.get("areaUnit");
                 Predicate areaUnitPredicate = criteriaBuilder.equal(root.get("details").get("areaUnit"), areaUnit);
-//                predicates.add(areaUnitPredicate);
+                predicates.add(areaUnitPredicate);
             }
 
             // Combine all predicates with AND operator
