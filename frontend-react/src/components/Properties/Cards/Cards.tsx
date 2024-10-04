@@ -94,10 +94,13 @@ export default function PropertyCardsCarousel() {
           url += `maxCarpetArea=${filters.maxCarpetArea}&`;
         if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       } else {
-        url = `${baseURL}/v1/api/properties/all`;
+        url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
       }
       const response = await axios.get(url);
-      setProperties(response.data.properties);
+      if(response.data){
+        setProperties(response.data);
+      }
+      
     } catch (err) {
       console.error("An error occurred: ", err);
       setError("Failed to fetch properties. Please try again.");

@@ -72,7 +72,7 @@ export default function PropertyListing() {
           url += `maxCarpetArea=${filters.maxCarpetArea}&`;
         if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       } else {
-        url = `${baseURL}/v1/api/properties/all`;
+        url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
       }
       const response = await axios.get(url);
       setProperties(response.data.properties);
