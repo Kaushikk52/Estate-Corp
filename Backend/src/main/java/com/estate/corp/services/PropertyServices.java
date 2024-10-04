@@ -47,7 +47,9 @@ public class PropertyServices {
         if(Objects.equals(currentUser.getRole().toString(), "ROLE_ADMIN")){
             PropertyDetails details = property.getDetails();
             details.setIsApproved(true);
+            details.setAvailability(new Date(String.valueOf(details.getAvailability())));
             property.setDetails(details);
+
         }
         property.setOwner(currentUser);
         property.setCreatedAt(new Date());
