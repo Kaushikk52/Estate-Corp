@@ -57,7 +57,6 @@ export default function PropertyListing() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
       let url = `${baseURL}/v1/api/properties/filter?`;
       if (filters) {
         if (filters.cities.length > 0)
@@ -75,9 +74,7 @@ export default function PropertyListing() {
       } else {
         url = `${baseURL}/v1/api/properties/all`;
       }
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(url);
       setProperties(response.data.properties);
     } catch (err) {
       console.error("An error occurred: ", err);
