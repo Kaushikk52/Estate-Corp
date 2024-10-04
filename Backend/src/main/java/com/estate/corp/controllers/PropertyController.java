@@ -119,12 +119,24 @@ public class PropertyController {
         try {
             if (!isApproved) {
                 List<Property> unApprovedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
-                log.info("Retrieved all approved properties :{}", unApprovedProperties);
-                return ResponseEntity.status(HttpStatus.OK).body(unApprovedProperties);
+                if(unApprovedProperties.size() == 0){
+                    log.info("Property Resposity is empty :{}", unApprovedProperties);
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(unApprovedProperties);
+                }else{
+                    log.info("Retrieved all approved properties :{}", unApprovedProperties);
+                    return ResponseEntity.status(HttpStatus.OK).body(unApprovedProperties);
+                }
+
             } else {
                 List<Property> approvedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
-                log.info("Retrieved all approved properties :{}", approvedProperties);
-                return ResponseEntity.status(HttpStatus.OK).body(approvedProperties);
+                if(approvedProperties.size() ==0){
+                    log.info("Property Resposity is empty :{}", approvedProperties);
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(approvedProperties);
+                }else{
+                    log.info("Retrieved all approved properties :{}", approvedProperties);
+                    return ResponseEntity.status(HttpStatus.OK).body(approvedProperties);
+                }
+
             }
         } catch (Exception e) {
             log.warn("An Error occurred : {}", e.getMessage());
