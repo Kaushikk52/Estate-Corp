@@ -97,10 +97,7 @@ export default function PropertyCardsCarousel() {
         url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
       }
       const response = await axios.get(url);
-      if(response.data){
-        setProperties(response.data);
-      }
-      
+      setProperties(response.data.properties);
     } catch (err) {
       console.error("An error occurred: ", err);
       setError("Failed to fetch properties. Please try again.");

@@ -117,24 +117,34 @@ public class PropertyController {
     @GetMapping(value = "/isApproved")
     public ResponseEntity<?> getPropertiesByApprovalStatus(@RequestParam boolean isApproved) {
         try {
+            Map<String, Object> response = new HashMap<>();
             if (!isApproved) {
                 List<Property> unApprovedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
                 if(unApprovedProperties.size() == 0){
-                    log.info("Property Resposity is empty :{}", unApprovedProperties);
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(unApprovedProperties);
+
+                    response.put("message","Not found any unaproved properties");
+                    response.put("properties",unApprovedProperties);
+                    log.info("Not found any unapproved properties");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                 }else{
-                    log.info("Retrieved all approved properties :{}", unApprovedProperties);
-                    return ResponseEntity.status(HttpStatus.OK).body(unApprovedProperties);
+                    response.put("message","Retrieved all unapproved Properties");
+                    response.put("properties",unApprovedProperties);
+                    log.info("Retrieved all unapproved properties :{}", unApprovedProperties);
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
             } else {
                 List<Property> approvedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
                 if(approvedProperties.size() ==0){
-                    log.info("Property Resposity is empty :{}", approvedProperties);
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(approvedProperties);
+                    response.put("message","Not found any approved properties");
+                    response.put("properties",approvedProperties);
+                    log.info("Not found any approved properties");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                 }else{
+                    response.put("message","Retrieved all approved Properties");
+                    response.put("properties",approvedProperties);
                     log.info("Retrieved all approved properties :{}", approvedProperties);
-                    return ResponseEntity.status(HttpStatus.OK).body(approvedProperties);
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
             }
