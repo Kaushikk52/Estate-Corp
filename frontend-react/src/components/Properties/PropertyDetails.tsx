@@ -43,7 +43,7 @@ export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string|undefined>('');
+  const [selectedImage, setSelectedImage] = useState<string | undefined>("");
 
   useEffect(() => {
     getPropertyById(id);
@@ -53,11 +53,18 @@ export default function PropertyDetails() {
     const response = await axios.get(`${baseURL}/v1/api/properties/id/${id}`);
     console.log("property : ", response);
     setProperty(response.data);
-    setSelectedImage(response.data.images[0])
+    setSelectedImage(response.data.images[0]);
   };
 
   if (!property) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <div className="text-center mt-8">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <p className="mt-2 text-blue-600">Loading properties...</p>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -104,12 +111,34 @@ export default function PropertyDetails() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div>
+              <div className="relative">
                 <img
                   src={selectedImage}
                   alt={property.name}
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 />
+                <div
+                  className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                    property.details.isNegotiable === "YES"
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  {property.details.isNegotiable === "YES"
+                    ? "Negotiable"
+                    : "Not Negotiable"}
+                </div>
+                <div
+                  className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                    property.details.furnishedStatus === "FURNISHED"
+                      ? "bg-green-500 text-white"
+                      : property.details.furnishedStatus === "SEMIFURNISHED"
+                      ? "bg-yellow-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  {property.details.furnishedStatus}
+                </div>
                 <div className="flex mt-4 space-x-4 overflow-x-auto p-2">
                   {property.images.map((image, index) => (
                     <img
@@ -124,6 +153,22 @@ export default function PropertyDetails() {
                       onClick={() => setSelectedImage(image)}
                     />
                   ))}
+                </div>
+                <div className="mt-8 flex justify-start gap-5 ">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="max-w-64 bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-700 transition-colors"
+                  >
+                    Enquiry
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Contact Owner
+                  </motion.button>
                 </div>
               </div>
               <div>
@@ -153,10 +198,6 @@ export default function PropertyDetails() {
                     <Calendar className="w-5 h-5 mr-2 text-gray-600" />
                     <span>Built in {property.details.availability}</span>
                   </div>
-                  <div className="flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2 text-gray-600" />
-                    <span>{property.details.isNegotiable}</span>
-                  </div>
                 </div>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
                 <p className="text-gray-600">
@@ -175,16 +216,6 @@ export default function PropertyDetails() {
                   ))}
                 </ul>
               </div>
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 ">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Contact Agent
-              </motion.button>
             </div>
           </div>
         </div>
