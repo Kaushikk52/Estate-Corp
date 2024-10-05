@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
+  ChevronLeft,
+  ChevronRight,
   Bed,
   Bath,
   Home,
@@ -11,12 +13,12 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, A11y } from 'swiper/modules';
+import { Navigation, A11y } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
 interface Property {
   id: string;
@@ -48,6 +50,7 @@ export default function LocationsCardsCarousel() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
   const filters = ["All", "Borivali East", "Dahisar East", "Goregaon West"];
   const [activeFilter, setActiveFilter] = useState("All");
@@ -74,6 +77,18 @@ export default function LocationsCardsCarousel() {
 
   const handlePropertyClick = (propertyId: string) => {
     navigate(`/property/${propertyId}`);
+  };
+
+  const handlePrev = () => {
+    if (swiper) {
+      swiper.slidePrev();
+    }
+  };
+
+  const handleNext = () => {
+    if (swiper) {
+      swiper.slideNext();
+    }
   };
 
   return (
@@ -129,13 +144,13 @@ export default function LocationsCardsCarousel() {
           </div>
         </div>
 
-        <div className="w-full lg:w-3/4">
+        <div className="w-full lg:w-3/4 relative">
           <Swiper
-            modules={[Navigation, Pagination, A11y]}
+            modules={[Navigation, A11y]}
             spaceBetween={20}
             slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
+            navigation={false}
+            onSwiper={setSwiper}
             breakpoints={{
               640: {
                 slidesPerView: 2,
@@ -250,6 +265,26 @@ export default function LocationsCardsCarousel() {
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="absolute top-0 left-0 bottom-0 right-0 pointer-events-none">
+            <div className="flex justify-between items-center h-full">
+              <motion.button
+                className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
+                onClick={handlePrev}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronLeft className="h-6 w-6 text-blue-700" />
+              </motion.button>
+              <motion.button
+                className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
+                onClick={handleNext}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronRight className="h-6 w-6 text-blue-700" />
+              </motion.button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
