@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -42,10 +42,6 @@ export default function LocationsCardsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const navigate = useNavigate();
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
   const [properties, setProperties] = useState<Property[]>([]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,43 +56,6 @@ export default function LocationsCardsCarousel() {
     window.addEventListener("resize", updateVisibleCards);
     return () => window.removeEventListener("resize", updateVisibleCards);
   }, [activeFilter]);
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    setStartX(e.pageX - (carouselRef.current?.offsetLeft || 0));
-    setScrollLeft(carouselRef.current?.scrollLeft || 0);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - (carouselRef.current?.offsetLeft || 0);
-    const walk = (x - startX) * 2;
-    if (carouselRef.current) {
-      carouselRef.current.scrollLeft = scrollLeft - walk;
-    }
-  };
-
-  const handleScroll = () => {
-    if (carouselRef.current) {
-      const scrollPosition = carouselRef.current.scrollLeft;
-      const maxScroll =
-        carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
-      setCurrentIndex(
-        Math.round(
-          (scrollPosition / maxScroll) * (properties.length - visibleCards)
-        )
-      );
-    }
-  };
 
   const updateVisibleCards = () => {
     if (window.innerWidth < 640) {
@@ -193,26 +152,29 @@ export default function LocationsCardsCarousel() {
 
         <div className="overflow-hidden w-full">
           <div className="relative p-4">
-            <div
-              ref={carouselRef}
-              className="flex overflow-x-auto scrollbar-hide"
-              onMouseDown={handleMouseDown}
-              onMouseLeave={handleMouseLeave}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              onScroll={handleScroll}
+            <motion.div
+              className="flex"
+              initial={false}
+              animate={{
+                x: `-${currentIndex * (100 / visibleCards)}%`,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+              }}
             >
               <AnimatePresence>
                 {properties.map((property) => (
                   <motion.div
                     key={property.id}
-                    className={`flex-shrink-0 ${
+                    className={`flex-shrink-0 w-full px-2 ${
                       visibleCards === 1
                         ? "w-full"
                         : visibleCards === 2
-                        ? "w-1/2"
-                        : "w-1/3"
-                    } px-2`}
+                        ? "md:w-1/2"
+                        : "md:w-1/2 xl:w-1/3"
+                    }`}
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -50 }}
@@ -313,13 +275,11 @@ export default function LocationsCardsCarousel() {
                   </motion.div>
                 ))}
               </AnimatePresence>
-            </div>
+            </motion.div>
             <div className="absolute top-0 left-0 bottom-0 right-0 pointer-events-none">
               <div className="flex justify-between items-center h-full">
                 <motion.button
-                  className={`pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300 ${
-                    currentIndex === 0 ? "opacity-0" : "opacity-100"
-                  }`}
+                  className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
                   onClick={prevSlide}
                   disabled={currentIndex === 0}
                   aria-label="Previous property"
@@ -329,11 +289,7 @@ export default function LocationsCardsCarousel() {
                   <ChevronLeft className="h-6 w-6 text-blue-700" />
                 </motion.button>
                 <motion.button
-                  className={`pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300 ${
-                    currentIndex >= properties.length - visibleCards
-                      ? "opacity-0"
-                      : "opacity-100"
-                  }`}
+                  className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
                   onClick={nextSlide}
                   disabled={currentIndex >= properties.length - visibleCards}
                   aria-label="Next property"
