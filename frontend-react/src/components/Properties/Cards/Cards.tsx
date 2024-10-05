@@ -129,7 +129,7 @@ export default function PropertyCardsCarousel() {
     <>
     <Filter onFilterChange={handleFilterChange}/>
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Featured Properties</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Latest Properties</h2>
       <div className="relative">
         <div className="overflow-hidden w-full">
           <div className="relative p-4">
