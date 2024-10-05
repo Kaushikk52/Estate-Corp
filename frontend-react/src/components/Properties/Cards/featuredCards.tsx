@@ -72,10 +72,7 @@ export default function FeaturedCardsCarousel() {
   }, [setProperties])
 
   const fetchProperties = async () => {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(`${baseURL}/v1/api/users/adminProperties`,
-        { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await axios.get(`${baseURL}/v1/api/users/adminProperties`);
     if(response.status == 200){
         setProperties(response.data.properties);
     }
