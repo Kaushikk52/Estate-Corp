@@ -4,6 +4,7 @@ import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import toast from "react-hot-toast";
 
 export default function AuthPopup(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -106,9 +107,20 @@ export default function AuthPopup(props: any) {
 
   async function handleForgotPassword(values: any) {
     try {
-      // Implement the API call to send reset email
-      console.log("Sending reset email to:", values.email);
-      setResetStep("otp");
+      // console.log("Sending reset email to:", values.email);
+      const response = await axios.post(`${baseURL}/v1/api/auth/send-otp?email=${values.email}`);
+      if(response.status === 200){
+        toast.error(`OTP sent successfully`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+        setResetStep("otp");
+      }else{
+        toast.error(`Couldn't send Otp , Try again`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -116,20 +128,22 @@ export default function AuthPopup(props: any) {
 
   async function handleOTPVerification(values: any) {
     try {
-      // Implement the API call to verify OTP
-      console.log("Verifying OTP:", values.otp);
-      setResetStep("newPassword");
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  async function handlePasswordReset(values: any) {
-    try {
-      // Implement the API call to reset password
-      console.log("Resetting password");
-      setActiveTab("login");
-      setResetStep("email");
+      // console.log("Verifying OTP:", values.otp);
+      const response = await axios.post(`${baseURL}/v1/api/auth/verify-otp?email=${values.email}&otp=${values.otp}&newPass=${values.confirmPassword}`);
+      if(response.status === 200){
+        // console.log("Resetting password");
+        setActiveTab("login");
+        setResetStep("email");
+        toast.success(`Password Reset successful`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }else{
+        toast.error(`Couldn't send Otp , Try again`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -439,6 +453,7 @@ export default function AuthPopup(props: any) {
                             <Field
                               name="email"
                               className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                              placeholder="Enter your email"
                             />
                           </div>
                           <ErrorMessage
@@ -460,12 +475,35 @@ export default function AuthPopup(props: any) {
                 )}
                 {resetStep === "otp" && (
                   <Formik
-                    initialValues={{ otp: "" }}
+                    initialValues={{ otp: "",email:"",password:"",confirmPassword:"", }}
                     validationSchema={otpSchema}
                     onSubmit={(values) => handleOTPVerification(values)}
                   >
                     {({ errors, touched, isSubmitting }) => (
                       <Form className="space-y-4">
+                         <div>
+                          <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Email
+                          </label>
+                          <div className="mt-1 relative rounded-md shadow-sm">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Mail className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <Field
+                              name="email"
+                              className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                              placeholder="Enter your email"
+                            />
+                          </div>
+                          <ErrorMessage
+                            name="email"
+                            component="div"
+                            className="mt-1 text-sm text-red-500"
+                          />
+                        </div>
                         <div>
                           <label
                             htmlFor="otp"
@@ -483,25 +521,6 @@ export default function AuthPopup(props: any) {
                             className="mt-1 text-sm text-red-500"
                           />
                         </div>
-                        <button
-                          type="submit"
-                          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          disabled={isSubmitting}
-                        >
-                          Verify OTP
-                        </button>
-                      </Form>
-                    )}
-                  </Formik>
-                )}
-                {resetStep === "newPassword" && (
-                  <Formik
-                    initialValues={{ password: "", confirmPassword: "" }}
-                    validationSchema={newPasswordSchema}
-                    onSubmit={(values) => handlePasswordReset(values)}
-                  >
-                    {({ errors, touched, isSubmitting }) => (
-                      <Form className="space-y-4">
                         <div>
                           <label
                             htmlFor="password"
@@ -543,7 +562,7 @@ export default function AuthPopup(props: any) {
                           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                           disabled={isSubmitting}
                         >
-                          Reset Password
+                          Verify OTP
                         </button>
                       </Form>
                     )}

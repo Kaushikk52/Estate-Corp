@@ -7,6 +7,7 @@ import DashboardLayout from './components/Dashboard/DashboardLayout.tsx'
 import AddPropertyLayout from './components/Dashboard/AddPropertyLayout.tsx'
 import Residential from './components/ListingPage/Residential.tsx'
 import PropertyDetails from './components/Properties/PropertyDetails.tsx'
+import NotFound from './NotFound.tsx'
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
     <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
+          <Route path='*' element={<NotFound/>} />
             <Route index element={<Home />} />
             <Route path="/property/:id" element={ <PropertyDetails/> }/>
             <Route path='/dashboard' element={<DashBoard />}>
