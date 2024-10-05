@@ -42,9 +42,9 @@ public class PropertySpecification {
             }
 
             // Handle cities (OR condition if multiple cities)
-            if (filters.containsKey("cities")) {
-                List<String> cities = (List<String>) filters.get("cities");
-                predicates.add(root.join("details").get("city").in(cities));
+            if (filters.containsKey("locations")) {
+                List<String> locations = (List<String>) filters.get("locations");
+                predicates.add(root.join("details").get("location").in(locations));
             }
 
             // Handle carpet area filters

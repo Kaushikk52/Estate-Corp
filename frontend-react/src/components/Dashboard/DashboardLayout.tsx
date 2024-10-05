@@ -69,7 +69,7 @@ export default function Dashboard() {
         bathrooms: 0,
         balconies: 0,
         floorNo: 0,
-        city: "",
+        location: "",
         ammenitites: [],
         facing: "",
         carpetArea: "",
@@ -322,7 +322,7 @@ export default function Dashboard() {
                         {property.type}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {property.details.city}
+                        {property.details.location}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {property.address.locality}

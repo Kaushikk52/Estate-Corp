@@ -22,7 +22,7 @@ public class PropertyDetails {
 
     private int floorNo;
 
-    private String city;
+    private String location;
     //    private String boundaryWall;
     private List<String> ammenities;
     private String facing;
@@ -36,7 +36,7 @@ public class PropertyDetails {
 
     @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date availability;
+    private String availability;
 
     private double rent;
 

@@ -34,6 +34,7 @@ interface Property {
     amtUnit: string;
     isNegotiable: string;
     furnishedStatus: string;
+    location: string;
   };
 }
 
@@ -93,7 +94,7 @@ export default function FeaturedCardsCarousel() {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
-    <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Builder Properties</h2>
+    <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Owner Properties</h2>
     <div className="relative">
       <div className="overflow-hidden w-full">
         <div className="relative p-4">
@@ -144,7 +145,7 @@ export default function FeaturedCardsCarousel() {
                       <p className="text-sm text-gray-600 mt-1 flex items-center line-clamp-1">
                         <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
                         <span className="truncate">
-                          {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
+                        {property.address.street} {property.address.locality} {property.details.location} {property.address.landmark} - {property.address.zipCode}
                         </span>
                       </p>
                       {property.type === "RENT" ? 

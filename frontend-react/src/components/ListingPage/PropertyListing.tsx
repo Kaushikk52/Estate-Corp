@@ -28,11 +28,12 @@ interface Property {
     amtUnit: string;
     isNegotiable: string;
     furnishedStatus: string;
+    location:string;
   };
 }
 
 interface FilterState {
-  cities: string[];
+  locations: string[];
   bedrooms: number[];
   minPrice: string;
   maxPrice: string;
@@ -59,8 +60,8 @@ export default function PropertyListing() {
     try {
       let url = `${baseURL}/v1/api/properties/filter?`;
       if (filters) {
-        if (filters.cities.length > 0)
-          url += `cities=${filters.cities.join(",")}&`;
+        if (filters.locations.length > 0)
+          url += `locations=${filters.locations.join(",")}&`;
         if (filters.bedrooms.length > 0)
           url += `bedrooms=${filters.bedrooms.join(",")}&`;
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
@@ -174,8 +175,7 @@ export default function PropertyListing() {
                       </div>
                       <p className="text-gray-600 mb-4 flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />{" "}
-                        {property.address.landmark}, {property.address.locality}
-                        , {property.address.street} - {property.address.zipCode}
+                        {property.address.street} {property.address.locality} {property.details.location} {property.address.landmark} - {property.address.zipCode}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-3">
                         <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-blue-100 text-blue-800">

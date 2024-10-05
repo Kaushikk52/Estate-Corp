@@ -42,7 +42,7 @@ public class PropertyController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String amtUnit,
-            @RequestParam(required = false) List<String> cities,
+            @RequestParam(required = false) List<String> locations,
             @RequestParam(required = false) Double minCarpetArea,
             @RequestParam(required = false) Double maxCarpetArea,
             @RequestParam(required =false) String areaUnit) {
@@ -58,7 +58,7 @@ public class PropertyController {
                 filters.remove("amtUnit");
             }
             if (maxPrice != null) filters.put("maxPrice", maxPrice);
-            if (cities != null && !cities.isEmpty()) filters.put("cities", cities);
+            if (locations != null && !locations.isEmpty()) filters.put("locations", locations);
             if (minCarpetArea != null) {
                 filters.put("minCarpetArea", minCarpetArea);
                 filters.put("areaUnit",areaUnit);
@@ -71,10 +71,10 @@ public class PropertyController {
             Map<String, Object> response = new HashMap<>();
 
             // Check for empty results
-            if (filteredProperties.isEmpty() && (cities != null && !cities.isEmpty()) && (bedrooms != null && !bedrooms.isEmpty())) {
-                String city = cities.get(0);
+            if (filteredProperties.isEmpty() && (locations != null && !locations.isEmpty()) && (bedrooms != null && !bedrooms.isEmpty())) {
+                String location = locations.get(0);
                 int bedroom = bedrooms.get(0);
-                filteredProperties = propertyServ.getApprovedPropertiesByCityAndBedrooms(true, city, bedroom);
+                filteredProperties = propertyServ.getApprovedPropertiesByLocationAndBedrooms(true, location, bedroom);
                 log.warn("Retrieved properties by city and bedrooms");
                 response.put("message", "All properties retrieved by city and bedrooms");
             } else {
@@ -98,11 +98,11 @@ public class PropertyController {
     }
 
     @GetMapping(value = "/find")
-    public ResponseEntity<?> getPropertiesByCityAndBedrooms(@RequestParam String city, @RequestParam int bedrooms) {
+    public ResponseEntity<?> getPropertiesByLocationAndBedrooms(@RequestParam String location, @RequestParam int bedrooms) {
         try {
-            List<Property> properties = propertyServ.getPropertiesByCityAndBedrooms(city,bedrooms);
+            List<Property> properties = propertyServ.getPropertiesByLocationAndBedrooms(location,bedrooms);
             if (properties.isEmpty()) {
-                log.warn("Properties in {} does not exists", city);
+                log.warn("Properties in {} does not exists", location);
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(properties);
             }
             log.info("Retrieved all properties by city :{}", properties);

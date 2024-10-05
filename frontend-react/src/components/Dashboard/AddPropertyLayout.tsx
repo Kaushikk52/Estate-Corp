@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode"
+import { jwtDecode } from "jwt-decode";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Property Name is required"),
@@ -19,7 +19,7 @@ const validationSchema = Yup.object().shape({
     zipCode: Yup.string().required("Zip Code is required"),
   }),
   details: Yup.object().shape({
-    city: Yup.string().required("City is required"),
+    location: Yup.string().required("Location is required"),
     bedrooms: Yup.number()
       .required("Number of bedrooms is required")
       .min(0, "Cannot be negative"),
@@ -81,7 +81,7 @@ export default function AddPropertyLayout() {
       bathrooms: "",
       balconies: "",
       floorNo: "",
-      city: "",
+      location: "",
       facing: "",
       carpetArea: "",
       areaUnit: "sqft",
@@ -97,23 +97,23 @@ export default function AddPropertyLayout() {
   };
 
   useEffect(() => {
-    const token:any = localStorage.getItem("token");
+    const token: any = localStorage.getItem("token");
     if (!token) {
       toast.error("Please Login", {
         position: "bottom-right",
         duration: 3000,
       });
     }
-    try{
-    const decodedToken:any = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    if(decodedToken.exp < currentTime){
-      toast.error("Please Login", {
-        position: "bottom-right",
-        duration: 3000,
-      });
-    }
-    }catch(err){
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const currentTime = Date.now() / 1000;
+      if (decodedToken.exp < currentTime) {
+        toast.error("Please Login", {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    } catch (err) {
       console.log(err);
     }
   });
@@ -163,7 +163,6 @@ export default function AddPropertyLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-
     if (step !== 4) {
       setSubmitting(false);
       return;
@@ -231,7 +230,7 @@ export default function AddPropertyLayout() {
           "address.locality",
           "address.street",
           "address.zipCode",
-          "details.city",
+          "details.location",
         ];
       case 2:
         return [
@@ -533,19 +532,49 @@ export default function AddPropertyLayout() {
                       </div>
                       <div>
                         <label
-                          htmlFor="details.city"
+                          htmlFor="details.location"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          City
+                          Location
                         </label>
                         <Field
-                          id="details.city"
-                          name="details.city"
-                          type="text"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
+                          as="select"
+                          id="details.location"
+                          name="details.location"
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                        >
+                          <option value="">Select location</option>
+                          <optgroup label="Bhayandar">
+                            <option value="Bhayandar East">Bhayandar East</option>
+                            <option value="Bhayandar West">Bhayandar West</option>
+                          </optgroup>
+
+                          <optgroup label="Mira Road">
+                            <option value="Mira Road East">Mira Road East</option>
+                          </optgroup>
+
+                          <optgroup label="Dahisar">
+                            <option value="Dahisar East">Dahisar East</option>
+                            <option value="Dahisar West">Dahisar West</option>
+                          </optgroup>
+
+                          <optgroup label="Borivali">
+                            <option value="Borivali East">Borivali East</option>
+                            <option value="Borivali West">Borivali West</option>
+                          </optgroup>
+
+                          <optgroup label="Malad">
+                            <option value="Malad East">Malad East</option>
+                            <option value="Malad West">Malad West</option>
+                          </optgroup>
+                          
+                          <optgroup label="Goregaon">
+                            <option value="Goregaon East">Goregaon East</option>
+                            <option value="Goregaon West">Goregaon West</option>
+                          </optgroup>
+                        </Field>
                         <ErrorMessage
-                          name="details.city"
+                          name="details.location"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
@@ -745,7 +774,8 @@ export default function AddPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div>
+                    {values.type === "RENT" ?
+                      <div>
                       <label
                         htmlFor="details.availability"
                         className="block text-sm font-medium text-gray-700"
@@ -763,7 +793,28 @@ export default function AddPropertyLayout() {
                         component="div"
                         className="text-red-500 text-sm mt-1"
                       />
-                    </div>
+                    </div>  
+                    : <div>
+                    <label
+                      htmlFor="details.availability"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Possession date
+                    </label>
+                    <Field
+                      id="details.availability"
+                      name="details.availability"
+                      type="date"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <ErrorMessage
+                      name="details.availability"
+                      component="div"
+                      className="text-red-500 text-sm mt-1"
+                    />
+                  </div>  
+                  }
+                    
                     {values.type === "RENT" && (
                       <div>
                         <label

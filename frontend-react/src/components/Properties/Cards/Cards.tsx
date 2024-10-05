@@ -27,11 +27,12 @@ interface Property {
     amtUnit: string;
     isNegotiable: string;
     furnishedStatus: string;
+    location:string;
   };
 }
 
 interface FilterState {
-  cities: string[];
+  locations: string[];
   bedrooms: number[];
   minPrice: string;
   maxPrice: string;
@@ -81,8 +82,8 @@ export default function PropertyCardsCarousel() {
     try {
       let url = `${baseURL}/v1/api/properties/filter?`;
       if (filters) {
-        if (filters.cities.length > 0)
-          url += `cities=${filters.cities.join(",")}&`;
+        if (filters.locations.length > 0)
+          url += `locations=${filters.locations.join(",")}&`;
         if (filters.bedrooms.length > 0)
           url += `bedrooms=${filters.bedrooms.join(",")}&`;
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
@@ -180,7 +181,7 @@ export default function PropertyCardsCarousel() {
                         <p className="text-sm text-gray-600 mt-1 flex items-center line-clamp-1">
                           <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
                           <span className="truncate">
-                            {property.address.landmark} {property.address.locality} {property.address.street} - {property.address.zipCode}
+                            {property.address.street} {property.address.locality} {property.details.location} {property.address.landmark} - {property.address.zipCode}
                           </span>
                         </p>
                         {property.type === "RENT" ? 

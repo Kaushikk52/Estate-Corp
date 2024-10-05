@@ -36,10 +36,11 @@ interface Property {
     amtUnit: string;
     isNegotiable: string;
     furnishedStatus: string;
+    location: string;
   };
 }
 
-export default function CityCardsCarousel() {
+export default function LocationsCardsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function CityCardsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(3);
 
-  const filters = ["All", "Mumbai", "Navi Mumbai", "Thane"];
+  const filters = ["All", "Borivali East", "Dahisar East", "Goregaon West"];
   const [activeFilter, setActiveFilter] = useState("All");
 
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function CityCardsCarousel() {
       );
     } else {
       response = await axios.get(
-        `${baseURL}/v1/api/properties/filter?cities=${activeFilter}`
+        `${baseURL}/v1/api/properties/filter?locations=${activeFilter}`
       );
     }
     if (response.status == 200) {
@@ -229,7 +230,8 @@ export default function CityCardsCarousel() {
                           <span className="truncate">
                             {property.address.landmark}{" "}
                             {property.address.locality}{" "}
-                            {property.address.street} -{" "}
+                            {property.address.street}{" "}
+                            {property.details.location}-{" "}
                             {property.address.zipCode}
                           </span>
                         </p>

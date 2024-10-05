@@ -47,7 +47,6 @@ public class PropertyServices {
         if(Objects.equals(currentUser.getRole().toString(), "ROLE_ADMIN")){
             PropertyDetails details = property.getDetails();
             details.setIsApproved(true);
-            details.setAvailability(new Date(String.valueOf(details.getAvailability())));
             property.setDetails(details);
 
         }
@@ -71,12 +70,12 @@ public class PropertyServices {
         return propertyRepo.findByName(name);
     }
 
-    public List<Property> getPropertiesByCityAndBedrooms(String city,int bedrooms){
-        return propertyRepo.findByDetailsCityAndDetailsBedrooms(city,bedrooms);
+    public List<Property> getPropertiesByLocationAndBedrooms(String city,int bedrooms){
+        return propertyRepo.findByDetailsLocationAndDetailsBedrooms(city,bedrooms);
     }
 
-    public List<Property> getApprovedPropertiesByCityAndBedrooms(boolean isApproved,String city,int bedrooms){
-        return propertyRepo.findByDetailsIsApprovedAndDetailsCityAndDetailsBedrooms(isApproved,city,bedrooms);
+    public List<Property> getApprovedPropertiesByLocationAndBedrooms(boolean isApproved,String location,int bedrooms){
+        return propertyRepo.findByDetailsIsApprovedAndDetailsLocationAndDetailsBedrooms(isApproved,location,bedrooms);
     }
 
     public List<Property> getPropertiesByApprovalStatus(boolean isApproved){

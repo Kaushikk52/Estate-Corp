@@ -37,6 +37,7 @@ interface Property {
     furnishedStatus: string;
     availability: string;
     ammenities: string[];
+    location:string;
   };
   owner: {
     fullName: string;
@@ -356,6 +357,12 @@ export default function PropertyDetails() {
                         <td className="font-medium">State / Country</td>
                         <td className="text-gray-600">
                           {property.address.street}
+                        </td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Location</td>
+                        <td className="text-gray-600">
+                          {property.details.location}
                         </td>
                       </tr>
                     </tbody>
