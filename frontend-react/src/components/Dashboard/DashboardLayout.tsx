@@ -83,6 +83,7 @@ export default function Dashboard() {
         furnishedStatus: "",
       },
       project: {},
+      owner: {fullName : ""}
     },
   ]);
   const cards = [
@@ -306,7 +307,7 @@ export default function Dashboard() {
                   {properties.map((property, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {property.id}
+                        {property.owner.fullName}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {property.name}
