@@ -64,6 +64,23 @@ public class UserController {
         }
     }
 
+    @GetMapping(value = "/adminProperties")
+    public ResponseEntity<?> getAdminProperties(){
+        try{
+            List<Property> propertyList = userServ.getAdminProperties();
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Admin properties retrieved");
+            response.put("properties",propertyList);
+            log.info("Retrieved user properties");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+
     @GetMapping(value = "/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id) {
         try {
