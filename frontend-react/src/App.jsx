@@ -16,7 +16,7 @@ function App() {
     <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-          <Route path='*' element={<NotFound/>} />
+          <Route path='/error' element={<NotFound/>} />
             <Route index element={<Home />} />
             <Route path="/property/:id" element={ <PropertyDetails/> }/>
             <Route path='/dashboard' element={<DashBoard />}>
