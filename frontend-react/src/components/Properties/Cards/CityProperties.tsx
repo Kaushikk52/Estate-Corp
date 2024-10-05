@@ -117,7 +117,7 @@ export default function LocationsCardsCarousel() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        <div className="w-full lg:w-1/4 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-around">
+        <div className="phone-non w-full lg:w-1/4 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-around">
           <div>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-center">
               Explore
