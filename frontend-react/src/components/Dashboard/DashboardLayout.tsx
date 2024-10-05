@@ -280,6 +280,9 @@ export default function Dashboard() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      #
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Owner Name
                     </th>
@@ -306,6 +309,9 @@ export default function Dashboard() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {properties.map((property, index) => (
                     <tr key={index}>
+                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {index+1}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {property.owner.fullName}
                       </td>

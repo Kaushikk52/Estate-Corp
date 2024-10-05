@@ -11,9 +11,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import Filter from "../../Home/Filter";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 
 interface Property {
   id: string;
