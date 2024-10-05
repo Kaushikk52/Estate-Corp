@@ -101,7 +101,7 @@ export default function LocationsCardsCarousel() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-center mb-8 pb-2 scrollbar-hide">
+      <div className="flex justify-start mb-8 pb-2 overflow-x-auto overflow-x:hidden scrollbar-hide">
         {filters.map((filter) => (
           <button
             key={filter}
