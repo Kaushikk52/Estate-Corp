@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from 'react'
+import React, { useState } from 'react'
 import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon, FilterIcon, Scaling, RefreshCw } from 'lucide-react'
 
 interface FilterProps {
@@ -6,7 +6,7 @@ interface FilterProps {
 }
 
 interface FilterState {
-  cities: string[];
+  locations: string[];
   bedrooms: number[];
   minPrice: string;
   maxPrice: string;
@@ -16,9 +16,14 @@ interface FilterState {
   areaUnit: string;
 }
 
+interface LocationGroup {
+  label: string;
+  options: string[];
+}
+
 export default function Filter({ onFilterChange }: FilterProps) {
-  const [cities, setCities] = useState<string[]>([])
-  const [currentCity, setCurrentCity] = useState('')
+  const [locations, setLocations] = useState<string[]>([])
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
   const [bedrooms, setBedrooms] = useState<number[]>([])
   const [isBedroomDropdownOpen, setIsBedroomDropdownOpen] = useState(false)
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
@@ -36,16 +41,42 @@ export default function Filter({ onFilterChange }: FilterProps) {
   const carpetAreaOptions = ['500', '1000', '1500', '2000', '2500', '3000', '3500', '4000', '4500', '5000', '5500', '6000', '7000', '8000', '9000', '10000']
   const amtUnitOptions = ['K', 'L', 'Cr']
   const carpetAreaUnitOptions = ['sqft', 'sqm', 'sqyd', 'acre']
-
-  const handleAddCity = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && currentCity.trim()) {
-      setCities([...cities, currentCity.trim()])
-      setCurrentCity('')
+  const locationGroups: LocationGroup[] = [
+    {
+      label: "- Bhayandar",
+      options: ["Bhayandar East", "Bhayandar West"]
+    },
+    {
+      label: "- Mira Road",
+      options: ["Mira Road East"]
+    },
+    {
+      label: "- Dahisar",
+      options: ["Dahisar East", "Dahisar West"]
+    },
+    {
+      label: "- Borivali",
+      options: ["Borivali East", "Borivali West"]
+    },
+    {
+      label: "- Malad",
+      options: ["Malad East", "Malad West"]
+    },
+    {
+      label: "- Goregaon",
+      options: ["Goregaon East", "Goregaon West"]
     }
+  ]
+
+  const handleAddLocation = (location: string) => {
+    if (!locations.includes(location)) {
+      setLocations([...locations, location])
+    }
+    setIsLocationDropdownOpen(false)
   }
 
-  const handleRemoveCity = (cityToRemove: string) => {
-    setCities(cities.filter(city => city !== cityToRemove))
+  const handleRemoveLocation = (locationToRemove: string) => {
+    setLocations(locations.filter(location => location !== locationToRemove))
   }
 
   const handleBedroomToggle = (option: number) => {
@@ -76,7 +107,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
 
   const applyFilters = () => {
     const filters: FilterState = {
-      cities,
+      locations,
       bedrooms,
       minPrice,
       maxPrice,
@@ -89,8 +120,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
   }
 
   const clearFilters = () => {
-    setCities([])
-    setCurrentCity('')
+    setLocations([])
     setBedrooms([])
     setMinPrice('')
     setMaxPrice('')
@@ -99,7 +129,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
     setMaxCarpetArea('')
     setAreaUnit('sqft')
     onFilterChange({
-      cities: [],
+      locations: [],
       bedrooms: [],
       minPrice: '',
       maxPrice: '',
@@ -128,37 +158,65 @@ export default function Filter({ onFilterChange }: FilterProps) {
             >
               <SearchIcon className="h-5 w-5" />
             </button>
-
             <button 
-                onClick={clearFilters}
-                className="w-1/5 bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center"
-              >
-                <RefreshCw className="h-5 w-5 mr-2" />
-              </button>
+              onClick={clearFilters}
+              className="w-1/5 bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center"
+            >
+              <RefreshCw className="h-5 w-5 mr-2" />
+            </button>
           </div>
           <div className={`md:flex md:items-center md:space-x-4 ${isFilterOpen ? '' : 'hidden md:flex'}`}>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
-              <div className="flex items-center bg-gray-100 rounded-full p-2">
+              <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
                 <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
                 <div className="flex flex-wrap items-center gap-2 w-full">
-                  {cities.map((city) => (
-                    <span key={city} className="bg-white text-gray-700 px-2 py-1 rounded-full text-sm flex items-center">
-                      {city}
+                  {locations.map((location) => (
+                    <span key={location} className="bg-white text-gray-700 px-2 py-1 rounded-full text-sm flex items-center">
+                      {location}
                       <XIcon 
                         className="h-4 w-4 ml-1 cursor-pointer" 
-                        onClick={() => handleRemoveCity(city)}
+                        onClick={() => handleRemoveLocation(location)}
                       />
                     </span>
                   ))}
-                  <input
-                    type="text"
-                    placeholder={cities.length ? "Add more" : "City"}
-                    value={currentCity}
-                    onChange={(e) => setCurrentCity(e.target.value)}
-                    onKeyPress={handleAddCity}
-                    className="flex-grow min-w-[100px] bg-transparent focus:outline-none"
-                  />
+                  <button
+                    onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                    className="flex items-center text-gray-700 focus:outline-none"
+                  >
+                    {locations.length === 0 ? 'Location' : 'Add more'}
+                    <ChevronDownIcon className="h-4 w-4 ml-1" />
+                  </button>
                 </div>
+                {isLocationDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      <button
+                        onClick={() => setIsLocationDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
+                        role="menuitem"
+                      >
+                        Select location
+                      </button>
+                      {locationGroups.map((group) => (
+                        <div key={group.label}>
+                          <div className="px-4 py-2 text-xs font-semibold text-gray-500">{group.label}</div>
+                          {group.options.map((option) => (
+                            <button
+                              key={option}
+                              onClick={() => handleAddLocation(option)}
+                              className={`${
+                                locations.includes(option) ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                              } block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900`}
+                              role="menuitem"
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
