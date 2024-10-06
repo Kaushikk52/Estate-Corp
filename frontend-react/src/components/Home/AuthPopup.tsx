@@ -1,28 +1,30 @@
-import React, { useState,useEffect } from "react";
-import { Link,useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Github, PlusSquare, Phone } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import toast from "react-hot-toast";
 
-export default function AuthPopup(props:any) {
+export default function AuthPopup(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const roles = ["ROLE_AGENT", "ROLE_RESALER", "ROLE_USER"];
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const [user, setUser] = useState({});
+  const [resetStep, setResetStep] = useState("email"); // "email", "otp", "newPassword"
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     const token = localStorage.getItem('token')
-    if(props.popup ===true){
+    if (props.popup === true) {
       setIsOpen(true);
     }
-    if(token !== null && props.popup === true){
+    if (token !== null && props.popup === true) {
       setIsOpen(false);
     }
-  })
+  }, [props.popup])
 
   const registerSchema = Yup.object({
     fullName: Yup.string()
@@ -48,6 +50,23 @@ export default function AuthPopup(props:any) {
       .required("Required"),
   });
 
+  const forgotPasswordSchema = Yup.object({
+    email: Yup.string().email("Invalid email address").required("Required"),
+  });
+
+  const otpSchema = Yup.object({
+    otp: Yup.string().length(6, "OTP must be 6 digits").required("Required"),
+  });
+
+  const newPasswordSchema = Yup.object({
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), ""], 'Passwords must match')
+      .required("Required"),
+  });
+
   const togglePopup = (tab: string) => {
     setActiveTab(tab);
     setIsOpen(!isOpen);
@@ -61,7 +80,6 @@ export default function AuthPopup(props:any) {
       );
       if (response.status === 201) {
         setUser(response.data.user);
-        localStorage.setItem("token", response.data.user.token);
         setActiveTab("login");
         console.log("User registered Successfully", user);
       }
@@ -87,8 +105,52 @@ export default function AuthPopup(props:any) {
     }
   }
 
+  async function handleForgotPassword(values: any) {
+    try {
+      // console.log("Sending reset email to:", values.email);
+      const response = await axios.post(`${baseURL}/v1/api/auth/send-otp?email=${values.email}`);
+      if(response.status === 200){
+        toast.error(`OTP sent successfully`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+        setResetStep("otp");
+      }else{
+        toast.error(`Couldn't send Otp , Try again`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function handleOTPVerification(values: any) {
+    try {
+      // console.log("Verifying OTP:", values.otp);
+      const response = await axios.post(`${baseURL}/v1/api/auth/verify-otp?email=${values.email}&otp=${values.otp}&newPass=${values.confirmPassword}`);
+      if(response.status === 200){
+        // console.log("Resetting password");
+        setActiveTab("login");
+        setResetStep("email");
+        toast.success(`Password Reset successful`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }else{
+        toast.error(`Couldn't send Otp , Try again`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <div className="">
+    <div className="relative">
       {isOpen && (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -101,39 +163,37 @@ export default function AuthPopup(props:any) {
                 ✕
               </button>
             </div>
-            {activeTab === "login" ? (
-              <p className="text-center text-gray-600 mb-6">
-                Sign in to your account
-              </p>
-            ) : (
-              <p className="text-center text-gray-600 mb-6">
-                Sign Up to create a new account
-              </p>
+            {activeTab !== "forgotPassword" && (
+              <>
+                <p className="text-center text-gray-600 mb-6">
+                  {activeTab === "login" ? "Sign in to your account" : "Sign Up to create a new account"}
+                </p>
+                <div className="flex mb-4">
+                  <button
+                    className={`flex-1 py-2 ${
+                      activeTab === "register"
+                        ? "border-b-2 border-pink-500 text-pink-500"
+                        : "text-gray-500"
+                    }`}
+                    onClick={() => setActiveTab("register")}
+                  >
+                    Register
+                  </button>
+                  <button
+                    className={`flex-1 py-2 ${
+                      activeTab === "login"
+                        ? "border-b-2 border-purple-500 text-purple-500"
+                        : "text-gray-500"
+                    }`}
+                    onClick={() => setActiveTab("login")}
+                  >
+                    Login
+                  </button>
+                </div>
+              </>
             )}
-            <div className="flex mb-4">
-              <button
-                className={`flex-1 py-2 ${
-                  activeTab === "register"
-                    ? "border-b-2 border-pink-500 text-pink-500"
-                    : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("register")}
-              >
-                Register
-              </button>
-              <button
-                className={`flex-1 py-2 ${
-                  activeTab === "login"
-                    ? "border-b-2 border-purple-500 text-purple-500"
-                    : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("login")}
-              >
-                Login
-              </button>
-            </div>
 
-            {activeTab === "login" ? (
+            {activeTab === "login" && (
               <Formik
                 initialValues={{ email: "", password: "" }}
                 validationSchema={loginSchema}
@@ -148,7 +208,7 @@ export default function AuthPopup(props:any) {
                       >
                         Email
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Mail className="h-5 w-5 text-gray-400" />
                         </div>
@@ -160,7 +220,7 @@ export default function AuthPopup(props:any) {
                       <ErrorMessage
                         name="email"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
@@ -171,7 +231,7 @@ export default function AuthPopup(props:any) {
                       >
                         Password
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Lock className="h-5 w-5 text-gray-400" />
                         </div>
@@ -184,8 +244,17 @@ export default function AuthPopup(props:any) {
                       <ErrorMessage
                         name="password"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
+                    </div>
+                    <div className="text-right">
+                      <button
+                        type="button"
+                        className="text-sm text-purple-600 hover:text-purple-500"
+                        onClick={() => setActiveTab("forgotPassword")}
+                      >
+                        Forgot password?
+                      </button>
                     </div>
                     <button
                       type="submit"
@@ -197,7 +266,9 @@ export default function AuthPopup(props:any) {
                   </Form>
                 )}
               </Formik>
-            ) : (
+            )}
+
+            {activeTab === "register" && (
               <Formik
                 initialValues={{
                   fullName: "",
@@ -218,7 +289,7 @@ export default function AuthPopup(props:any) {
                       >
                         Name
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <User className="h-5 w-5 text-gray-400" />
                         </div>
@@ -230,54 +301,56 @@ export default function AuthPopup(props:any) {
                       <ErrorMessage
                         name="fullName"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Email
-                      </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          htmlFor="email"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Email
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Mail className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <Field
+                            name="email"
+                            className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          />
                         </div>
-                        <Field
+                        <ErrorMessage
                           name="email"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          component="div"
+                          className="mt-1 text-sm text-red-500"
                         />
                       </div>
-                      <ErrorMessage
-                        name="email"
-                        component="div"
-                        className="error text-red-500"
-                      />
-                    </div>
 
-                    <div>
-                      <label
-                        htmlFor="phone"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Phone
-                      </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Phone className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <label
+                          htmlFor="phone"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Phone
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Phone className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <Field
+                            name="phone"
+                            className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          />
                         </div>
-                        <Field
+                        <ErrorMessage
                           name="phone"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                          component="div"
+                          className="mt-1 text-sm text-red-500"
                         />
                       </div>
-                      <ErrorMessage
-                        name="phone"
-                        component="div"
-                        className="error text-red-500"
-                      />
                     </div>
 
                     <div>
@@ -287,7 +360,7 @@ export default function AuthPopup(props:any) {
                       >
                         Password
                       </label>
-                      <div className="mt-1 p-2 relative rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Lock className="h-5 w-5 text-gray-400" />
                         </div>
@@ -300,7 +373,7 @@ export default function AuthPopup(props:any) {
                       <ErrorMessage
                         name="password"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
@@ -314,47 +387,26 @@ export default function AuthPopup(props:any) {
                           </div>
                           <div className="w-full border-t border-gray-300 mt-2"></div>
                           <div className="flex justify-around mt-2">
-                            {/* Option 1 */}
-                            <div className="mb-4">
-                              <Field
-                                name="role"
-                                type="radio"
-                                value="ROLE_AGENT"
-                                className="form-radio h-5 w-5 text-blue-600"
-                              />
-                              <label className="ml-2 text-gray-700">
-                                Agent
-                              </label>
-                            </div>
-                            {/* Option 2 */}
-                            <div className="mb-4">
-                              <Field
-                                name="role"
-                                type="radio"
-                                value="ROLE_RESALER"
-                                className="form-radio h-5 w-5 text-blue-600"
-                              />
-                              <label className="ml-2 text-gray-700">
-                                Resaler
-                              </label>
-                            </div>
-                            {/* Option 3 */}
-                            <div className="mb-4">
-                              <Field
-                                name="role"
-                                type="radio"
-                                value="ROLE_USER"
-                                className="form-radio h-5 w-5 text-blue-600"
-                              />
-                              <label className="ml-2 text-gray-700">User</label>
-                            </div>
+                            {roles.map((role) => (
+                              <div key={role} className="mb-4">
+                                <Field
+                                  name="role"
+                                  type="radio"
+                                  value={role}
+                                  className="form-radio h-5 w-5 text-blue-600"
+                                />
+                                <label className="ml-2 text-gray-700">
+                                  {role.replace('ROLE_', '')}
+                                </label>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
                       <ErrorMessage
                         name="role"
                         component="div"
-                        className="error text-red-500"
+                        className="mt-1 text-sm text-red-500"
                       />
                     </div>
 
@@ -368,6 +420,155 @@ export default function AuthPopup(props:any) {
                   </Form>
                 )}
               </Formik>
+            )}
+
+            {activeTab === "forgotPassword" && (
+              <div>
+                <button
+                  onClick={() => setActiveTab("login")}
+                  className="mb-4 flex items-center text-sm text-gray-600 hover:text-gray-800"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Back to Login
+                </button>
+                {resetStep === "email" && (
+                  <Formik
+                    initialValues={{ email: "" }}
+                    validationSchema={forgotPasswordSchema}
+                    onSubmit={(values) => handleForgotPassword(values)}
+                  >
+                    {({ errors, touched, isSubmitting }) => (
+                      <Form className="space-y-4">
+                        <div>
+                          <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Email
+                          </label>
+                          <div className="mt-1 relative rounded-md shadow-sm">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Mail className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <Field
+                              name="email"
+                              className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                              placeholder="Enter your email"
+                            />
+                          </div>
+                          <ErrorMessage
+                            name="email"
+                            component="div"
+                            className="mt-1 text-sm text-red-500"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          disabled={isSubmitting}
+                        >
+                          Send Reset Email
+                        </button>
+                      </Form>
+                    )}
+                  </Formik>
+                )}
+                {resetStep === "otp" && (
+                  <Formik
+                    initialValues={{ otp: "",email:"",password:"",confirmPassword:"", }}
+                    validationSchema={otpSchema}
+                    onSubmit={(values) => handleOTPVerification(values)}
+                  >
+                    {({ errors, touched, isSubmitting }) => (
+                      <Form className="space-y-4">
+                         <div>
+                          <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Email
+                          </label>
+                          <div className="mt-1 relative rounded-md shadow-sm">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Mail className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <Field
+                              name="email"
+                              className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                              placeholder="Enter your email"
+                            />
+                          </div>
+                          <ErrorMessage
+                            name="email"
+                            component="div"
+                            className="mt-1 text-sm text-red-500"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="otp"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Enter OTP
+                          </label>
+                          <Field
+                            name="otp"
+                            className="block w-full sm:text-sm border-gray-300 rounded-md"
+                          />
+                          <ErrorMessage
+                            name="otp"
+                            component="div"
+                            className="mt-1 text-sm text-red-500"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            New Password
+                          </label>
+                          <Field
+                            name="password"
+                            type="password"
+                            className="block w-full sm:text-sm border-gray-300 rounded-md"
+                          />
+                          <ErrorMessage
+                            name="password"
+                            component="div"
+                            className="mt-1 text-sm text-red-500"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="confirmPassword"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Confirm New Password
+                          </label>
+                          <Field
+                            name="confirmPassword"
+                            type="password"
+                            className="block w-full sm:text-sm border-gray-300 rounded-md"
+                          />
+                          <ErrorMessage
+                            name="confirmPassword"
+                            component="div"
+                            className="mt-1 text-sm text-red-500"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          disabled={isSubmitting}
+                        >
+                          Verify OTP
+                        </button>
+                      </Form>
+                    )}
+                  </Formik>
+                )}
+              </div>
             )}
           </div>
         </div>

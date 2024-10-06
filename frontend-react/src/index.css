@@ -47,6 +47,14 @@
     background-color: rgba(0, 0, 0, 0.7);
   }
 
+  .lineclamp1 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: inherit;  
+    overflow: hidden;
+  }
 
 /* For extra small screens (mobile) */
 @media (max-width: 640px) {
@@ -67,3 +75,16 @@
 input:focus { 
   outline: none !important;
 }
+
+/* phone view strat  */
+
+@media screen and (max-width: 600px){
+
+  .phone-non{
+    display: none;
+  }
+
+}
+
+
+/* phone view end  */

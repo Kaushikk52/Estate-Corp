@@ -18,6 +18,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class PropertyServices {
@@ -43,6 +44,12 @@ public class PropertyServices {
     public Property saveProperty(Property property, Principal principal) throws IOException {
         Address savedAddress = addressRepo.save(property.getAddress());
         User currentUser = (User) userServ.loadUserByUsername(principal.getName());
+        if(Objects.equals(currentUser.getRole().toString(), "ROLE_ADMIN")){
+            PropertyDetails details = property.getDetails();
+            details.setIsApproved(true);
+            property.setDetails(details);
+
+        }
         property.setOwner(currentUser);
         property.setCreatedAt(new Date());
         property.setUpdatedAt(new Date());
@@ -63,8 +70,12 @@ public class PropertyServices {
         return propertyRepo.findByName(name);
     }
 
-    public List<Property> getPropertiesByCityAndBedrooms(String city,int bedrooms){
-        return propertyRepo.findByDetailsCityAndDetailsBedrooms(city,bedrooms);
+    public List<Property> getPropertiesByLocationAndBedrooms(String city,int bedrooms){
+        return propertyRepo.findByDetailsLocationAndDetailsBedrooms(city,bedrooms);
+    }
+
+    public List<Property> getApprovedPropertiesByLocationAndBedrooms(boolean isApproved,String location,int bedrooms){
+        return propertyRepo.findByDetailsIsApprovedAndDetailsLocationAndDetailsBedrooms(isApproved,location,bedrooms);
     }
 
     public List<Property> getPropertiesByApprovalStatus(boolean isApproved){

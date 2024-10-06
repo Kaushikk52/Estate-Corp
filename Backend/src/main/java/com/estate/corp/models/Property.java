@@ -1,15 +1,21 @@
 package com.estate.corp.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 import java.util.UUID;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
-@Data
+@Table
 public class Property {
     @Id
     private String id;
@@ -36,7 +42,7 @@ public class Property {
     @NotNull(message = "Owner cannot be null")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id",nullable = true)
-    @JsonIgnore
+    @JsonIgnoreProperties({"properties","projects"})
     private User owner;
 
     @Embedded

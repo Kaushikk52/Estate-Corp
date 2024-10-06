@@ -1,40 +1,85 @@
-import React, { useState, KeyboardEvent } from 'react'
-import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon } from 'lucide-react'
-import { motion } from 'framer-motion'
+import React, { useState } from 'react'
+import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon, FilterIcon, Scaling, RefreshCw } from 'lucide-react'
 
-export default function Component() {
+interface FilterProps {
+  onFilterChange: (filters: FilterState) => void;
+}
+
+interface FilterState {
+  locations: string[];
+  bedrooms: number[];
+  minPrice: string;
+  maxPrice: string;
+  amtUnit: string;
+  minCarpetArea: string;
+  maxCarpetArea: string;
+  areaUnit: string;
+}
+
+interface LocationGroup {
+  label: string;
+  options: string[];
+}
+
+export default function Filter({ onFilterChange }: FilterProps) {
   const [locations, setLocations] = useState<string[]>([])
-  const [currentLocation, setCurrentLocation] = useState('')
-  const [bedrooms, setBedrooms] = useState<string[]>([])
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
+  const [bedrooms, setBedrooms] = useState<number[]>([])
   const [isBedroomDropdownOpen, setIsBedroomDropdownOpen] = useState(false)
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
   const [isCarpetAreaDropdownOpen, setIsCarpetAreaDropdownOpen] = useState(false)
-  const [priceMin, setPriceMin] = useState('')
-  const [priceMax, setPriceMax] = useState('')
-  const [carpetAreaMin, setCarpetAreaMin] = useState('')
-  const [carpetAreaMax, setCarpetAreaMax] = useState('')
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
+  const [amtUnit, setAmtUnit] = useState('K')
+  const [minCarpetArea, setMinCarpetArea] = useState('')
+  const [maxCarpetArea, setMaxCarpetArea] = useState('')
+  const [areaUnit, setAreaUnit] = useState('sqft')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
-  const bedroomOptions = ['1BHK', '2BHK', '3BHK', '4BHK', '5BHK', '5+BHK']
-  const priceOptions = ['5 Lacs', '10 Lacs', '20 Lacs', '30 Lacs', '40 Lacs', '50 Lacs', '60 Lacs', '70 Lacs', '80 Lacs', '90 Lacs', '1 Cr', '1.5 Cr', '2 Cr', '2.5 Cr', '3 Cr', '4 Cr', '5 Cr', '10 Cr', '20 Cr']
+  const bedroomOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const priceOptions = ['1', '5', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100']
   const carpetAreaOptions = ['500', '1000', '1500', '2000', '2500', '3000', '3500', '4000', '4500', '5000', '5500', '6000', '7000', '8000', '9000', '10000']
-
-  const titleWords = [
-    ["FIND", "YOUR", "HOME"],
-    ["SUITABLE", "TO", "YOUR", "NEEDS"]
+  const amtUnitOptions = ['K', 'L', 'Cr']
+  const carpetAreaUnitOptions = ['sqft', 'sqm', 'sqyd', 'acre']
+  const locationGroups: LocationGroup[] = [
+    {
+      label: "- Bhayandar",
+      options: ["Bhayandar East", "Bhayandar West"]
+    },
+    {
+      label: "- Mira Road",
+      options: ["Mira Road East"]
+    },
+    {
+      label: "- Dahisar",
+      options: ["Dahisar East", "Dahisar West"]
+    },
+    {
+      label: "- Borivali",
+      options: ["Borivali East", "Borivali West"]
+    },
+    {
+      label: "- Malad",
+      options: ["Malad East", "Malad West"]
+    },
+    {
+      label: "- Goregaon",
+      options: ["Goregaon East", "Goregaon West"]
+    }
   ]
 
-  const handleAddLocation = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && currentLocation.trim()) {
-      setLocations([...locations, currentLocation.trim()])
-      setCurrentLocation('')
+  const handleAddLocation = (location: string) => {
+    if (!locations.includes(location)) {
+      setLocations([...locations, location])
     }
+    setIsLocationDropdownOpen(false)
   }
 
   const handleRemoveLocation = (locationToRemove: string) => {
-    setLocations(locations.filter(loc => loc !== locationToRemove))
+    setLocations(locations.filter(location => location !== locationToRemove))
   }
 
-  const handleToggleBedroom = (option: string) => {
+  const handleBedroomToggle = (option: number) => {
     if (bedrooms.includes(option)) {
       setBedrooms(bedrooms.filter(bed => bed !== option))
     } else {
@@ -44,227 +89,297 @@ export default function Component() {
 
   const handlePriceSelect = (value: string, isMin: boolean) => {
     if (isMin) {
-      setPriceMin(value)
+      setMinPrice(value)
     } else {
-      setPriceMax(value)
+      setMaxPrice(value)
       setIsPriceDropdownOpen(false)
     }
   }
 
   const handleCarpetAreaSelect = (value: string, isMin: boolean) => {
     if (isMin) {
-      setCarpetAreaMin(value)
+      setMinCarpetArea(value)
     } else {
-      setCarpetAreaMax(value)
+      setMaxCarpetArea(value)
       setIsCarpetAreaDropdownOpen(false)
     }
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
+  const applyFilters = () => {
+    const filters: FilterState = {
+      locations,
+      bedrooms,
+      minPrice,
+      maxPrice,
+      amtUnit,
+      minCarpetArea,
+      maxCarpetArea,
+      areaUnit
+    }
+    onFilterChange(filters)
   }
 
-  const wordVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
+  const clearFilters = () => {
+    setLocations([])
+    setBedrooms([])
+    setMinPrice('')
+    setMaxPrice('')
+    setAmtUnit('K')
+    setMinCarpetArea('')
+    setMaxCarpetArea('')
+    setAreaUnit('sqft')
+    onFilterChange({
+      locations: [],
+      bedrooms: [],
+      minPrice: '',
+      maxPrice: '',
+      amtUnit: 'K',
+      minCarpetArea: '',
+      maxCarpetArea: '',
+      areaUnit: 'sqft'
+    })
   }
 
   return (
     <div className="max-w-6xl mx-auto mt-5">
-      <div className="relative h-[400px] mb-6 rounded-xl overflow-hidden bg-[#d0d9e6]">
-        <img 
-          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-          alt="Modern furniture" 
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.h1 
-            className="text-6xl font-bold text-white text-center leading-tight drop-shadow-lg text-opacity-80"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {titleWords.map((line, lineIndex) => (
-              <motion.div key={lineIndex} className="mb-2">
-                {line.map((word, wordIndex) => (
-                  <motion.span
-                    key={wordIndex}
-                    variants={wordVariants}
-                    className="inline-block mr-4"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </motion.div>
-            ))}
-          </motion.h1>
-        </div>
-      </div>
-      <div className="max-w-6xl mx-auto mt-10 px-4">
-      <div className="flex flex-wrap items-center bg-white rounded-full shadow-lg p-2 border border-zinc-500">
-        <div className="flex items-center flex-1 min-w-0 px-4 py-2">
-          <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-          <div className="flex flex-wrap items-center gap-2 w-full">
-            {locations.map((loc) => (
-              <span key={loc} className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-sm flex items-center">
-                {loc}
-                <XIcon 
-                  className="h-4 w-4 ml-1 cursor-pointer" 
-                  onClick={() => handleRemoveLocation(loc)}
-                />
-              </span>
-            ))}
-            <input
-              type="text"
-              placeholder={locations.length ? "Add more" : "Location"}
-              value={currentLocation}
-              onChange={(e) => setCurrentLocation(e.target.value)}
-              onKeyPress={handleAddLocation}
-              className="flex-grow min-w-[100px] focus:outline-none"
-            />
-          </div>
-        </div>
-        <div className="flex items-center flex-1 min-w-0 px-4 py-2 border-l border-gray-300 relative">
-          <BedDoubleIcon className="h-5 w-5 text-gray-400 mr-2" />
-          <div className="flex flex-wrap items-center gap-2 w-full">
-            {bedrooms.map((bed) => (
-              <span key={bed} className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-sm flex items-center">
-                {bed}
-                <XIcon 
-                  className="h-4 w-4 ml-1 cursor-pointer" 
-                  onClick={() => handleToggleBedroom(bed)}
-                />
-              </span>
-            ))}
+      <div className="mx-auto mt-10 px-4">
+        <div className="bg-white rounded-3xl shadow-lg p-4 border border-zinc-500">
+          <div className="md:hidden flex items-center justify-between sm:mb-0">
             <button
-              onClick={() => setIsBedroomDropdownOpen(!isBedroomDropdownOpen)}
-              className="flex items-center text-gray-700 focus:outline-none"
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="w-3/4 bg-gray-100 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center mb-2"
             >
-              {bedrooms.length === 0 ? 'Bedrooms' : 'Add more'}
-              <ChevronDownIcon className="h-4 w-4 ml-1" />
+              <FilterIcon className="h-5 w-5 mr-2" />
+              {isFilterOpen ? 'Hide Filters' : 'Show Filters'}
+            </button>
+            <button 
+              onClick={applyFilters}
+              className="w-1/5 bg-blue-500 text-white px-4 py-2 rounded-full flex items-center justify-center"
+            >
+              <SearchIcon className="h-5 w-5" />
+            </button>
+            <button 
+              onClick={clearFilters}
+              className="w-1/5 bg-gray-200 text-gray-700 px-4 py-2 rounded-full flex items-center justify-center"
+            >
+              <RefreshCw className="h-5 w-5 mr-2" />
             </button>
           </div>
-          {isBedroomDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                {bedroomOptions.map((option) => (
+          <div className={`md:flex md:items-center md:space-x-4 ${isFilterOpen ? '' : 'hidden md:flex'}`}>
+            <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
+              <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
+                <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
+                <div className="flex flex-wrap items-center gap-2 w-full">
+                  {locations.map((location) => (
+                    <span key={location} className="bg-white text-gray-700 px-2 py-1 rounded-full text-sm flex items-center">
+                      {location}
+                      <XIcon 
+                        className="h-4 w-4 ml-1 cursor-pointer" 
+                        onClick={() => handleRemoveLocation(location)}
+                      />
+                    </span>
+                  ))}
                   <button
-                    key={option}
-                    onClick={() => handleToggleBedroom(option)}
-                    className={`${
-                      bedrooms.includes(option) ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                    } block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900`}
-                    role="menuitem"
+                    onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                    className="flex items-center text-gray-700 focus:outline-none"
                   >
-                    {option}
+                    {locations.length === 0 ? 'Location' : 'Add more'}
+                    <ChevronDownIcon className="h-4 w-4 ml-1" />
                   </button>
-                ))}
+                </div>
+                {isLocationDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      <button
+                        onClick={() => setIsLocationDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
+                        role="menuitem"
+                      >
+                        Select location
+                      </button>
+                      {locationGroups.map((group) => (
+                        <div key={group.label}>
+                          <div className="px-4 py-2 text-xs font-semibold text-gray-500">{group.label}</div>
+                          {group.options.map((option) => (
+                            <button
+                              key={option}
+                              onClick={() => handleAddLocation(option)}
+                              className={`${
+                                locations.includes(option) ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                              } block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900`}
+                              role="menuitem"
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-        </div>
-        <div className="flex items-center flex-1 min-w-0 px-4 py-2 border-l border-gray-300 relative">
-          <IndianRupeeIcon className="h-5 w-5 text-gray-400 mr-2" />
-          <button
-            onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
-            className="flex items-center text-gray-700 focus:outline-none"
-          >
-            {priceMin && priceMax ? `${priceMin} - ${priceMax}` : priceMin ? `${priceMin}+` : 'Price'}
-            <ChevronDownIcon className="h-4 w-4 ml-1" />
-          </button>
-          {isPriceDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                {!priceMin && (
-                  <div className="px-4 py-2 text-sm text-gray-700">Min Price</div>
+            <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
+              <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
+                <BedDoubleIcon className="h-5 w-5 text-gray-400 mr-2" />
+                <button
+                  onClick={() => setIsBedroomDropdownOpen(!isBedroomDropdownOpen)}
+                  className="flex items-center text-gray-700 focus:outline-none"
+                >
+                  {bedrooms.length > 0 ? `${bedrooms.join(', ')} BHK` : 'Bedrooms'}
+                  <ChevronDownIcon className="h-4 w-4 ml-1" />
+                </button>
+                {isBedroomDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      {bedroomOptions.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handleBedroomToggle(option)}
+                          className={`${
+                            bedrooms.includes(option) ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                          } block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 hover:text-gray-900`}
+                          role="menuitem"
+                        >
+                          {option} BHK
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                {!priceMin && priceOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handlePriceSelect(option, true)}
-                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
-                    role="menuitem"
-                  >
-                    {option}
-                  </button>
-                ))}
-                {priceMin && !priceMax && (
-                  <div className="px-4 py-2 text-sm text-gray-700">Max Price</div>
-                )}
-                {priceMin && !priceMax && priceOptions.filter(option => option > priceMin).map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handlePriceSelect(option, false)}
-                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
-                    role="menuitem"
-                  >
-                    {option}
-                  </button>
-                ))}
               </div>
             </div>
-          )}
-        </div>
-        <div className="flex items-center flex-1 min-w-0 px-4 py-2 border-l border-gray-300 relative">
-          <button
-            onClick={() => setIsCarpetAreaDropdownOpen(!isCarpetAreaDropdownOpen)}
-            className="flex items-center text-gray-700 focus:outline-none"
-          >
-            {carpetAreaMin && carpetAreaMax ? `${carpetAreaMin} - ${carpetAreaMax} sq ft` : carpetAreaMin ? `${carpetAreaMin}+ sq ft` : 'Carpet Area'}
-            <ChevronDownIcon className="h-4 w-4 ml-1" />
-          </button>
-          {isCarpetAreaDropdownOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                {!carpetAreaMin && (
-                  <div className="px-4 py-2 text-sm text-gray-700">Min Area (sq ft)</div>
+            <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
+              <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
+                <IndianRupeeIcon className="h-5 w-5 text-gray-400 mr-2" />
+                <button
+                  onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
+                  className="flex items-center text-gray-700 focus:outline-none"
+                >
+                  {minPrice && maxPrice ? `${minPrice} - ${maxPrice} ${amtUnit}` : minPrice ? `${minPrice}+ ${amtUnit}` : 'Price'}
+                  <ChevronDownIcon className="h-4 w-4 ml-1" />
+                </button>
+                {isPriceDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      <div className="px-4 py-2 text-sm text-gray-700">Amount Unit</div>
+                      <div className="flex justify-around mb-2">
+                        {amtUnitOptions.map((unit) => (
+                          <button
+                            key={unit}
+                            onClick={() => setAmtUnit(unit)}
+                            className={`px-2 py-1 rounded ${amtUnit === unit ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                          >
+                            {unit}
+                          </button>
+                        ))}
+                      </div>
+                      {!minPrice && (
+                        <div className="px-4 py-2 text-sm text-gray-700">Min Price</div>
+                      )}
+                      {!minPrice && priceOptions.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handlePriceSelect(option, true)}
+                          className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
+                          role="menuitem"
+                        >
+                          {parseInt(option).toLocaleString()} {amtUnit}
+                        </button>
+                      ))}
+                      {minPrice && !maxPrice && (
+                        <div className="px-4 py-2 text-sm text-gray-700">Max Price</div>
+                      )}
+                      {minPrice && !maxPrice && priceOptions.filter(option => parseInt(option) > parseInt(minPrice)).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handlePriceSelect(option, false)}
+                          className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
+                          role="menuitem"
+                        >
+                          {parseInt(option).toLocaleString()} {amtUnit}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
-                {!carpetAreaMin && carpetAreaOptions.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handleCarpetAreaSelect(option, true)}
-                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
-                    role="menuitem"
-                  >
-                    {option}
-                  </button>
-                ))}
-                {carpetAreaMin && !carpetAreaMax && (
-                  <div className="px-4 py-2 text-sm text-gray-700">Max Area (sq ft)</div>
-                )}
-                {carpetAreaMin && !carpetAreaMax && carpetAreaOptions.filter(option => parseInt(option) > parseInt(carpetAreaMin)).map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handleCarpetAreaSelect(option, false)}
-                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
-                    role="menuitem"
-                  >
-                    {option}
-                  </button>
-                ))}
               </div>
             </div>
-          )}
+            <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
+              <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
+                <Scaling className="h-5 w-5 text-gray-400 mr-2" />
+                <button
+                  onClick={() => setIsCarpetAreaDropdownOpen(!isCarpetAreaDropdownOpen)}
+                  className="flex items-center text-gray-700 focus:outline-none"
+                >
+                  {minCarpetArea && maxCarpetArea ? `${minCarpetArea} - ${maxCarpetArea} ${areaUnit}` : minCarpetArea ? `${minCarpetArea}+ ${areaUnit}` : 'Area'}
+                  <ChevronDownIcon className="h-4 w-4 ml-1" />
+                </button>
+                {isCarpetAreaDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                      <div className="px-4 py-2 text-sm text-gray-700">Area Unit</div>
+                      <div className="flex flex-wrap justify-around mb-2">
+                        {carpetAreaUnitOptions.map((unit) => (
+                          <button
+                            key={unit}
+                            onClick={() => setAreaUnit(unit)}
+                            className={`px-2 py-1 rounded mb-1 ${areaUnit === unit ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                          >
+                            {unit}
+                          </button>
+                        ))}
+                      </div>
+                      {!minCarpetArea && (
+                        <div className="px-4 py-2 text-sm text-gray-700">Min Area</div>
+                      )}
+                      {!minCarpetArea && carpetAreaOptions.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handleCarpetAreaSelect(option, true)}
+                          className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
+                          role="menuitem"
+                        >
+                          {option} {areaUnit}
+                        </button>
+                      ))}
+                      {minCarpetArea && !maxCarpetArea && (
+                        <div className="px-4 py-2 text-sm text-gray-700">Max Area</div>
+                      )}
+                      {minCarpetArea && !maxCarpetArea && carpetAreaOptions.filter(option => parseInt(option) > parseInt(minCarpetArea)).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => handleCarpetAreaSelect(option, false)}
+                          className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
+                          role="menuitem"
+                        >
+                          {option} {areaUnit}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="hidden md:flex space-x-2">
+              <button 
+                onClick={applyFilters}
+                className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
+              >
+                <SearchIcon className="h-5 w-5 mr-2" />
+                Search
+              </button>
+              <button 
+                onClick={clearFilters}
+                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
+              >
+                <RefreshCw className="h-5 w-5 mr-2" />
+                Clear
+              </button>
+            </div>
+          </div>
         </div>
-        <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center">
-          <SearchIcon className="h-5 w-5 mr-2" />
-          Search
-        </button>
       </div>
-    </div>
     </div>
   )
 }

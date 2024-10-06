@@ -1,5 +1,4 @@
 package com.estate.corp.specifications;
-
 import com.estate.corp.models.Property;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
@@ -14,12 +13,17 @@ public class PropertySpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Add predicates based on the non-null filters
+            // Always filter for approved properties
+            predicates.add(criteriaBuilder.equal(root.get("details").get("isApproved"), true));
+
+            // Handle bedrooms (List of values)
             if (filters.containsKey("bedrooms")) {
-                Integer bedrooms = (Integer) filters.get("bedrooms");
-                predicates.add(criteriaBuilder.equal(root.get("details").get("bedrooms"), bedrooms));
+                List<Integer> bedrooms = (List<Integer>) filters.get("bedrooms");
+                Predicate bedroomPredicate = root.get("details").get("bedrooms").in(bedrooms);
+                predicates.add(bedroomPredicate);
             }
 
+            // Handle price filters
             if (filters.containsKey("minPrice")) {
                 Double minPrice = (Double) filters.get("minPrice");
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("details").get("price"), minPrice));
@@ -30,12 +34,20 @@ public class PropertySpecification {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("details").get("price"), maxPrice));
             }
 
-            if (filters.containsKey("cities")) {
-                List<String> cities = (List<String>) filters.get("cities");
-//                predicates.add(root.join("project").join("address").get("city").in(cities));
-                predicates.add(root.join("details").get("city").in(cities));
+            // Handle amtUnit filter (inside details embeddable)
+            if (filters.containsKey("amtUnit")) {
+                String amtUnit = (String) filters.get("amtUnit");
+                Predicate amtUnitPredicate = criteriaBuilder.equal(root.get("details").get("amtUnit"), amtUnit);
+                predicates.add(amtUnitPredicate);
             }
 
+            // Handle cities (OR condition if multiple cities)
+            if (filters.containsKey("locations")) {
+                List<String> locations = (List<String>) filters.get("locations");
+                predicates.add(root.join("details").get("location").in(locations));
+            }
+
+            // Handle carpet area filters
             if (filters.containsKey("minCarpetArea")) {
                 Double minCarpetArea = (Double) filters.get("minCarpetArea");
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("details").get("carpetArea"), minCarpetArea));
@@ -44,6 +56,13 @@ public class PropertySpecification {
             if (filters.containsKey("maxCarpetArea")) {
                 Double maxCarpetArea = (Double) filters.get("maxCarpetArea");
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("details").get("carpetArea"), maxCarpetArea));
+            }
+
+            // Correcting area unit check - ensure you check against areaUnit, not carpetArea
+            if (filters.containsKey("areaUnit")) {
+                String areaUnit = (String) filters.get("areaUnit");
+                Predicate areaUnitPredicate = criteriaBuilder.equal(root.get("details").get("areaUnit"), areaUnit);
+                predicates.add(areaUnitPredicate);
             }
 
             // Combine all predicates with AND operator

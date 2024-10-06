@@ -1,114 +1,235 @@
-import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin } from 'lucide-react'
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
+import axios from 'axios'
+import { motion, AnimatePresence } from 'framer-motion'
+import Filter from '../../Home/Filter'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, A11y } from 'swiper/modules'
+import type { Swiper as SwiperType } from 'swiper'
 
-const properties = [
-  { id: 1, name: "Sunset Villa", type: "House", price: 500000, bedrooms: 4, bathrooms: 3, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Malibu, CA", status: "Ready to Move", images: 12 },
-  { id: 2, name: "Urban Loft", type: "Apartment", price: 300000, bedrooms: 2, bathrooms: 2, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "New York, NY", status: "Under Construction", images: 8 },
-  { id: 3, name: "Seaside Cottage", type: "House", price: 450000, bedrooms: 3, bathrooms: 2, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Cape Cod, MA", status: "Ready to Move", images: 15 },
-  { id: 4, name: "Mountain Retreat", type: "Cabin", price: 350000, bedrooms: 2, bathrooms: 1, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Aspen, CO", status: "Ready to Move", images: 10 },
-  { id: 5, name: "Downtown Condo", type: "Apartment", price: 275000, bedrooms: 1, bathrooms: 1, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Chicago, IL", status: "Under Construction", images: 6 },
-  { id: 6, name: "Suburban Family Home", type: "House", price: 550000, bedrooms: 5, bathrooms: 3, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80", location: "Austin, TX", status: "Ready to Move", images: 20 },
-]
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/navigation'
+
+interface Property {
+  id: string;
+  name: string;
+  images: string[];
+  type: string;
+  address: {
+    street: string;
+    locality: string;
+    landmark: string;
+    zipCode: string;
+  };
+  details: {
+    bedrooms: number;
+    bathrooms: number;
+    carpetArea: string;
+    areaUnit: string;
+    rent: number;
+    price: number;
+    amtUnit: string;
+    isNegotiable: string;
+    furnishedStatus: string;
+    location: string;
+  };
+}
+
+interface FilterState {
+  locations: string[];
+  bedrooms: number[];
+  minPrice: string;
+  maxPrice: string;
+  amtUnit: string;
+  minCarpetArea: string;
+  maxCarpetArea: string;
+  areaUnit: string;
+}
 
 export default function PropertyCardsCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [visibleCards, setVisibleCards] = useState(3)
+  const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
   useEffect(() => {
-    const updateVisibleCards = () => {
-      const width = window.innerWidth;
-      let newVisibleCards;
-      if (width < 640) newVisibleCards = 1;
-      else if (width < 1024) newVisibleCards = 2;
-      else newVisibleCards = 3;
-      
-      if (newVisibleCards !== visibleCards) {
-        setVisibleCards(newVisibleCards);
-        setCurrentIndex(0); 
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async (filters?: FilterState) => {
+    setLoading(true);
+    setError(null);
+    try {
+      let url = `${baseURL}/v1/api/properties/filter?`;
+      if (filters) {
+        if (filters.locations.length > 0)
+          url += `locations=${filters.locations.join(",")}&`;
+        if (filters.bedrooms.length > 0)
+          url += `bedrooms=${filters.bedrooms.join(",")}&`;
+        if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
+        if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
+        if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
+        if (filters.minCarpetArea)
+          url += `minCarpetArea=${filters.minCarpetArea}&`;
+        if (filters.maxCarpetArea)
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
+      } else {
+        url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
       }
-    };
-  
-    updateVisibleCards();
-    window.addEventListener('resize', updateVisibleCards);
-    return () => window.removeEventListener('resize', updateVisibleCards);
-  }, [visibleCards]);
-  
+      const response = await axios.get(url);
+      setProperties(response.data.properties);
+    } catch (err) {
+      console.error("An error occurred: ", err);
+      setError("Failed to fetch properties. Please try again.");
+      toast.error("Failed to fetch properties");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      Math.min(prevIndex + 1, properties.length - visibleCards)
-    )
-  }
+  const handlePropertyClick = (propertyId: string) => {
+    navigate(`/property/${propertyId}`);
+  };
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0))
-  }
+  const handleFilterChange = (filters: FilterState) => {
+    fetchProperties(filters);
+  };
+
+  const handlePrev = () => {
+    if (swiper) {
+      swiper.slidePrev();
+    }
+  };
+
+  const handleNext = () => {
+    if (swiper) {
+      swiper.slideNext();
+    }
+  };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-purple-700">Featured Properties</h2>
-      <div className="relative">
-        <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md"
-          onClick={prevSlide}
-          disabled={currentIndex === 0}
-          aria-label="Previous property"
-        >
-          <ChevronLeft className="h-6 w-6 text-purple-700" />
-        </button>
-        <div className="overflow-hidden">
-          <div className="flex gap-4 transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentIndex * (107 / visibleCards)}%)` }}>
+    <>
+      <Filter onFilterChange={handleFilterChange}/>
+      <div className="w-full max-w-6xl mx-auto px-4 py-8">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Latest Properties</h2>
+        <div className="relative">
+          <Swiper
+            modules={[Navigation, A11y]}
+            spaceBetween={20}
+            slidesPerView={1}
+            navigation={false}
+            onSwiper={setSwiper}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+              },
+              1024: {
+                slidesPerView: 3,
+              },
+            }}
+          >
             {properties.map((property) => (
-              <div key={property.id} className={`w-full flex-shrink-0 ${visibleCards === 1 ? 'w-full' : visibleCards === 2 ? 'sm:w-3/5' : 'sm:w-3/5 lg:w-1/3'}`}>
-
-                <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-                  <div className="relative">
-                    <img src={property.image} alt={property.name} className="w-full h-48 object-cover" />
-                    <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
-                      <Camera className="h-3 w-3 mr-1" />
-                      {property.images}
+              <SwiperSlide key={property.id}>
+                <AnimatePresence>
+                  <motion.div
+                    className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -50 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="relative">
+                      <img 
+                        src={property.images.length > 0 ? property.images[0] : defaultImg} 
+                        alt={property.name} 
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
+                        <Camera className="h-3 w-3 mr-1" />
+                        {property.images.length}
+                      </div>
+                      <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${property.details.isNegotiable === 'YES' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                        {property.details.isNegotiable === "YES" ? "Negotiable" : "Not Negotiable"}
+                      </div>
+                      <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                        property.details.furnishedStatus === 'FURNISHED' ? 'bg-green-500 text-white' : 
+                        property.details.furnishedStatus === "SEMIFURNISHED" ? 'bg-yellow-500 text-white' : 
+                        'bg-red-500 text-white'
+                      }`}>
+                        {property.details.furnishedStatus}
+                      </div>
                     </div>
-                    <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${property.status === 'Ready to Move' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black'}`}>
-                      {property.status}
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-blue-700 truncate">{property.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1 flex items-center line-clamp-1">
+                        <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
+                        <span className="truncate">
+                          {property.address.street} {property.address.locality} {property.details.location} {property.address.landmark} - {property.address.zipCode}
+                        </span>
+                      </p>
+                      {property.type === "RENT" ? 
+                        <p className="text-xl font-bold text-blue-600 mt-2">Rs. {property.details.rent.toLocaleString()} {property.details.amtUnit} /monthly</p> :
+                        <p className="text-xl font-bold text-blue-600 mt-2">Rs. {property.details.price.toLocaleString()} {property.details.amtUnit}</p>
+                      }
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <Home className="h-3 w-3 mr-1" /> {property.type}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <Scaling className="h-3 w-3 mr-1" /> {property.details.carpetArea} {property.details.areaUnit}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <Bed className="h-3 w-3 mr-1" /> {property.details.bedrooms}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <Bath className="h-3 w-3 mr-1" /> {property.details.bathrooms}
+                        </span>
+                      </div>
+                      <motion.button 
+                        className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-md transition-colors duration-300"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handlePropertyClick(property.id)}
+                      >
+                        View Details
+                      </motion.button>
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-purple-700 truncate">{property.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1 flex items-center">
-                      <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                      {property.location}
-                    </p>
-                    <p className="text-xl font-bold text-purple-600 mt-2">${property.price.toLocaleString()}</p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Home className="h-3 w-3 mr-1" /> {property.type}
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Bed className="h-3 w-3 mr-1" /> {property.bedrooms}
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        <Bath className="h-3 w-3 mr-1" /> {property.bathrooms}
-                      </span>
-                    </div>
-                    <button className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-md transition-colors duration-300">
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              </div>
+                  </motion.div>
+                </AnimatePresence>
+              </SwiperSlide>
             ))}
+          </Swiper>
+          <div className="absolute top-0 left-0 bottom-0 right-0 pointer-events-none">
+            <div className="flex justify-between items-center h-full">
+              <motion.button
+                className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
+                onClick={handlePrev}
+                aria-label="Previous property"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronLeft className="h-6 w-6 text-blue-700" />
+              </motion.button>
+              <motion.button
+                className="pointer-events-auto z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md transition-colors duration-300"
+                onClick={handleNext}
+                aria-label="Next property"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronRight className="h-6 w-6 text-blue-700" />
+              </motion.button>
+            </div>
           </div>
         </div>
-        <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white bg-opacity-50 hover:bg-opacity-75 p-2 rounded-full shadow-md"
-          onClick={nextSlide}
-          disabled={currentIndex >= properties.length - visibleCards}
-          aria-label="Next property"
-        >
-          <ChevronRight className="h-6 w-6 text-purple-700" />
-        </button>
       </div>
-    </div>
+    </>
   )
 }

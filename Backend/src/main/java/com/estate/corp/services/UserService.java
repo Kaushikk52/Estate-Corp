@@ -19,6 +19,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import static com.estate.corp.models.User.UserRole.ROLE_ADMIN;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -74,9 +76,26 @@ public class UserService implements UserDetailsService {
         return users;
     }
 
+    public User getCurrentUserRole(Principal principal){
+        User currentUser = (User) this.loadUserByUsername(principal.getName());
+        return  currentUser;
+    }
+
     public User getUserById(String id){
         User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return user;
+    }
+
+    public List<Property> getUserProperties(Principal principal){
+        User currentUser = (User) this.loadUserByUsername(principal.getName());
+        List<Property> propertyList = currentUser.getProperties();
+        return propertyList;
+    }
+
+    public List<Property> getAdminProperties(){
+        User admin = userRepo.findByRole(ROLE_ADMIN);
+        List<Property> propertyList = admin.getProperties();
+        return propertyList;
     }
 
 

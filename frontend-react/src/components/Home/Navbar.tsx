@@ -1,5 +1,5 @@
-import React, { useState} from "react";
-import {useNavigate } from 'react-router-dom';
+import React, { useState,useEffect} from "react";
+import {Link,useNavigate } from 'react-router-dom';
 import { Search, User, Menu, X, ChevronDown, PlusSquare } from "lucide-react";
 import AuthPopup from "./AuthPopup";
 
@@ -10,13 +10,14 @@ const NavLink = ({
   href: string;
   children: React.ReactNode;
 }) => (
-  <a
-    href={href}
+
+  <Link
+    to={href}
     className="group relative text-base font-semibold text-gray-800 hover:text-gray-900"
   >
     {children}
     <span className="absolute left-0 bottom-0 h-0.5 w-0 bg-gray-800 transition-all duration-300 group-hover:w-full"></span>
-  </a>
+  </Link>
 );
 
 const DropdownLink = ({
@@ -26,12 +27,12 @@ const DropdownLink = ({
   href: string;
   children: React.ReactNode;
 }) => (
-  <a
-    href={href}
-    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+
+  <Link to={href}
+  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
   >
-    {children}
-  </a>
+  {children}
+  </Link>
 );
 
 export default function Navbar() {
@@ -39,7 +40,12 @@ export default function Navbar() {
   const [isResidentialsOpen, setIsResidentialsOpen] = useState(false);
   const [isCommercialsOpen, setIsCommercialsOpen] = useState(false);
   const [toggle,setToggle] = useState(false);
+  const [navigateTo,setNavigateTo] = useState("");
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    setToggle(false);
+  });
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -55,10 +61,11 @@ export default function Navbar() {
     if (isResidentialsOpen) setIsResidentialsOpen(false);
   };
 
-  const checkIfLogin = () => {
+  const checkIfLogin = (route:string) => {
     const token = localStorage.getItem('token')
+    setNavigateTo(route)
     if(token !== null && toggle === false){//user logged in and no popup
-      navigate('/dashboard/add-property')
+      navigate(route)
     }else if(token !== null && toggle === true){//user logged in and still popup
       setToggle(false);
     }else if(token === null){//user not logged in 
@@ -78,8 +85,8 @@ export default function Navbar() {
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <a
-              href="/"
+            <Link
+              to={"/"}
               className="text-xl font-semibold text-gray-800 uppercase flex items-center"
             >
               <img
@@ -88,8 +95,8 @@ export default function Navbar() {
                 height={70}
                 width={70}
               />
-              Estatecorp
-            </a>
+             <span className="phone-non"> Estatecorp</span>
+            </Link>
           </div>
           <div className="hidden md:flex items-center space-x-6">
             <NavLink href="/">Home</NavLink>
@@ -123,19 +130,19 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center space-x-4 cursor-pointer">
-            <a onClick={() => navigate('/dashboard/main')}>
+            <button onClick={() => checkIfLogin('/dashboard/main')}>
               <User size={20} />
-            </a>
+            </button>
 
-            <AuthPopup popup={toggle} />
+            <AuthPopup popup={toggle} navigateTo={navigateTo} />
             
             <div className="space-x-4">
               <button
                 className="group inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-md hover:bg-blue-600 transition-colors duration-200"
-                onClick={() => checkIfLogin()}
+                onClick={() => checkIfLogin('/dashboard/add-property')}
               >
                 <PlusSquare size={16} className="mr-2" />
-                Add Property
+               <span className="phone-non"> Add </span>Property
                 <span className="ml-1 text-xs bg-white px-1 rounded">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-300">
                     FREE
@@ -143,15 +150,6 @@ export default function Navbar() {
                 </span>
               </button>
             </div>
-
-            {/* <button
-              className="text-gray-600 hover:text-gray-800 transition-colors duration-200"
-              aria-label="Account"
-            >
-              <a href="/dashboard">
-                <User size={20} />
-              </a>
-            </button> */}
           </div>
         </div>
       </nav>
@@ -160,12 +158,12 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute left-0 right-0 top-full bg-white shadow-lg z-40">
           <div className="py-2">
-            <a
-              href="/"
+            <Link
+              to={"/"}
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
             >
               Home
-            </a>
+            </Link>
             <button
               onClick={toggleResidentials}
               className="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
@@ -180,18 +178,18 @@ export default function Navbar() {
             </button>
             {isResidentialsOpen && (
               <div className="bg-gray-50 py-2">
-                <a
-                  href="/residential/rent"
+                <Link
+                  to={"/residential/rent"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Rent
-                </a>
-                <a
-                  href="/residential/buy"
+                </Link>
+                <Link
+                  to={"/residential/buy"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Buy
-                </a>
+                </Link>
               </div>
             )}
             <button
@@ -208,32 +206,20 @@ export default function Navbar() {
             </button>
             {isCommercialsOpen && (
               <div className="bg-gray-50 py-2">
-                <a
-                  href="/commercial/rent"
+                <Link
+                  to={"/commercial/rent"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Rent
-                </a>
-                <a
-                  href="/commercial/buy"
+                </Link>
+                <Link
+                  to={"/commercial/buy"}
                   className="block px-8 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   Buy
-                </a>
+                </Link>
               </div>
             )}
-            <button
-                className="group inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-md hover:bg-blue-600 transition-colors duration-200"
-                onClick={() => checkIfLogin()}
-              >
-                <PlusSquare size={16} className="mr-2" />
-                Add Property
-                <span className="ml-1 text-xs bg-white px-1 rounded">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-300">
-                    FREE
-                  </span>
-                </span>
-              </button>
           </div>
         </div>
       )}
