@@ -1,7 +1,7 @@
 import React, { useState,useEffect} from "react";
 import {Link,useNavigate } from 'react-router-dom';
 import { Search, User, Menu, X, ChevronDown, PlusSquare } from "lucide-react";
-import AuthPopup from "./AuthPopup";
+import AuthPopup from "./Auth/AuthPopup";
 
 const NavLink = ({
   href,
