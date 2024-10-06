@@ -93,6 +93,7 @@ export default function LocationsCardsCarousel() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
+       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Explore</h2>
       <div className="flex justify-start mb-8 pb-2 overflow-x-auto scrollbar-hide">
         {filters.map((filter) => (
           <button
