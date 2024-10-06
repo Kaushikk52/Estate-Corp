@@ -1,6 +1,5 @@
 package com.estate.corp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -18,6 +17,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
 
@@ -66,14 +66,13 @@ public class User implements UserDetails {
     @PrePersist
     private void prePersist() {
         if (this.id == null) {
-            this.id = UUID.randomUUID().toString();  // Generate UUID for ID
+            this.id = UUID.randomUUID().toString();
         }
         if (this.role == null) {
-            this.role = UserRole.ROLE_USER;  // Default role to USER
+            this.role = UserRole.ROLE_USER;
         }
     }
 
-    // Override methods from UserDetails interface
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

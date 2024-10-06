@@ -48,7 +48,6 @@ public class ProjectService {
             project.setCreatedAt(new Date());
             project.setUpdatedAt(new Date());
             project.setAddress(savedAddress);
-            imageServ.saveImageToUrl(sourceUrl, destinationUrl, project.getImageName());
             Project savedProject= projectRepo.save(project);
             return savedProject;
         } catch (Exception e) {

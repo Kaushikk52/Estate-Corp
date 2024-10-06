@@ -9,11 +9,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Entity
 public class Project {
     @Id
     @Column(length = 36, nullable = false, unique = true) // UUID or unique ID with length constraint
@@ -29,7 +30,6 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String ownerName;
 
-    //    @NotNull(message = "Address cannot be null")
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
@@ -44,14 +44,10 @@ public class Project {
     @Column(nullable = true)
     private List<Property> properties;
 
-    @Column(name = "image_name")
-    private String imageName;
+    @Column(name = "images")
+    private String[] images;
 
-    private String city;
-
-//    @Lob
-//    @Column(name = "base64image",columnDefinition = "LONGTEXT")
-//    private String base64Image;
+    private String location;
 
     @Min(value = 1, message = "Total floors must be at least 1")
     @Max(value = 200, message = "Total floors cannot exceed 200")

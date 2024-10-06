@@ -6,12 +6,15 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Future;
-import lombok.Data;
+import lombok.*;
 
-import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Embeddable
 public class PropertyDetails {
     private int bedrooms;
@@ -23,7 +26,7 @@ public class PropertyDetails {
     private int floorNo;
 
     private String location;
-    //    private String boundaryWall;
+
     private List<String> ammenities;
     private String facing;
 
@@ -36,7 +39,11 @@ public class PropertyDetails {
 
     @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private String availability;
+    private String builtIn;
+
+    @Future
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private String possession;
 
     private double rent;
 
@@ -44,6 +51,9 @@ public class PropertyDetails {
     private double price;
 
     private String amtUnit;
+
+    @Column(name = "description")
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private PropertyDetails.IsNegotiable isNegotiable;

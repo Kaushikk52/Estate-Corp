@@ -1,5 +1,6 @@
 package com.estate.corp.controllers;
 
+import com.estate.corp.models.JwtResponse;
 import com.estate.corp.models.Property;
 import com.estate.corp.models.User;
 import com.estate.corp.services.UserService;
@@ -13,6 +14,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -23,14 +25,31 @@ public class UserController {
     private UserService userServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userServ.getAllUsers();
-        if (users.isEmpty()) {
+    public ResponseEntity<Map<String,Object>> getAllUsers() {
+        List<User> usersData = userServ.getAllUsers();
+        Map<String,Object> response = new HashMap<>();
+        if (usersData.isEmpty()) {
             log.warn("User repository is Empty");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(users);
+            response.put("message","User repository is Empty");
+            response.put("users",usersData);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        log.info("Retrieved all users :{}", users);
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+        List<User> users = usersData.stream()
+                        .map(user -> User.builder()
+                                .id(user.getId())
+                                .token(user.getToken())
+                                .fullName(user.getFullName())
+                                .email(user.getEmail())
+                                .phone(user.getPhone())
+                                .role(user.getRole())
+                                .build())
+                .collect(Collectors.toList());
+
+        log.info("Retrieved all users :{}", users.size());
+
+        response.put("message","Retrieved all users");
+        response.put("users",users);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping(value = "/getCurrentUser")

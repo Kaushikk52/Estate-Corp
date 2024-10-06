@@ -44,6 +44,7 @@ const validationSchema = Yup.object().shape({
     ammenities: Yup.array()
       .of(Yup.string())
       .min(1, "At least one amenity must be selected"),
+    description:Yup.string().required("Description is required"),
   }),
   // rent: Yup.number().when('propertyType', {
   //   is: (val: string) => val === 'RENT',
@@ -92,6 +93,7 @@ export default function AddPropertyLayout() {
       isNegotiable: "",
       furnishedStatus: "",
       ammenities: [] as string[],
+      description:""
     },
     images: [] as File[],
   };
@@ -245,6 +247,7 @@ export default function AddPropertyLayout() {
           "details.price",
           "details.amtUnit",
           "details.furnishedStatus",
+          "details.description"
         ];
       case 3:
         return ["images"];
@@ -632,6 +635,26 @@ export default function AddPropertyLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
+                     <div>
+                      <label
+                        htmlFor="details.description"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Description
+                      </label>
+                      <Field
+                        as="textarea"
+                        id="details.description"
+                        name="details.description"
+                        rows={4}
+                        className="mt-1 block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 touch-manipulation"
+                      />
+                      <ErrorMessage
+                        name="details.description"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                    </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <label
