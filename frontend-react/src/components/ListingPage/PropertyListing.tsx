@@ -28,7 +28,8 @@ interface Property {
     amtUnit: string;
     isNegotiable: string;
     furnishedStatus: string;
-    location:string;
+    location: string;
+    description: string;
   };
 }
 
@@ -175,7 +176,9 @@ export default function PropertyListing() {
                       </div>
                       <p className="text-gray-600 mb-4 flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />{" "}
-                        {property.address.street} {property.address.locality} {property.details.location} {property.address.landmark} - {property.address.zipCode}
+                        {property.address.street} {property.address.locality}{" "}
+                        {property.details.location} {property.address.landmark}{" "}
+                        - {property.address.zipCode}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-3">
                         <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-blue-100 text-blue-800">
@@ -199,7 +202,11 @@ export default function PropertyListing() {
                           {property.details.bathrooms} Baths
                         </span>
                       </div>
+                      <p className="text-gray-600">
+                        {property.details.description}
+                      </p>
                     </div>
+
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

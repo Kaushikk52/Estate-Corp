@@ -9,6 +9,7 @@ import {
   MapPin,
   Calendar,
   Maximize,
+  Compass,
 } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Formik, FormikHelpers } from "formik";
@@ -35,9 +36,12 @@ interface Property {
     amtUnit: string;
     isNegotiable: string;
     furnishedStatus: string;
-    availability: string;
+    builtIn: string;
+    possesion: string;
     ammenities: string[];
-    location:string;
+    location: string;
+    description: string;
+    facing:string;
   };
   owner: {
     fullName: string;
@@ -191,9 +195,11 @@ export default function PropertyDetails() {
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                   >
-                    {({isSubmitting}) => (
+                    {({ isSubmitting }) => (
                       <form className="space-y-4">
-                        <h2 className="font-bold text-xl">Contact over email</h2>
+                        <h2 className="font-bold text-xl">
+                          Contact over email
+                        </h2>
                         <div>
                           <Field
                             name="name"
@@ -309,16 +315,19 @@ export default function PropertyDetails() {
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-gray-600" />
-                    <span>Built in {property.details.availability}</span>
+                    {
+                      property.type === "RENT" ?
+                      <span>Built in {property.details.builtIn}</span>
+                      : <span>Possesion in {property.details.possesion}</span>
+                    }
+                  </div>
+                  <div className="flex items-center">
+                    <Compass className="w-5 h-5 mr-2 text-gray-600" />
+                      <span>Facing {property.details.facing}</span>
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
-                <p className="text-gray-600">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Beatae modi placeat, voluptates enim nobis quia amet impedit
-                  nostrum magni eum aliquam dicta praesentium eveniet ipsum eius
-                  id veritatis. Quibusdam, culpa?
-                </p>
+                <p className="text-gray-600">{property.details.description}</p>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Amenities</h3>
                 <ul className="grid grid-cols-2 gap-2">
                   {property.details.ammenities.map((amenity, index) => (
@@ -342,19 +351,19 @@ export default function PropertyDetails() {
                   <table className="grid grid-cols-2 gap-4">
                     <tbody>
                       <tr className="flex flex-col">
-                        <td className="font-medium">City</td>
+                        <td className="font-medium">Locality</td>
                         <td className="text-gray-600">
                           {property.address.locality}
                         </td>
                       </tr>
                       <tr className="flex flex-col">
-                        <td className="font-medium">Country</td>
-                        <td className="text-gray-600">India</td>
+                        <td className="font-medium">Zip Code</td>
+                        <td className="text-gray-600">{property.address.zipCode}</td>
                       </tr>
                     </tbody>
                     <tbody>
                       <tr className="flex flex-col">
-                        <td className="font-medium">State / Country</td>
+                        <td className="font-medium">Street</td>
                         <td className="text-gray-600">
                           {property.address.street}
                         </td>
@@ -394,10 +403,22 @@ export default function PropertyDetails() {
                         </td>
                       </tr>
                       <tr className="flex flex-col">
-                        <td className="font-medium">Year Built:</td>
-                        <td className="text-gray-600">
-                          {property.details.availability}
-                        </td>
+                        {property.type === "RENT" ? (
+                          <>
+                            <td className="font-medium">Year Built:</td>
+                            <td className="text-gray-600">
+                              {property.details.builtIn}
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="font-medium">Possession Date:</td>
+                            <td className="text-gray-600">
+                              {property.details.possesion}
+                            </td>
+                          </>
+                        )}
+
                         <td className="font-medium">Property Type:</td>
                         <td className="text-gray-600">{property.type}</td>
                       </tr>

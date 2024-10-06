@@ -39,7 +39,8 @@ const validationSchema = Yup.object().shape({
     areaUnit: Yup.string().required("Carpet area unit is required"),
     amtUnit: Yup.string().required("This field is required"),
     isNegotiable: Yup.string().required("Is Negotiable is required"),
-    availability: Yup.date().required("Availability date is required"),
+    builtIn: Yup.date(),
+    possesion: Yup.date(),
     furnishedStatus: Yup.string().required("Furnished status is required"),
     ammenities: Yup.array()
       .of(Yup.string())
@@ -86,7 +87,8 @@ export default function AddPropertyLayout() {
       facing: "",
       carpetArea: "",
       areaUnit: "sqft",
-      availability: "",
+      builtIn: "",
+      possesion:"",
       rent: 0,
       price: 0,
       amtUnit: "",
@@ -242,7 +244,8 @@ export default function AddPropertyLayout() {
           "details.floorNo",
           "details.facing",
           "details.carpetArea",
-          "details.availability",
+          "details.builtIn",
+          "details.possesion",
           "details.rent",
           "details.price",
           "details.amtUnit",
@@ -800,38 +803,38 @@ export default function AddPropertyLayout() {
                     {values.type === "RENT" ?
                       <div>
                       <label
-                        htmlFor="details.availability"
+                        htmlFor="details.builtIn"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Availability
+                        Built In
                       </label>
                       <Field
-                        id="details.availability"
-                        name="details.availability"
+                        id="details.builtIn"
+                        name="details.builtIn"
                         type="date"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                       <ErrorMessage
-                        name="details.availability"
+                        name="details.builtIn"
                         component="div"
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>  
                     : <div>
                     <label
-                      htmlFor="details.availability"
+                      htmlFor="details.possesion"
                       className="block text-sm font-medium text-gray-700"
                     >
                       Possession date
                     </label>
                     <Field
-                      id="details.availability"
-                      name="details.availability"
+                      id="details.possesion"
+                      name="details.possesion"
                       type="date"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                     <ErrorMessage
-                      name="details.availability"
+                      name="details.possesion"
                       component="div"
                       className="text-red-500 text-sm mt-1"
                     />
