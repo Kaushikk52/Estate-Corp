@@ -1,6 +1,4 @@
-import React from 'react';
 import BentoGrid from './BentoGrid';
-import Carousel from './Carousel';
 import Cards from '../../Cards/Cards';
 import { motion } from 'framer-motion'
 import FeaturedCardsCarousel from '../../Cards/featuredCards';

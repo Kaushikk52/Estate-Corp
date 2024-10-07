@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 import BlogSidebar from "./BlogSidebar";
-import Filter from "../Pages/Home/Filter";
+import Filter from '../Home/Filter';
 
 interface Property {
   id: string;
