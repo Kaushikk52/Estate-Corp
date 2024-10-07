@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { propertyValidationSchema } from "../../Validations/propertyValidations";
+import { propertyValidationSchema } from "../../../Validations/propertyValidations";
 
 export default function AddPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
