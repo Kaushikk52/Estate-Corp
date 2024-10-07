@@ -2,41 +2,17 @@ import React, { useState, useEffect, useRef } from 'react'
 import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
-import Filter from '../Pages/Home/Filter'
+import Filter from '../Filter'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, A11y } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper'
+import Property from '../../Models/Property'
 
 // Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
-
-interface Property {
-  id: string;
-  name: string;
-  images: string[];
-  type: string;
-  address: {
-    street: string;
-    locality: string;
-    landmark: string;
-    zipCode: string;
-  };
-  details: {
-    bedrooms: number;
-    bathrooms: number;
-    carpetArea: string;
-    areaUnit: string;
-    rent: number;
-    price: number;
-    amtUnit: string;
-    isNegotiable: string;
-    furnishedStatus: string;
-    location: string;
-  };
-}
 
 interface FilterState {
   locations: string[];

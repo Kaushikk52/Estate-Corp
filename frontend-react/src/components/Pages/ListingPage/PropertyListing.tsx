@@ -5,33 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 import BlogSidebar from "./BlogSidebar";
-import Filter from '../Home/Filter';
-
-interface Property {
-  id: string;
-  name: string;
-  images: string[];
-  type: string;
-  address: {
-    street: string;
-    locality: string;
-    landmark: string;
-    zipCode: string;
-  };
-  details: {
-    bedrooms: number;
-    bathrooms: number;
-    carpetArea: string;
-    areaUnit: string;
-    rent: number;
-    price: number;
-    amtUnit: string;
-    isNegotiable: string;
-    furnishedStatus: string;
-    location: string;
-    description: string;
-  };
-}
+import Filter from '../../Filter';
+import Property from "../../../Models/Property";
 
 interface FilterState {
   locations: string[];

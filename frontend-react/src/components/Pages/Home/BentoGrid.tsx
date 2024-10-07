@@ -1,5 +1,4 @@
 import { ArrowRight, Zap, Smile, Sparkles, Rocket, Star } from "lucide-react"
-import React from "react"
 
 export default function BentoGrid() {
   return (
