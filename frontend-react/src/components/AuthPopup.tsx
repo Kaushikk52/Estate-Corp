@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
 import axios from "axios";
@@ -13,7 +13,7 @@ export default function AuthPopup(props: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const [user, setUser] = useState({});
-  const [resetStep, setResetStep] = useState("email"); // "email", "otp", "newPassword"
+  const [resetStep, setResetStep] = useState("email");
   const navigate = useNavigate();
 
   useEffect(() => {

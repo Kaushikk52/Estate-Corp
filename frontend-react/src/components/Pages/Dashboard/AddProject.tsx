@@ -2,66 +2,12 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import * as Yup from "yup";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers,FieldArray } from "formik";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
+import { propertyValidationSchema } from "../../../Validations/propertyValidations";
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Property Name is required"),
-  type: Yup.string().required("Property Type is required"),
-  propertyVariant: Yup.string().required("Property Variant is required"),
-  subVariant: Yup.string().required("Sub Variant is required"),
-  address: Yup.object().shape({
-    landmark: Yup.string().required("Landmark is required"),
-    locality: Yup.string().required("Locality is required"),
-    street: Yup.string().required("Street is required"),
-    zipCode: Yup.string().required("Zip Code is required"),
-  }),
-  details: Yup.object().shape({
-    location: Yup.string().required("Location is required"),
-    bedrooms: Yup.number()
-      .required("Number of bedrooms is required")
-      .min(0, "Cannot be negative"),
-    bathrooms: Yup.number()
-      .required("Number of bathrooms is required")
-      .min(0, "Cannot be negative"),
-    balconies: Yup.number()
-      .required("Number of balconies is required")
-      .min(0, "Cannot be negative"),
-    floorNo: Yup.number()
-      .required("Floor number is required")
-      .min(0, "Cannot be negative"),
-    facing: Yup.string().required("Facing direction is required"),
-    carpetArea: Yup.number()
-      .required("Carpet area is required")
-      .positive("Must be a positive number"),
-    areaUnit: Yup.string().required("Carpet area unit is required"),
-    amtUnit: Yup.string().required("This field is required"),
-    isNegotiable: Yup.string().required("Is Negotiable is required"),
-    builtIn: Yup.date(),
-    possesion: Yup.date(),
-    furnishedStatus: Yup.string().required("Furnished status is required"),
-    ammenities: Yup.array()
-      .of(Yup.string())
-      .min(1, "At least one amenity must be selected"),
-    description:Yup.string().required("Description is required"),
-  }),
-  // rent: Yup.number().when('propertyType', {
-  //   is: (val: string) => val === 'RENT',
-  //   then: Yup.number().required("Rent is required").positive("Must be a positive number"),
-  //   otherwise: Yup.number().nullable(),
-  // }),
-  // price: Yup.number().when('propertyType', {
-  //   is: (val: string) => val === 'BUY',
-  //   then: Yup.number().required("Price is required").positive("Must be a positive number"),
-  //   otherwise: Yup.number().nullable(),
-  // }),
-
-  images: Yup.array().of(Yup.mixed()).min(1, "At least one image is required"),
-});
-
-export default function AddPropertyLayout() {
+export default function AddProjectLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
@@ -285,10 +231,10 @@ export default function AddPropertyLayout() {
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Add Property
+            Add Project
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Please fill in the details of your property
+            Please fill in the details of your project
           </p>
         </div>
 
@@ -342,7 +288,7 @@ export default function AddPropertyLayout() {
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={propertyValidationSchema}
           onSubmit={handleSubmit}
         >
           {({ values, errors, touched, setFieldValue, isSubmitting }) => (

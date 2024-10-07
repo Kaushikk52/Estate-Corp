@@ -1,4 +1,3 @@
-
 import PropertyListing from "./PropertyListing";
 
 function Residential() {

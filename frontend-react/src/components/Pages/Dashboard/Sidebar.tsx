@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Home,
   LayoutDashboard,
-  Settings,
-  ShoppingCart,
   Users,
   Menu,
   User,
@@ -15,7 +13,7 @@ import {
 const navItems = [
   { icon: Home, label: "Home", href: "/" },
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/main" },
-  { icon: Building2, label: "Projects", href: "/projects" },
+  { icon: Building2, label: "Projects", href: "/dashboard/add-project" },
   { icon: Users, label: "Users", href: "/users" },
 ];
 

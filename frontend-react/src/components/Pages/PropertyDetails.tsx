@@ -14,39 +14,7 @@ import {
 import axios from "axios";
 import { ErrorMessage, Field, Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
-
-interface Property {
-  id: string;
-  name: string;
-  images: string[];
-  type: string;
-  address: {
-    street: string;
-    locality: string;
-    landmark: string;
-    zipCode: string;
-  };
-  details: {
-    bedrooms: number;
-    bathrooms: number;
-    carpetArea: string;
-    areaUnit: string;
-    rent: number;
-    price: number;
-    amtUnit: string;
-    isNegotiable: string;
-    furnishedStatus: string;
-    builtIn: string;
-    possesion: string;
-    ammenities: string[];
-    location: string;
-    description: string;
-    facing:string;
-  };
-  owner: {
-    fullName: string;
-  };
-}
+import Property from "../../Models/Property";
 
 export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
