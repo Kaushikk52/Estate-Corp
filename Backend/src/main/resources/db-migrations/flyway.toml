@@ -1,0 +1,32 @@
+databaseType = "MySql"
+id = "111f215a-7139-4027-ade6-410971d3ad74"
+name = "db-migrations"
+
+[flyway]
+locations = [
+  "filesystem:E:\\A9 Projects\\Estate-Corp\\Backend\\src\\main\\resources\\db-migrations"
+]
+mixed = true
+outOfOrder = true
+schemaModelLocation = "schema-model"
+validateMigrationNaming = true
+baselineOnMigrate = true
+baselineVersion = "1"
+
+  [flyway.check]
+  majorTolerance = 0
+
+[flywayDesktop]
+developmentEnvironment = "development"
+shadowEnvironment = "shadow"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.mysql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[environments.prodTarget]
+url = "jdbc:mysql://junction.proxy.rlwy.net:32463"
+schemas = [ "railway" ]
+displayName = "Production DB"
