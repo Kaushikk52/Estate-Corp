@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers,FieldArray } from "formik";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { propertyValidationSchema } from "../../Validations/propertyValidations";
+import {jwtDecode} from "jwt-decode";
+import { propertyValidationSchema } from "../../../Validations/propertyValidations";
 
-export default function AddPropertyLayout() {
+export default function AddProjectLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
@@ -231,10 +231,10 @@ export default function AddPropertyLayout() {
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Add Property
+            Add Project
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Please fill in the details of your property
+            Please fill in the details of your project
           </p>
         </div>
 

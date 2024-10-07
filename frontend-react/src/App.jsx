@@ -1,12 +1,13 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import Home from './components/Home/Home.tsx'
+import Home from './components/Pages/Home/Home.tsx'
 import Layout from './components/Layout.tsx'
 import DashBoard from './components/Dashboard/Dashboard.tsx'
 import DashboardLayout from './components/Dashboard/DashboardLayout.tsx'
 import AddPropertyLayout from './components/Dashboard/AddPropertyLayout.tsx'
+import AddProjectLayout from './components/Dashboard/Projects/AddProject.tsx'
 import Residential from './components/ListingPage/Residential.tsx'
-import PropertyDetails from './components/Properties/PropertyDetails.tsx'
+import PropertyDetails from './components/Pages/PropertyDetailsPage/PropertyDetails.tsx'
 import NotFound from './NotFound.tsx'
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Route path='/dashboard' element={<DashBoard />}>
               <Route path='/dashboard/main' element={<DashboardLayout />} />
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
+              <Route path='/dashboard/add-project' element={<AddProjectLayout />} />
             </Route>
             <Route path="/residential/buy"  element={<Residential />}>  
             </Route>

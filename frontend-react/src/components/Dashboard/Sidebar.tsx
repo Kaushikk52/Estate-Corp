@@ -15,7 +15,7 @@ import {
 const navItems = [
   { icon: Home, label: "Home", href: "/" },
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/main" },
-  { icon: Building2, label: "Projects", href: "/projects" },
+  { icon: Building2, label: "Projects", href: "/dashboard/add-project" },
   { icon: Users, label: "Users", href: "/users" },
 ];
 
