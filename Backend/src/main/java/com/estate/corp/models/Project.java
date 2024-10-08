@@ -54,7 +54,7 @@ public class Project {
     @Column(nullable = false)
     private int totalFloors;
 
-    private boolean underConstruction;
+    private String underConstruction;
 
     @PastOrPresent(message = "Creation date must be in the past or present")
     @Temporal(TemporalType.TIMESTAMP)

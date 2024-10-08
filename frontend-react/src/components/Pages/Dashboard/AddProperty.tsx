@@ -13,33 +13,6 @@ export default function AddPropertyLayout() {
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const [step, setStep] = useState(1);
 
-  const LOCATION_OPTIONS = [
-    {
-      label: "Bhayandar",
-      options: ["Bhayandar East", "Bhayandar West"],
-    },
-    {
-      label: "Mira Road",
-      options: ["Mira Road East"],
-    },
-    {
-      label: "Dahisar",
-      options: ["Dahisar East", "Dahisar West"],
-    },
-    {
-      label: "Borivali",
-      options: ["Borivali East", "Borivali West"],
-    },
-    {
-      label: "Malad",
-      options: ["Malad East", "Malad West"],
-    },
-    {
-      label: "Goregaon",
-      options: ["Goregaon East", "Goregaon West"],
-    },
-  ];
-
   const initialValues = {
     name: "",
     type: "",
@@ -61,14 +34,14 @@ export default function AddPropertyLayout() {
       carpetArea: "",
       areaUnit: "sqft",
       builtIn: "",
-      possesion: "",
+      possesion:"",
       rent: 0,
       price: 0,
       amtUnit: "",
       isNegotiable: "",
       furnishedStatus: "",
       ammenities: [] as string[],
-      description: "",
+      description:""
     },
     images: [] as File[],
   };
@@ -223,7 +196,7 @@ export default function AddPropertyLayout() {
           "details.price",
           "details.amtUnit",
           "details.furnishedStatus",
-          "details.description",
+          "details.description"
         ];
       case 3:
         return ["images"];
@@ -380,6 +353,36 @@ export default function AddPropertyLayout() {
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
+                      <div>
+                        <label className=" text-sm font-medium text-gray-700">
+                          Is Negotiable
+                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.isNegotiable"
+                              value="YES"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Yes</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.isNegotiable"
+                              value="NO"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">No</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="details.isNegotiable"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div>
@@ -488,20 +491,39 @@ export default function AddPropertyLayout() {
                         </label>
                         <Field
                           as="select"
-                          id="location"
-                          name="location"
+                          id="details.location"
+                          name="details.location"
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                           <option value="">Select location</option>
-                          {LOCATION_OPTIONS.map((group) => (
-                            <optgroup key={group.label} label={group.label}>
-                              {group.options.map((option) => (
-                                <option key={option} value={option}>
-                                  {option}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ))}
+                          <optgroup label="Bhayandar">
+                            <option value="Bhayandar East">Bhayandar East</option>
+                            <option value="Bhayandar West">Bhayandar West</option>
+                          </optgroup>
+
+                          <optgroup label="Mira Road">
+                            <option value="Mira Road East">Mira Road East</option>
+                          </optgroup>
+
+                          <optgroup label="Dahisar">
+                            <option value="Dahisar East">Dahisar East</option>
+                            <option value="Dahisar West">Dahisar West</option>
+                          </optgroup>
+
+                          <optgroup label="Borivali">
+                            <option value="Borivali East">Borivali East</option>
+                            <option value="Borivali West">Borivali West</option>
+                          </optgroup>
+
+                          <optgroup label="Malad">
+                            <option value="Malad East">Malad East</option>
+                            <option value="Malad West">Malad West</option>
+                          </optgroup>
+                          
+                          <optgroup label="Goregaon">
+                            <option value="Goregaon East">Goregaon East</option>
+                            <option value="Goregaon West">Goregaon West</option>
+                          </optgroup>
                         </Field>
                         <ErrorMessage
                           name="details.location"
@@ -562,7 +584,7 @@ export default function AddPropertyLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                    <div>
+                     <div>
                       <label
                         htmlFor="details.description"
                         className="block text-sm font-medium text-gray-700 mb-1"
@@ -724,48 +746,47 @@ export default function AddPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    {values.type === "RENT" ? (
+                    {values.type === "RENT" ?
                       <div>
-                        <label
-                          htmlFor="details.builtIn"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Built In
-                        </label>
-                        <Field
-                          id="details.builtIn"
-                          name="details.builtIn"
-                          type="date"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <ErrorMessage
-                          name="details.builtIn"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                    ) : (
-                      <div>
-                        <label
-                          htmlFor="details.possesion"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Possession date
-                        </label>
-                        <Field
-                          id="details.possesion"
-                          name="details.possesion"
-                          type="date"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <ErrorMessage
-                          name="details.possesion"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                    )}
-
+                      <label
+                        htmlFor="details.builtIn"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Built In
+                      </label>
+                      <Field
+                        id="details.builtIn"
+                        name="details.builtIn"
+                        type="date"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <ErrorMessage
+                        name="details.builtIn"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                    </div>  
+                    : <div>
+                    <label
+                      htmlFor="details.possesion"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Possession date
+                    </label>
+                    <Field
+                      id="details.possesion"
+                      name="details.possesion"
+                      type="date"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <ErrorMessage
+                      name="details.possesion"
+                      component="div"
+                      className="text-red-500 text-sm mt-1"
+                    />
+                  </div>  
+                  }
+                    
                     {values.type === "RENT" && (
                       <div>
                         <label

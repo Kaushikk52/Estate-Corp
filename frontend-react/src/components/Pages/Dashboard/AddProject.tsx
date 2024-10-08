@@ -13,14 +13,27 @@ import {
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { projectValidationSchema } from "../../../Validations/projectValidations";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+
+const DatePickerField = ({ field, form }: any) => {
+  return (
+    <DatePicker
+      {...field}
+      selected={(field.value && new Date(field.value)) || null}
+      dateFormat="dd/MM/yyyy" // Set the date format to DD/MM/YYYY
+      onChange={(date) => form.setFieldValue(field.name, date)}
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    />
+  );
+};
 
 export default function AddProjectLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const [step, setStep] = useState(1);
-
-  const [constructionStatus, setConstructionStatus] = useState("");
 
   const LOCATION_OPTIONS = [
     {
@@ -71,6 +84,7 @@ export default function AddProjectLayout() {
         bathrooms: 0,
         balconies: 0,
         price: 0,
+        rent:0,
         amtUnit: "",
         carpetArea: 0,
         areaUnit: "",
@@ -148,7 +162,10 @@ export default function AddProjectLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    console.log("submitting");
+    if (step !== 4) {
+      setSubmitting(false);
+      return;
+    }
     try {
       const updatedFloorPlans = await Promise.all(
         values.floorPlans.map(async (floorPlan) => {
@@ -299,13 +316,7 @@ export default function AddProjectLayout() {
         <Formik
           initialValues={initialValues}
           validationSchema={projectValidationSchema}
-          onSubmit={(values) => {
-            const updatedValues = {
-              ...values,
-              underConstruction: values.underConstruction,
-            };
-            console.log(updatedValues);
-          }}
+          onSubmit={handleSubmit}
           
         >
           {({ values, errors, touched, setFieldValue, isSubmitting }) => (
@@ -409,7 +420,7 @@ export default function AddProjectLayout() {
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
-                      {constructionStatus === "Yes" ? (
+                      {values.underConstruction === "Yes" ? (
                       <div>
                         <label
                           htmlFor="possesion"
@@ -421,6 +432,7 @@ export default function AddProjectLayout() {
                           id="possesion"
                           name="possesion"
                           type="date"
+                          component={DatePickerField}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -440,7 +452,7 @@ export default function AddProjectLayout() {
                         <Field
                           id="builtIn"
                           name="builtIn"
-                          type="date"
+                          component={DatePickerField}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -1102,7 +1114,7 @@ export default function AddProjectLayout() {
                 )}
                 {step < 4 ? (
                   <button
-                    type="button"
+                    type="button" // Add this line
                     onClick={() => setStep((prev) => prev + 1)}
                     disabled={hasStepErrors(errors, touched, step)}
                     className={`ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center ${

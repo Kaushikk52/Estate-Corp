@@ -5,6 +5,7 @@ interface FloorPlan {
     bathrooms: number;
     balconies: number;
     price: number;
+    rent:number;
     amtUnit: string;
     carpetArea: number;
     areaUnit: string;
