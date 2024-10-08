@@ -42,7 +42,7 @@ public class Project {
 
     @OneToMany( cascade = CascadeType.ALL)
     @Column(nullable = true)
-    private List<Property> properties;
+    private List<FloorPlan> floorPlans;
 
     @Column(name = "images")
     private String[] images;
