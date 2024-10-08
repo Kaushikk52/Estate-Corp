@@ -61,8 +61,7 @@ export default function ProjectsCarousel() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-12 bg-gradient-to-r from-slate-100 to-slate-200">
-      
+    <div className="w-full max-w-7xl mx-auto px-4 py-12 bg-gradient-to-r from-slate-100 to-slate-200"> 
       <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">
         Explore Projects
       </h2>

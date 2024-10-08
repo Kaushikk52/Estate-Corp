@@ -20,7 +20,7 @@ export default function AddProjectLayout() {
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const [step, setStep] = useState(1);
 
-  const [constructionStatus, setConstructionStatus] = useState(false);
+  const [constructionStatus, setConstructionStatus] = useState("");
 
   const LOCATION_OPTIONS = [
     {
@@ -76,12 +76,12 @@ export default function AddProjectLayout() {
         areaUnit: "",
         description: "",
         image: null as File | null,
-        isMinimized:false,
+        isMinimized: false,
       },
     ],
-    underConstruction: false,
+    underConstruction: "",
   };
-  
+
   useEffect(() => {
     const token: any = localStorage.getItem("token");
     if (!token) {
@@ -148,7 +148,7 @@ export default function AddProjectLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    console.log("submitting")
+    console.log("submitting");
     try {
       const updatedFloorPlans = await Promise.all(
         values.floorPlans.map(async (floorPlan) => {
@@ -299,7 +299,14 @@ export default function AddProjectLayout() {
         <Formik
           initialValues={initialValues}
           validationSchema={projectValidationSchema}
-          onSubmit={(values,formikHelpers)=> handleSubmit(values,formikHelpers)}
+          onSubmit={(values) => {
+            const updatedValues = {
+              ...values,
+              underConstruction: values.underConstruction,
+            };
+            console.log(updatedValues);
+          }}
+          
         >
           {({ values, errors, touched, setFieldValue, isSubmitting }) => (
             <Form className="mt-8 space-y-6">
@@ -373,38 +380,36 @@ export default function AddProjectLayout() {
                         />
                       </div>
                       <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Under Construction
-                      </label>
-                      <div className="mt-2 space-x-4">
-                        <label className="inline-flex items-center">
-                          <Field
-                            type="radio"
-                            name="underConstruction"
-                            value={true}
-                            className="form-radio h-4 w-4 text-blue-600"
-                          />
-                          <span className="ml-2">Yes</span>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Under Construction
                         </label>
-                        <label className="inline-flex items-center">
-                          <Field
-                            type="radio"
-                            name="underConstruction"
-                            value={false}
-                            className="form-radio h-4 w-4 text-blue-600"
-                          />
-                          <span className="ml-2">No</span>
-                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="underConstruction"
+                              value="Yes"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Yes</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="underConstruction"
+                              value="No"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">No</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="underConstruction"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
                       </div>
-                      <ErrorMessage
-                        name="underConstruction"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    </div>
-
-                    {constructionStatus ? (
+                      {constructionStatus === "Yes" ? (
                       <div>
                         <label
                           htmlFor="possesion"
@@ -445,6 +450,9 @@ export default function AddProjectLayout() {
                         />
                       </div>
                     )}
+                    </div>
+
+                    
 
                     <div>
                       <label
