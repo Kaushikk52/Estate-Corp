@@ -12,24 +12,52 @@ import {
 } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import * as Yup from 'yup';
+import { projectValidationSchema } from "../../../Validations/projectValidations";
 
 export default function AddProjectLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
+
+  const [constructionStatus, setConstructionStatus] = useState(false);
+
+  const LOCATION_OPTIONS = [
+    {
+      label: "Bhayandar",
+      options: ["Bhayandar East", "Bhayandar West"],
+    },
+    {
+      label: "Mira Road",
+      options: ["Mira Road East"],
+    },
+    {
+      label: "Dahisar",
+      options: ["Dahisar East", "Dahisar West"],
+    },
+    {
+      label: "Borivali",
+      options: ["Borivali East", "Borivali West"],
+    },
+    {
+      label: "Malad",
+      options: ["Malad East", "Malad West"],
+    },
+    {
+      label: "Goregaon",
+      options: ["Goregaon East", "Goregaon West"],
+    },
+  ];
 
   const initialValues = {
     name: "",
     description: "",
-    images: [],
+    images: [] as File[],
     totalFloors: 0,
     location: "",
     builtIn: "",
     possesion: "",
-    ammentites: [],
+    ammenities: [] as string[],
     address: {
       landmark: "",
       locality: "",
@@ -40,52 +68,20 @@ export default function AddProjectLayout() {
       {
         name: "",
         bedrooms: 0,
-        price: 0,
-        priceUnit: "",
-        carpetArea: 0,
-        areaUnit: "",
         bathrooms: 0,
         balconies: 0,
-        location: "",
+        price: 0,
+        amtUnit: "",
+        carpetArea: 0,
+        areaUnit: "",
         description: "",
-        images: [],
-        isMinimized: false,
+        image: null as File | null,
+        isMinimized:false,
       },
     ],
+    underConstruction: false,
   };
-
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Project Name is required'),
-    description: Yup.string().required('Project Description is required'),
-    totalFloors: Yup.number().min(1, 'Total floors must be at least 1').required('Total floors is required'),
-    location: Yup.string().required('Project Location is required'),
-    builtIn: Yup.date().required('Built-in date is required'),
-    possesion: Yup.date().required('Possession date is required'),
-    address: Yup.object().shape({
-      landmark: Yup.string().required('Landmark is required'),
-      locality: Yup.string().required('Locality is required'),
-      street: Yup.string().required('Street is required'),
-      zipCode: Yup.string().required('Zip Code is required'),
-    }),
-    floorPlans: Yup.array().of(
-      Yup.object().shape({
-        name: Yup.string().required('Floor Plan Name is required'),
-        bedrooms: Yup.number().min(0, 'Bedrooms cannot be negative').required('Number of bedrooms is required'),
-        price: Yup.number().min(0, 'Price cannot be negative').required('Price is required'),
-        priceUnit: Yup.string().required('Price Unit is required'),
-        carpetArea: Yup.number().min(0, 'Carpet Area cannot be negative').required('Carpet Area is required'),
-        areaUnit: Yup.string().required('Area Unit is required'),
-        bathrooms: Yup.number().min(0, 'Bathrooms cannot be negative').required('Number of bathrooms is required'),
-        balconies: Yup.number().min(0, 'Balconies cannot be negative').required('Number of balconies is required'),
-        location: Yup.string().required('Floor plan location is required'),
-        description: Yup.string().required('Floor plan description is required'),
-        images: Yup.array().min(1, 'At least one image is required'),
-      })
-    ),
-    images: Yup.array().min(1, 'At least one project image is required'),
-    ammentites: Yup.array().min(1, 'At least one amenity must be selected'),
-  });
-
+  
   useEffect(() => {
     const token: any = localStorage.getItem("token");
     if (!token) {
@@ -152,16 +148,12 @@ export default function AddProjectLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    if (step !== totalSteps) {
-      setSubmitting(false);
-      return;
-    }
-
+    console.log("submitting")
     try {
       const updatedFloorPlans = await Promise.all(
         values.floorPlans.map(async (floorPlan) => {
-          const urls = await uploadImages(floorPlan.images);
-          return { ...floorPlan, images: urls };
+          const url = await uploadImages([floorPlan.image]);
+          return { ...floorPlan, image: url[0] };
         })
       );
 
@@ -171,11 +163,12 @@ export default function AddProjectLayout() {
         ...values,
         floorPlans: updatedFloorPlans,
         images: projectImages,
+        underConstruction: values.underConstruction,
       };
 
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${baseURL}/v1/api/projects/create`,
+        `${baseURL}/v1/api/projects/add`,
         projectData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -186,7 +179,7 @@ export default function AddProjectLayout() {
           duration: 3000,
         });
         resetForm();
-        setSubmitting(false);
+        setStep(1);
       }
     } catch (err: any) {
       console.log(err);
@@ -194,6 +187,8 @@ export default function AddProjectLayout() {
         position: "bottom-right",
         duration: 3000,
       });
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -202,7 +197,15 @@ export default function AddProjectLayout() {
   const getStepFields = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
-        return ["name", "description", "totalFloors", "location", "builtIn", "possesion", "address"];
+        return [
+          "name",
+          "description",
+          "totalFloors",
+          "location",
+          "builtIn",
+          "possesion",
+          "address",
+        ];
       case 2:
         return ["floorPlans"];
       case 3:
@@ -295,8 +298,8 @@ export default function AddProjectLayout() {
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
+          validationSchema={projectValidationSchema}
+          onSubmit={(values,formikHelpers)=> handleSubmit(values,formikHelpers)}
         >
           {({ values, errors, touched, setFieldValue, isSubmitting }) => (
             <Form className="mt-8 space-y-6">
@@ -349,68 +352,101 @@ export default function AddProjectLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="totalFloors"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Total Floors
-                      </label>
-                      <Field
-                        id="totalFloors"
-                        name="totalFloors"
-                        type="number"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="totalFloors"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label
-                        htmlFor="builtIn"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Built-in Date
-                      </label>
-                      <Field
-                        id="builtIn"
-                        name="builtIn"
-                        type="date"
-                        
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="builtIn"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="possesion"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Possession Date
-                      </label>
-                      <Field
-                        id="possesion"
-                        name="possesion"
-                        type="date"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="possesion"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Address</h3>
+                    <div className="grid grid-cols-2 gap-6">
                       <div>
+                        <label
+                          htmlFor="totalFloors"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Total Floors
+                        </label>
+                        <Field
+                          id="totalFloors"
+                          name="totalFloors"
+                          type="number"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="totalFloors"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Under Construction
+                      </label>
+                      <div className="mt-2 space-x-4">
+                        <label className="inline-flex items-center">
+                          <Field
+                            type="radio"
+                            name="underConstruction"
+                            value={true}
+                            className="form-radio h-4 w-4 text-blue-600"
+                          />
+                          <span className="ml-2">Yes</span>
+                        </label>
+                        <label className="inline-flex items-center">
+                          <Field
+                            type="radio"
+                            name="underConstruction"
+                            value={false}
+                            className="form-radio h-4 w-4 text-blue-600"
+                          />
+                          <span className="ml-2">No</span>
+                        </label>
+                      </div>
+                      <ErrorMessage
+                        name="underConstruction"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                    </div>
+                    </div>
+
+                    {constructionStatus ? (
+                      <div>
+                        <label
+                          htmlFor="possesion"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Possession Date
+                        </label>
+                        <Field
+                          id="possesion"
+                          name="possesion"
+                          type="date"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="possesion"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label
+                          htmlFor="builtIn"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Built-in Date
+                        </label>
+                        <Field
+                          id="builtIn"
+                          name="builtIn"
+                          type="date"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="builtIn"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                    )}
+
+                    <div>
                       <label
                         htmlFor="address.landmark"
                         className="block text-sm font-medium text-gray-700"
@@ -451,49 +487,30 @@ export default function AddProjectLayout() {
                       </div>
                       <div>
                         <label
-                          htmlFor="details.location"
+                          htmlFor="location"
                           className="block text-sm font-medium text-gray-700"
                         >
                           Location
                         </label>
                         <Field
                           as="select"
-                          id="details.location"
-                          name="details.location"
+                          id="location"
+                          name="location"
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                           <option value="">Select location</option>
-                          <optgroup label="Bhayandar">
-                            <option value="Bhayandar East">Bhayandar East</option>
-                            <option value="Bhayandar West">Bhayandar West</option>
-                          </optgroup>
-
-                          <optgroup label="Mira Road">
-                            <option value="Mira Road East">Mira Road East</option>
-                          </optgroup>
-
-                          <optgroup label="Dahisar">
-                            <option value="Dahisar East">Dahisar East</option>
-                            <option value="Dahisar West">Dahisar West</option>
-                          </optgroup>
-
-                          <optgroup label="Borivali">
-                            <option value="Borivali East">Borivali East</option>
-                            <option value="Borivali West">Borivali West</option>
-                          </optgroup>
-
-                          <optgroup label="Malad">
-                            <option value="Malad East">Malad East</option>
-                            <option value="Malad West">Malad West</option>
-                          </optgroup>
-                          
-                          <optgroup label="Goregaon">
-                            <option value="Goregaon East">Goregaon East</option>
-                            <option value="Goregaon West">Goregaon West</option>
-                          </optgroup>
+                          {LOCATION_OPTIONS.map((group) => (
+                            <optgroup key={group.label} label={group.label}>
+                              {group.options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
                         </Field>
                         <ErrorMessage
-                          name="details.location"
+                          name="location"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
@@ -538,7 +555,6 @@ export default function AddProjectLayout() {
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
-                    </div>
                     </div>
                   </motion.div>
                 )}
@@ -800,25 +816,6 @@ export default function AddProjectLayout() {
                                   </div>
                                   <div>
                                     <label
-                                      htmlFor={`floorPlans.${index}.location`}
-                                      className="block text-sm font-medium text-gray-700"
-                                    >
-                                      Floor Plan Location
-                                    </label>
-                                    <Field
-                                      id={`floorPlans.${index}.location`}
-                                      name={`floorPlans.${index}.location`}
-                                      type="text"
-                                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                    />
-                                    <ErrorMessage
-                                      name={`floorPlans.${index}.location`}
-                                      component="div"
-                                      className="text-red-500 text-sm mt-1"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label
                                       htmlFor={`floorPlans.${index}.description`}
                                       className="block text-sm font-medium text-gray-700"
                                     >
@@ -839,7 +836,7 @@ export default function AddProjectLayout() {
                                   </div>
                                   <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                      Floor Plan Images
+                                      Floor Plan Image
                                     </label>
                                     <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                       <div className="space-y-1 text-center">
@@ -859,28 +856,23 @@ export default function AddProjectLayout() {
                                         </svg>
                                         <div className="flex text-sm text-gray-600">
                                           <label
-                                            htmlFor={`floorPlans.${index}.images`}
+                                            htmlFor={`floorPlans.${index}.image`}
                                             className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                                           >
-                                            <span>Upload files</span>
+                                            <span>Upload a file</span>
                                             <input
-                                              id={`floorPlans.${index}.images`}
-                                              name={`floorPlans.${index}.images`}
+                                              id={`floorPlans.${index}.image`}
+                                              name={`floorPlans.${index}.image`}
                                               type="file"
-                                              multiple
                                               className="sr-only"
                                               onChange={(event) => {
-                                                const files =
-                                                  event.currentTarget.files;
-                                                if (files) {
+                                                const file =
+                                                  event.currentTarget
+                                                    .files?.[0];
+                                                if (file) {
                                                   setFieldValue(
-                                                    `floorPlans.${index}.images`,
-                                                    [
-                                                      ...(values.floorPlans[
-                                                        index
-                                                      ].images || []),
-                                                      ...Array.from(files),
-                                                    ]
+                                                    `floorPlans.${index}.image`,
+                                                    file
                                                   );
                                                 }
                                               }}
@@ -896,7 +888,7 @@ export default function AddProjectLayout() {
                                       </div>
                                     </div>
                                     <ErrorMessage
-                                      name={`floorPlans.${index}.images`}
+                                      name={`floorPlans.${index}.image`}
                                       component="div"
                                       className="text-red-500 text-sm mt-1"
                                     />
@@ -919,7 +911,7 @@ export default function AddProjectLayout() {
                                 balconies: 0,
                                 location: "",
                                 description: "",
-                                images: [],
+                                image: null,
                                 isMinimized: false,
                               })
                             }
@@ -979,7 +971,7 @@ export default function AddProjectLayout() {
                               htmlFor="file-upload"
                               className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                             >
-                              <span>Upload a file</span>
+                              <span>Upload files</span>
                               <input
                                 id="file-upload"
                                 name="file-upload"
@@ -990,7 +982,6 @@ export default function AddProjectLayout() {
                                 onChange={(event) => {
                                   const files = event.currentTarget.files;
                                   if (files) {
-                                    console.log(files);
                                     setFieldValue("images", [
                                       ...values.images,
                                       ...Array.from(files),
@@ -1067,7 +1058,7 @@ export default function AddProjectLayout() {
                             <Field
                               type="checkbox"
                               id={amenity}
-                              name="ammentites"
+                              name="ammenities"
                               value={amenity}
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                             />
@@ -1081,7 +1072,7 @@ export default function AddProjectLayout() {
                         ))}
                       </div>
                       <ErrorMessage
-                        name="ammentites"
+                        name="ammenities"
                         component="div"
                         className="text-red-500 text-sm mt-1"
                       />
@@ -1101,7 +1092,7 @@ export default function AddProjectLayout() {
                     Previous
                   </button>
                 )}
-                {step < totalSteps ? (
+                {step < 4 ? (
                   <button
                     type="button"
                     onClick={() => setStep((prev) => prev + 1)}
@@ -1121,7 +1112,7 @@ export default function AddProjectLayout() {
                     disabled={isSubmitting}
                     className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
                   >
-                    Submit Project
+                    Submit Listing
                     <Check className="w-5 h-5 ml-1" />
                   </button>
                 )}

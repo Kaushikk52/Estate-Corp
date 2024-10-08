@@ -5,13 +5,14 @@ interface Project {
     name: string;
     description: string;
     images: string[];
-    totalFloor: number;
+    totalFloors: number;
     location: string;
     builtIn: string;
     possesion: string;
     ammenities: string[];
     address: Address;
     floorPlans: FloorPlan[];
+    underConstruction:boolean;
 }
 
 export default Project;

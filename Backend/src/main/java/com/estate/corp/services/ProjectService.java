@@ -1,9 +1,11 @@
 package com.estate.corp.services;
 
 import com.estate.corp.models.Address;
+import com.estate.corp.models.FloorPlan;
 import com.estate.corp.models.Project;
 import com.estate.corp.models.User;
 import com.estate.corp.repositories.AddressRepo;
+import com.estate.corp.repositories.FloorPlanRepo;
 import com.estate.corp.repositories.ProjectRepo;
 import com.estate.corp.repositories.UserRepo;
 import jakarta.transaction.Transactional;
@@ -26,6 +28,9 @@ public class ProjectService {
     private AddressRepo addressRepo;
 
     @Autowired
+    private FloorPlanRepo floorPlanRepo;
+
+    @Autowired
     private UserRepo userRepo;
 
     @Autowired
@@ -44,13 +49,16 @@ public class ProjectService {
         try {
             Address savedAddress = addressRepo.save(project.getAddress());
             User currentUser = (User) userServ.loadUserByUsername(principal.getName());
+            List<FloorPlan> savedPlans = floorPlanRepo.saveAll(project.getFloorPlans());
             project.setOwner(currentUser);
             project.setCreatedAt(new Date());
             project.setUpdatedAt(new Date());
             project.setAddress(savedAddress);
+            project.setFloorPlans(savedPlans);
             Project savedProject= projectRepo.save(project);
             return savedProject;
         } catch (Exception e) {
+            System.out.println("Error occurred during transaction: "+ e);
             throw new RuntimeException("Transaction failed", e);
         }
     }
