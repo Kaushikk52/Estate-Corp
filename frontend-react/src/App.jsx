@@ -8,6 +8,7 @@ import AddPropertyLayout from './components/Pages/Dashboard/AddProperty.tsx';
 import AddProjectLayout from './components/Pages/Dashboard/AddProject.tsx';
 import Residential from './components/Pages/ListingPage/Residential.tsx';
 import PropertyDetails from './components/Pages/PropertyDetails.tsx';
+import ProjectDetails from './components/Pages/ProjectDetails.tsx';
 import NotFound from './components/Pages/NotFound.tsx';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path='/*' element={<NotFound/>} />
             <Route index element={<Home />} />
             <Route path="/property/:id" element={ <PropertyDetails/> }/>
+            <Route path="/project/:id" element={ <ProjectDetails/> }/>
             <Route path='/dashboard' element={<DashBoard />}>
               <Route path='/dashboard/main' element={<DashboardLayout />} />
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
