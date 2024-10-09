@@ -28,6 +28,7 @@ interface FilterState {
 export default function PropertyCardsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
@@ -123,7 +124,7 @@ export default function PropertyCardsCarousel() {
                   >
                     <div className="relative">
                       <img 
-                        src={property.images.length > 0 ? property.images[0] : defaultImg} 
+                        src={property.images.length > 0 ?  `${imgPrefix}${property.images[0]}` : defaultImg} 
                         alt={property.name} 
                         className="w-full h-48 object-cover"
                       />

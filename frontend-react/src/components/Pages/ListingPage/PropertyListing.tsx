@@ -21,6 +21,7 @@ interface FilterState {
 
 export default function PropertyListing() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
@@ -113,7 +114,7 @@ export default function PropertyListing() {
                   <div className="w-full md:w-2/5 lg:w-1/3 relative">
                     <img
                       src={
-                        property.images[0] ||
+                        `${imgPrefix}${property.images[0]}` ||
                         "/placeholder.svg?height=400&width=600"
                       }
                       alt={property.name}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, Form } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -18,6 +18,7 @@ import Property from "../../Models/Property";
 
 export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
@@ -116,7 +117,7 @@ export default function PropertyDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="relative">
                 <img
-                  src={selectedImage}
+                  src={`${imgPrefix}${selectedImage}`}
                   alt={property.name}
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 />
@@ -146,7 +147,7 @@ export default function PropertyDetails() {
                   {property.images.map((image, index) => (
                     <img
                       key={index}
-                      src={image}
+                      src={`${imgPrefix}${image}`}
                       alt={`${property.name} - Image ${index + 1}`}
                       className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
                         selectedImage === image
@@ -285,8 +286,8 @@ export default function PropertyDetails() {
                     <Calendar className="w-5 h-5 mr-2 text-gray-600" />
                     {
                       property.type === "RENT" ?
-                      <span>Built in {property.details.builtIn}</span>
-                      : <span>Possesion in {property.details.possesion}</span>
+                      <span>Built in {new Date(property.details.builtIn).getDate()}/{new Date(property.details.builtIn).getMonth()+1}/{new Date(property.details.builtIn).getFullYear()}</span>
+                      : <span>Possesion in {new Date(property.details.possesion).getDate()}/{new Date(property.details.possesion).getMonth()+1}/{new Date(property.details.possesion).getFullYear()}</span>
                     }
                   </div>
                   <div className="flex items-center">
@@ -296,15 +297,27 @@ export default function PropertyDetails() {
                 </div>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
                 <p className="text-gray-600">{property.details.description}</p>
-                <h3 className="text-xl font-semibold mt-6 mb-2">Amenities</h3>
-                <ul className="grid grid-cols-2 gap-2">
-                  {property.details.ammenities.map((amenity, index) => (
-                    <li key={index} className="flex items-center">
+                <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white overflow-hidden mt-5 mb-12"
+              >
+                <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {property.details.ammenities?.map((amenity, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center p-3 bg-gray-100 rounded-lg"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                       {amenity}
-                    </li>
+                    </motion.div>
                   ))}
-                </ul>
+                </div>
+              </motion.div>
                 {/* Address Section */}
                 <motion.div
                   className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
@@ -375,14 +388,14 @@ export default function PropertyDetails() {
                           <>
                             <td className="font-medium">Year Built:</td>
                             <td className="text-gray-600">
-                              {property.details.builtIn}
+                              {new Date(property.details.builtIn).getDate()}/{new Date(property.details.builtIn).getMonth()+1}/{new Date(property.details.builtIn).getFullYear()}
                             </td>
                           </>
                         ) : (
                           <>
                             <td className="font-medium">Possession Date:</td>
                             <td className="text-gray-600">
-                              {property.details.possesion}
+                            {new Date(property.details.possesion).getDate()}/{new Date(property.details.possesion).getMonth()+1}/{new Date(property.details.possesion).getFullYear()}
                             </td>
                           </>
                         )}
