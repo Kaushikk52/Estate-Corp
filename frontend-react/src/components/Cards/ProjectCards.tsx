@@ -23,6 +23,7 @@ import "swiper/css/autoplay";
 
 export default function ProjectsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -94,7 +95,7 @@ export default function ProjectsCarousel() {
                 >
                   <div className="relative">
                     <img 
-                      src={project.images.length > 0 ? project.images[0] : defaultImg} 
+                      src={project.images.length > 0 ? `${imgPrefix}${project.images[0]}` : defaultImg} 
                       alt={project.name} 
                       className="w-full h-48 object-cover"
                     />
@@ -116,25 +117,22 @@ export default function ProjectsCarousel() {
                         {project.floorPlans.length} Floor Plans
                       </span>
                     </div>
-                      <p className="text-sm text-gray-600 mt-1 flex items-center lineclamp1">
+                      <p className="text-sm text-gray-600 mt-1 flex items-center">
                       <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
                       <span className="truncate lineclamp1">
                       {project.address.street} {project.address.locality} {project.location} {project.address.landmark} - {project.address.zipCode}
                       </span>
                     </p>
-                    <p className="text-sm text-gray-600 mb-4 lineclamp1">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-2 mb-4 mt-3">
                       {
                         project.underConstruction ?
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <Calendar className="h-3 w-3 mr-1" />
-                        Possesion date: {project.possesion}
+                        Possesion: {new Date(project.possesion).getDate()}/{new Date(project.possesion).getMonth() + 1}/{new Date(project.possesion).getFullYear()}
                       </span> : 
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       <Calendar className="h-3 w-3 mr-1" />
-                      Built: {project.builtIn}
+                      Built: {new Date(project.builtIn).getDate()}/{new Date(project.builtIn).getMonth() + 1}/{new Date(project.builtIn).getFullYear()}
                     </span>
                       }
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -147,7 +145,7 @@ export default function ProjectsCarousel() {
                       </span>
                     </div>
                     <div className="mt-4">
-                      <div className="flex justify-between text-sm text-gray-500">
+                      <div className="flex justify-between text-sm text-gray-500 lineclamp1">
                         <span>Description : {project.description}</span>
                       </div>
                     </div>

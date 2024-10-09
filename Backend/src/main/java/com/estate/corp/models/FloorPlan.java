@@ -1,9 +1,6 @@
 package com.estate.corp.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -20,6 +17,10 @@ public class FloorPlan {
     private String id;
     private String name;
     private String image;
+
+    @Enumerated(EnumType.STRING)
+    private PropertyType type;
+
     private int bedrooms;
     private int bathrooms;
     private int balconies;
@@ -37,6 +38,10 @@ public class FloorPlan {
         if(this.id == null){
             this.id = UUID.randomUUID().toString();
         }
+    }
+
+    public enum PropertyType{
+        RENT,BUY
     }
 
 }

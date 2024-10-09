@@ -6,6 +6,19 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { propertyValidationSchema } from "../../../Validations/propertyValidations";
+import DatePicker from "react-datepicker";
+
+const DatePickerField = ({ field, form }: any) => {
+  return (
+    <DatePicker
+      {...field}
+      selected={(field.value && new Date(field.value)) || null}
+      dateFormat="dd/MM/yyyy"
+      onChange={(date) => form.setFieldValue(field.name, date)}
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    />
+  );
+};
 
 export default function AddPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -92,9 +105,9 @@ export default function AddPropertyLayout() {
             formData
           );
 
-          if (res && res.data && res.data.secure_url) {
-            console.log("Image uploaded...", res.data.secure_url);
-            imgUrls.push(res.data.secure_url);
+          if (res && res.data && res.data.display_name) {
+            console.log("Image uploaded...", res.data.display_name);
+            imgUrls.push(res.data.display_name);
           }
         })
       );
@@ -755,11 +768,12 @@ export default function AddPropertyLayout() {
                         Built In
                       </label>
                       <Field
-                        id="details.builtIn"
-                        name="details.builtIn"
-                        type="date"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
+                          id="details.builtIn"
+                          name="details.builtIn"
+                          type="date"
+                          component={DatePickerField}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                       <ErrorMessage
                         name="details.builtIn"
                         component="div"
@@ -774,11 +788,12 @@ export default function AddPropertyLayout() {
                       Possession date
                     </label>
                     <Field
-                      id="details.possesion"
-                      name="details.possesion"
-                      type="date"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
+                          id="details.possesion"
+                          name="details.possesion"
+                          type="date"
+                          component={DatePickerField}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                     <ErrorMessage
                       name="details.possesion"
                       component="div"

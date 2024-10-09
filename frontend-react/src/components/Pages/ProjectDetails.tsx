@@ -1,160 +1,211 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik'
-import * as Yup from 'yup'
-import { MapPin, Calendar, Home, Users, Maximize2, DollarSign, Phone, Mail, ChevronRight, X, ChevronLeft } from 'lucide-react'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import * as Yup from "yup";
+import {
+  MapPin,
+  Calendar,
+  X,
+  ChevronLeft,
+  IndianRupee,
+  BedDoubleIcon,
+  ChartNoAxesGantt,
+  Scan,
+  Bed,
+  Bath,
+} from "lucide-react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
+import Project from "../../Models/Project";
+import FloorPlan from "../../Models/FloorPlan";
 
-const projectData = {
-  name: "Skyline Residences",
-  location: "Downtown Metro City",
-  completion: "Q4 2024",
-  completionPercentage: 75,
-  totalUnits: 120,
-  description: "Skyline Residences is a luxurious residential project offering breathtaking views of the city skyline. With its prime location in Downtown Metro City, residents will enjoy easy access to shopping, dining, and entertainment options. The project features modern amenities including a rooftop pool, fitness center, and 24/7 concierge service.",
-  floorPlans: [
-    { id: 1, name: "Studio Apartment", size: "500 sq ft", bedrooms: 0, bathrooms: 1, price: 250000 },
-    { id: 2, name: "One Bedroom", size: "750 sq ft", bedrooms: 1, bathrooms: 1, price: 350000 },
-    { id: 3, name: "Two Bedroom", size: "1000 sq ft", bedrooms: 2, bathrooms: 2, price: 500000 },
-    { id: 4, name: "Penthouse Suite", size: "2000 sq ft", bedrooms: 3, bathrooms: 3, price: 1000000 },
-  ],
-  amenities: ["Rooftop Pool", "Fitness Center", "24/7 Concierge", "Underground Parking", "Pet-friendly", "Smart Home Technology"],
-  gallery: [
-    "/placeholder.svg?height=400&width=600&text=Project+Image+1",
-    "/placeholder.svg?height=400&width=600&text=Project+Image+2",
-    "/placeholder.svg?height=400&width=600&text=Project+Image+3",
-    "/placeholder.svg?height=400&width=600&text=Project+Image+4",
-  ]
-}
+const initialValues = {
+  name: "",
+  phone: "",
+  email: "",
+  message: "",
+  terms: false,
+};
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  phone: Yup.string().required('Phone is required'),
-  message: Yup.string().required('Message is required'),
-})
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string().required("Phone is required"),
+  message: Yup.string().required("Message is required"),
+});
 
 export default function ProjectDetails() {
-  const [selectedPlan, setSelectedPlan] = useState(projectData.floorPlans[0])
-  const [showContactForm, setShowContactForm] = useState(false)
+  const { id } = useParams<{ id: string }>();
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const [selectedPlan, setSelectedPlan] = useState<FloorPlan>();
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [project, setProject] = useState<Project | any>();
+  const [selectedImage, setSelectedImage] = useState<string | undefined>("");
+  const [bedroomList, setBedroomList] = useState("");
 
-  const { scrollYProgress } = useScroll()
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1])
-  const imageScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.2])
-
-  const overviewRef = useRef(null)
-  const floorPlansRef = useRef(null)
-  const amenitiesRef = useRef(null)
-  const galleryRef = useRef(null)
-
-  const handleSubmit = (values:any, { setSubmitting, resetForm }: FormikHelpers<any>) => {
-    console.log(values)
-    setSubmitting(false)
-    resetForm()
-    setShowContactForm(false)
-  }
+  const handleSubmit = (
+    values: any,
+    { setSubmitting, resetForm }: FormikHelpers<any>
+  ) => {
+    console.log(values);
+    setSubmitting(false);
+    resetForm();
+    setShowContactForm(false);
+  };
 
   useEffect(() => {
+    getProjectById(id);
     const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      const header = document.getElementById('sticky-header')
+      const scrollPosition = window.scrollY;
+      const header = document.getElementById("sticky-header");
       if (header) {
         if (scrollPosition > 100) {
-          header.classList.add('bg-white', 'shadow-md')
+          header.classList.add("bg-white", "shadow-md");
         } else {
-          header.classList.remove('bg-white', 'shadow-md')
+          header.classList.remove("bg-white", "shadow-md");
         }
       }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const getProjectById = async (id: any) => {
+    const response = await axios.get(`${baseURL}/v1/api/projects/id/${id}`);
+    if (response.status === 200) {
+      setProject(response.data);
+      setSelectedPlan(response.data?.floorPlans[0]);
+      setSelectedImage(response.data.images[0]);
+      const bedroomList = response.data?.floorPlans
+        .map((plan: any) => plan.bedrooms)
+        .sort((a: number, b: number) => a - b)
+        .join(",");
+      setBedroomList(bedroomList);
+    } else {
     }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const scrollTo = (ref:any) => {
-    ref.current.scrollIntoView({ behavior: 'smooth' })
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      
-      <Link
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8"
+      >
+        <Link
           to="/"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6"
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-5"
         >
           <ChevronLeft className="w-5 h-5 mr-2" />
           Back to Listings
         </Link>
-
-      <motion.div 
-        style={{ opacity: headerOpacity }}
-        className="h-16"  // Spacer for fixed header
-      />
-      
-
-      <motion.div className="relative h-[50vh] overflow-hidden">
-        <motion.img
-          src="/placeholder.svg?height=800&width=1200&text=Skyline+Residences"
-          alt={projectData.name}
-          className="w-full h-full object-cover"
-          style={{ scale: imageScale }}
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-5xl font-bold text-white text-center">{projectData.name}</h1>
-        </div>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8">
         <motion.div
-          ref={overviewRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="bg-white shadow-xl rounded-lg overflow-hidden p-6 mb-12"
         >
-          <h2 className="text-3xl font-semibold mb-6">Project Overview</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <p className="text-gray-600 mb-4">{projectData.description}</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 md:mb-0">
+                {project?.name}
+              </h1>
+              <div className="flex items-center text-gray-600 mb-6">
+                <MapPin className="w-5 h-5 mr-2" />
+                <span>
+                  {project?.address.landmark} {project?.address.locality}{" "}
+                  {project?.address.street} - {project?.address.zipCode}
+                </span>
+              </div>
+              <img
+                src={`${imgPrefix}${selectedImage}`}
+                alt={project?.name}
+                className="w-full h-[400px] object-cover rounded-lg shadow-md"
+              />
+              <div className="flex mt-4 space-x-4 overflow-x-auto p-2">
+                {project?.images.map((image:any, index:any) => (
+                  <img
+                    key={index}
+                    src={`${imgPrefix}${image}`}
+                    alt={`${project?.name} - Image ${index + 1}`}
+                    className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
+                      selectedImage === image
+                        ? "ring-2 ring-gray-500"
+                        : "opacity-70 hover:opacity-100"
+                    }`}
+                    onClick={() => setSelectedImage(image)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h2 className="text-3xl font-semibold mb-6 mt-12">
+                Project Overview
+              </h2>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center">
                   <MapPin className="w-5 h-5 mr-2 text-blue-600" />
-                  <span>{projectData.location}</span>
+                  <span>{project?.location}</span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="w-5 h-5 mr-2 text-blue-600" />
-                  <span>Completion: {projectData.completion}</span>
+                  {project?.underConstruction == "Yes" ? 
+                  (
+                    <span>Possession: {new Date(project?.possesion).getDate()}/{new Date(project?.possesion).getMonth() + 1}/{new Date(project?.possesion).getFullYear()}</span>
+                  ):
+                  (
+                    <span>Built-In: {new Date(project?.builtIn).getDate()}/{new Date(project?.builtIn).getMonth() + 1}/{new Date(project?.builtIn).getFullYear()}</span>
+                  )
+                  }
                 </div>
                 <div className="flex items-center">
-                  <Home className="w-5 h-5 mr-2 text-blue-600" />
-                  <span>{projectData.totalUnits} Units</span>
+                  <ChartNoAxesGantt className="w-5 h-5 mr-2 text-blue-600" />
+                  <span>{project?.floorPlans.length} Floor Plans</span>
                 </div>
                 <div className="flex items-center">
-                  <Users className="w-5 h-5 mr-2 text-blue-600" />
-                  <span>Studio to 3BR</span>
+                  <BedDoubleIcon className="w-5 h-5 mr-2 text-blue-600" />
+                  <span>{bedroomList} bedrooms</span>
                 </div>
               </div>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Project Progress</h3>
-              <div className="bg-gray-200 rounded-full h-4 mb-4">
-                <div 
-                  className="bg-blue-600 rounded-full h-4 transition-all duration-1000 ease-out"
-                  style={{ width: `${projectData.completionPercentage}%` }}
-                />
-              </div>
-              <p className="text-center font-semibold">{projectData.completionPercentage}% Complete</p>
+              <h3 className="text-xl font-semibold mt-5 mb-2">Description</h3>
+              <p className="text-gray-600 mb-4">{project?.description}</p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white overflow-hidden mt-5 mb-12"
+              >
+                <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {project?.ammenities?.map((amenity:any, index:any) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center p-3 bg-gray-100 rounded-lg"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      {amenity}
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </div>
         </motion.div>
 
         <motion.div
-          ref={floorPlansRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -162,82 +213,264 @@ export default function ProjectDetails() {
         >
           <h2 className="text-3xl font-semibold mb-6">Floor Plans</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {projectData.floorPlans.map((plan) => (
+            {project?.floorPlans.map((plan:any) => (
               <motion.div
                 key={plan.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                  selectedPlan.id === plan.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'
+                  selectedPlan?.id === plan.id
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-blue-300"
                 }`}
                 onClick={() => setSelectedPlan(plan)}
               >
                 <h3 className="font-semibold">{plan.name}</h3>
-                <p className="text-sm text-gray-600">{plan.size}</p>
+                <p className="text-sm text-gray-600">{plan.bedrooms} BHK</p>
               </motion.div>
             ))}
           </div>
           <motion.div
-            key={selectedPlan.id}
+            key={selectedPlan?.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <img
-                src={`/placeholder.svg?height=300&width=500&text=Floor+Plan+${selectedPlan.id}`}
-                alt={selectedPlan.name}
-                className="w-full rounded-lg object-cover"
-              />
               <div>
-                <h3 className="text-xl font-semibold mb-4">{selectedPlan.name}</h3>
+              <img
+                src={`${imgPrefix}${selectedPlan?.image}`}
+                alt={selectedPlan?.name}
+                className="w-full h-[400px] object-cover rounded-lg shadow-md"
+              />
+              <div className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3">
+                  <Formik
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                  >
+                    {({ isSubmitting }) => (
+                      <form className="space-y-4">
+                        <h2 className="font-bold text-xl">
+                          Contact over email
+                        </h2>
+                        <div>
+                          <Field
+                            name="name"
+                            type="text"
+                            placeholder="Name"
+                            className="w-full p-2 border rounded"
+                          />
+                          <ErrorMessage
+                            name="name"
+                            component="div"
+                            className="text-red-500 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Field
+                            name="phone"
+                            type="tel"
+                            placeholder="Phone"
+                            className="w-full p-2 border rounded"
+                          />
+                          <ErrorMessage
+                            name="phone"
+                            component="div"
+                            className="text-red-500 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Field
+                            name="email"
+                            type="email"
+                            placeholder="Email"
+                            className="w-full p-2 border rounded"
+                          />
+                          <ErrorMessage
+                            name="email"
+                            component="div"
+                            className="text-red-500 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Field
+                            name="message"
+                            as="textarea"
+                            rows="4"
+                            placeholder="Hello, I am interested in your property. Please provide more details."
+                            className="w-full p-2 border rounded"
+                          />
+                          <ErrorMessage
+                            name="message"
+                            component="div"
+                            className="text-red-500 text-sm"
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Field
+                            type="checkbox"
+                            name="terms"
+                            id="terms"
+                            className="rounded text-orange-500"
+                          />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm text-gray-600"
+                          >
+                            By submitting this form I agree to Terms of Use
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="terms"
+                          component="div"
+                          className="text-red-500 text-sm"
+                        />
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="w-full bg-gray-300  p-2 rounded hover:bg-gray-600 hover:text-white transition duration-300"
+                        >
+                          Send Message
+                        </motion.button>
+                      </form>
+                    )}
+                  </Formik>
+                </div>
+              </div>
+              <div>
+              <h2 className="text-2xl font-semibold mb-4">
+                  Floor Plan
+                </h2>
+                <h3 className="text-xl font-semibold mb-4">
+                  {selectedPlan?.name}
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center">
-                    <Maximize2 className="w-5 h-5 mr-2 text-blue-600" />
-                    <span>{selectedPlan.size}</span>
+                    <Scan className="w-5 h-5 mr-2 text-blue-600" />
+                    <span>
+                      {selectedPlan?.carpetArea} {selectedPlan?.areaUnit}
+                    </span>
                   </div>
                   <div className="flex items-center">
-                    <Home className="w-5 h-5 mr-2 text-blue-600" />
-                    <span>{selectedPlan.bedrooms} Bedroom{selectedPlan.bedrooms !== 1 && 's'}</span>
+                    <Bed className="w-5 h-5 mr-2 text-blue-600" />
+                    <span>
+                      {selectedPlan?.bedrooms} Bedroom
+                      {selectedPlan?.bedrooms !== 1 && "s"}
+                    </span>
                   </div>
                   <div className="flex items-center">
-                    <Users className="w-5 h-5 mr-2 text-blue-600" />
-                    <span>{selectedPlan.bathrooms} Bathroom{selectedPlan.bathrooms !== 1 && 's'}</span>
+                    <Bath className="w-5 h-5 mr-2 text-blue-600" />
+                    <span>
+                      {selectedPlan?.bathrooms} Bathroom
+                      {selectedPlan?.bathrooms !== 1 && "s"}
+                    </span>
                   </div>
                   <div className="flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2 text-blue-600" />
-                    <span>${selectedPlan.price.toLocaleString()}</span>
+                    <IndianRupee className="w-5 h-5 mr-2 text-blue-600" />
+                    <span>{selectedPlan?.price} {selectedPlan?.amtUnit}</span>
                   </div>
+                </div>
+                <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
+                <p className="text-gray-600">{selectedPlan?.description}</p>
+                {/* Address Section */}
+                <motion.div
+                  className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <h2 className="text-lg font-semibold mb-4">
+                    Address
+                    <hr />
+                  </h2>
+                  <table className="grid grid-cols-2 gap-4">
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Locality</td>
+                        <td className="text-gray-600">
+                          {project?.address.locality}
+                        </td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Zip Code</td>
+                        <td className="text-gray-600">
+                          {project?.address.zipCode}
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Street</td>
+                        <td className="text-gray-600">
+                          {project?.address.street}
+                        </td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Location</td>
+                        <td className="text-gray-600">{project?.location}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </motion.div>
+                {/* Details Section */}
+                <motion.div
+                  className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  <h2 className="text-lg font-semibold mb-4">
+                    Details
+                    <hr />
+                  </h2>
+                  <table className="grid grid-cols-2 gap-4">
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Owner:</td>
+                        <td className="text-gray-600">
+                          {project?.owner.fullName}
+                        </td>
+                        <td className="font-medium">Property Size:</td>
+                        <td className="text-gray-600">
+                          {selectedPlan?.carpetArea} {selectedPlan?.areaUnit}
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Bedrooms:</td>
+                        <td className="text-gray-600">
+                          {selectedPlan?.bedrooms}
+                        </td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Bathrooms:</td>
+                        <td className="text-gray-600">
+                          {selectedPlan?.bathrooms}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </motion.div>
+                <div className="flex flex-col md:flex-row justify-center items-center mt-4 gap-8">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Contact Owner
+                  </motion.button>
                 </div>
               </div>
             </div>
           </motion.div>
         </motion.div>
+        
 
-        <motion.div
-          ref={amenitiesRef}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white shadow-xl rounded-lg overflow-hidden p-6 mb-12"
-        >
-          <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {projectData.amenities.map((amenity, index) => (
-              <motion.div
-                key={index}
-                className="flex items-center p-3 bg-gray-100 rounded-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                {amenity}
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
+        {/* <motion.div
           ref={galleryRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -262,13 +495,17 @@ export default function ProjectDetails() {
           >
             {projectData.gallery.map((image, index) => (
               <SwiperSlide key={index}>
-                <img src={image} alt={`Project Image ${index + 1}`} className="w-full h-64 object-cover rounded-lg" />
+                <img
+                  src={image}
+                  alt={`Project Image ${index + 1}`}
+                  className="w-full h-64 object-cover rounded-lg"
+                />
               </SwiperSlide>
             ))}
           </Swiper>
-        </motion.div>
+        </motion.div> */}
       </div>
-
+{/* 
       <motion.div
         className="fixed bottom-8 right-8"
         initial={{ opacity: 0, y: 50 }}
@@ -282,10 +519,9 @@ export default function ProjectDetails() {
           onClick={() => setShowContactForm(true)}
         >
           <Mail className="w-5 h-5 mr-2" />
-          
           Contact Us
         </motion.button>
-      </motion.div>
+      </motion.div> */}
 
       {showContactForm && (
         <motion.div
@@ -308,23 +544,50 @@ export default function ProjectDetails() {
             </button>
             <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
             <Formik
-              initialValues={{ name: '', email: '', phone: '', message: '' }}
+              initialValues={{ name: "", email: "", phone: "", message: "" }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
               {({ isSubmitting }) => (
                 <Form className="space-y-4">
                   <div>
-                    <Field name="name" type="text" placeholder="Name" className="w-full p-2 border rounded" />
-                    <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
+                    <Field
+                      name="name"
+                      type="text"
+                      placeholder="Name"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage
+                      name="name"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
                   </div>
                   <div>
-                    <Field name="email" type="email" placeholder="Email" className="w-full p-2 border rounded" />
-                    <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
+                    <Field
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
                   </div>
                   <div>
-                    <Field name="phone" type="tel" placeholder="Phone" className="w-full p-2 border rounded" />
-                    <ErrorMessage name="phone" component="div" className="text-red-500 text-sm" />
+                    <Field
+                      name="phone"
+                      type="tel"
+                      placeholder="Phone"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage
+                      name="phone"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
                   </div>
                   <div>
                     <Field
@@ -334,7 +597,11 @@ export default function ProjectDetails() {
                       placeholder="I'm interested in learning more about Skyline Residences..."
                       className="w-full p-2 border rounded"
                     />
-                    <ErrorMessage name="message" component="div" className="text-red-500 text-sm" />
+                    <ErrorMessage
+                      name="message"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -352,5 +619,5 @@ export default function ProjectDetails() {
         </motion.div>
       )}
     </div>
-  )
+  );
 }

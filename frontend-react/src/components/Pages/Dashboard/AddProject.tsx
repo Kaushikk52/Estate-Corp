@@ -141,9 +141,9 @@ export default function AddProjectLayout() {
             formData
           );
 
-          if (res && res.data && res.data.secure_url) {
-            console.log("Image uploaded...", res.data.secure_url);
-            imgUrls.push(res.data.secure_url);
+          if (res && res.data && res.data.display_name) {
+            console.log("Image uploaded...", res.data.display_name);
+            imgUrls.push(res.data.display_name);
           }
         })
       );
@@ -162,7 +162,7 @@ export default function AddProjectLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    if (step !== 4) {
+    if (step !== 4 || values.ammenities.length < 1) {
       setSubmitting(false);
       return;
     }
@@ -726,15 +726,15 @@ export default function AddProjectLayout() {
                                     </div>
                                     <div>
                                       <label
-                                        htmlFor={`floorPlans.${index}.priceUnit`}
+                                        htmlFor={`floorPlans.${index}.amtUnit`}
                                         className="block text-sm font-medium text-gray-700"
                                       >
                                         Price Unit
                                       </label>
                                       <Field
                                         as="select"
-                                        id={`floorPlans.${index}.priceUnit`}
-                                        name={`floorPlans.${index}.priceUnit`}
+                                        id={`floorPlans.${index}.amtUnit`}
+                                        name={`floorPlans.${index}.amtUnit`}
                                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                                       >
                                         <option value="">Select Unit</option>
@@ -743,7 +743,7 @@ export default function AddProjectLayout() {
                                         <option value="Cr">Crore</option>
                                       </Field>
                                       <ErrorMessage
-                                        name={`floorPlans.${index}.priceUnit`}
+                                        name={`floorPlans.${index}.amtUnit`}
                                         component="div"
                                         className="text-red-500 text-sm mt-1"
                                       />
@@ -924,7 +924,7 @@ export default function AddProjectLayout() {
                                 name: "",
                                 bedrooms: 0,
                                 price: 0,
-                                priceUnit: "",
+                                amtUnit: "",
                                 carpetArea: 0,
                                 areaUnit: "",
                                 bathrooms: 0,

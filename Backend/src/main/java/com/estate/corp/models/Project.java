@@ -1,6 +1,6 @@
 package com.estate.corp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -32,7 +32,7 @@ public class Project {
     @NotNull(message = "Owner cannot be null")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id",nullable = true)
-    @JsonIgnore
+    @JsonIgnoreProperties({"properties","projects"})
     private User owner;
 
     @OneToMany( cascade = CascadeType.ALL)
@@ -55,6 +55,8 @@ public class Project {
     private int totalFloors;
 
     private String underConstruction;
+
+    private List<String> ammenities;
 
     @PastOrPresent(message = "Creation date must be in the past or present")
     @Temporal(TemporalType.TIMESTAMP)
