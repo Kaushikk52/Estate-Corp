@@ -47,6 +47,7 @@ public class Project {
     private String builtIn;
     private String possesion;
 
+    @Lob
     private String description;
 
     @Min(value = 1, message = "Total floors must be at least 1")

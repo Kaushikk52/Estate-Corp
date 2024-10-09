@@ -31,6 +31,7 @@ public class FloorPlan {
     private Double carpetArea;
     private String areaUnit;
     @Column(name = "description")
+    @Lob
     private String description;
 
     @PrePersist
