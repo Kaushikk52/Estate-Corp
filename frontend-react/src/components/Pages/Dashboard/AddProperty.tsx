@@ -126,7 +126,7 @@ export default function AddPropertyLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    if (step !== 4) {
+    if (step !== 4 || values.details.ammenities.length < 1) {
       setSubmitting(false);
       return;
     }
@@ -166,6 +166,7 @@ export default function AddPropertyLayout() {
           });
           resetForm();
           setSubmitting(false);
+          setStep(1);
         }
       } catch (err: any) {
         console.log(err);
