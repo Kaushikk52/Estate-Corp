@@ -30,8 +30,9 @@ public class FloorPlan {
     private String amtUnit;
     private Double carpetArea;
     private String areaUnit;
-    @Column(name = "description")
+
     @Lob
+    @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
     @PrePersist

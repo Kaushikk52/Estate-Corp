@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { Formik, Field, ErrorMessage, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
 import {
   MapPin,
@@ -17,16 +17,18 @@ import {
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Project from "../../Models/Project";
 import FloorPlan from "../../Models/FloorPlan";
+import toast from "react-hot-toast";
+import User from "../../Models/User";
 
 const initialValues = {
   name: "",
   phone: "",
   email: "",
-  message: "",
+  content: "",
   terms: false,
 };
 
@@ -34,31 +36,62 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   phone: Yup.string().required("Phone is required"),
-  message: Yup.string().required("Message is required"),
+  content: Yup.string().required("Message is required"),
 });
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const [selectedPlan, setSelectedPlan] = useState<FloorPlan>();
-  const [showContactForm, setShowContactForm] = useState(false);
   const [project, setProject] = useState<Project | any>();
+  const [currentUser,setCurrentUser] = useState<any>();
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
   const [bedroomList, setBedroomList] = useState("");
 
-  const handleSubmit = (
+  const handleSubmit = async (
     values: any,
     { setSubmitting, resetForm }: FormikHelpers<any>
   ) => {
-    console.log(values);
-    setSubmitting(false);
-    resetForm();
-    setShowContactForm(false);
+    try {
+      const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+      const body = {
+        userId: currentUser?.userId,
+        projectId: project.id,
+        projectName:project.name,
+        ownerId:project?.owner.id,
+        ownerName:project.owner.fullName,
+        enquiry: values,
+        subject: "PROJECT_ENQUIRY"
+      };
+
+      const response = await axios.post(
+        `${baseURL}/v1/api/enquiry/email`,body);
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(`Email sent Successfully`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+        resetForm();
+      } else {
+        throw new Error('Failed to send email');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(`Couldn't send Email, Try again`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
     getProjectById(id);
+    getCurrentUser();
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const header = document.getElementById("sticky-header");
@@ -87,6 +120,31 @@ export default function ProjectDetails() {
         .join(",");
       setBedroomList(bedroomList);
     } else {
+    }
+  };
+
+  const getCurrentUser = async () => {
+    try{
+      const token = localStorage.getItem('token');
+      if(!token){
+        setCurrentUser(undefined);
+      } 
+      const response = await axios.get(
+        `${baseURL}/v1/api/users/getCurrentUser`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 201 || response.status === 200) {
+        setCurrentUser(response.data);
+      }
+    }catch(err:any){
+      console.log("An error occured : ", err);
+      if(err.status === 401){
+        localStorage.removeItem('token');
+      }
+      toast.error(`An error occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
     }
   };
 
@@ -250,7 +308,7 @@ export default function ProjectDetails() {
                     onSubmit={handleSubmit}
                   >
                     {({ isSubmitting }) => (
-                      <form className="space-y-4">
+                      <Form className="space-y-4">
                         <h2 className="font-bold text-xl">
                           Contact over email
                         </h2>
@@ -295,14 +353,14 @@ export default function ProjectDetails() {
                         </div>
                         <div>
                           <Field
-                            name="message"
+                            name="content"
                             as="textarea"
                             rows="4"
                             placeholder="Hello, I am interested in your property. Please provide more details."
                             className="w-full p-2 border rounded"
                           />
                           <ErrorMessage
-                            name="message"
+                            name="content"
                             component="div"
                             className="text-red-500 text-sm"
                           />
@@ -335,7 +393,7 @@ export default function ProjectDetails() {
                         >
                           Send Message
                         </motion.button>
-                      </form>
+                      </Form>
                     )}
                   </Formik>
                 </div>
@@ -468,156 +526,7 @@ export default function ProjectDetails() {
             </div>
           </motion.div>
         </motion.div>
-        
-
-        {/* <motion.div
-          ref={galleryRef}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white shadow-xl rounded-lg overflow-hidden p-6 mb-12"
-        >
-          <h2 className="text-3xl font-semibold mb-6">Project Gallery</h2>
-          <Swiper
-            modules={[Navigation, Pagination]}
-            spaceBetween={30}
-            slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
-            breakpoints={{
-              640: {
-                slidesPerView: 2,
-              },
-              768: {
-                slidesPerView: 3,
-              },
-            }}
-          >
-            {projectData.gallery.map((image, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image}
-                  alt={`Project Image ${index + 1}`}
-                  className="w-full h-64 object-cover rounded-lg"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </motion.div> */}
       </div>
-{/* 
-      <motion.div
-        className="fixed bottom-8 right-8"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg flex items-center"
-          onClick={() => setShowContactForm(true)}
-        >
-          <Mail className="w-5 h-5 mr-2" />
-          Contact Us
-        </motion.button>
-      </motion.div> */}
-
-      {showContactForm && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
-          <motion.div
-            initial={{ scale: 0.9, y: 50 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.9, y: 50 }}
-            className="bg-white rounded-lg p-8 max-w-md w-full relative"
-          >
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              onClick={() => setShowContactForm(false)}
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
-            <Formik
-              initialValues={{ name: "", email: "", phone: "", message: "" }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({ isSubmitting }) => (
-                <Form className="space-y-4">
-                  <div>
-                    <Field
-                      name="name"
-                      type="text"
-                      placeholder="Name"
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="name"
-                      component="div"
-                      className="text-red-500 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <Field
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="email"
-                      component="div"
-                      className="text-red-500 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <Field
-                      name="phone"
-                      type="tel"
-                      placeholder="Phone"
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="phone"
-                      component="div"
-                      className="text-red-500 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <Field
-                      name="message"
-                      as="textarea"
-                      rows="4"
-                      placeholder="I'm interested in learning more about Skyline Residences..."
-                      className="w-full p-2 border rounded"
-                    />
-                    <ErrorMessage
-                      name="message"
-                      component="div"
-                      className="text-red-500 text-sm"
-                    />
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition duration-300"
-                  >
-                    Send Inquiry
-                  </motion.button>
-                </Form>
-              )}
-            </Formik>
-          </motion.div>
-        </motion.div>
-      )}
     </div>
   );
 }

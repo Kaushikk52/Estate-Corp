@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, Form } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -12,22 +12,24 @@ import {
   Compass,
 } from "lucide-react";
 import axios from "axios";
-import { ErrorMessage, Field, Formik, FormikHelpers } from "formik";
+import { ErrorMessage, Field, Formik, FormikHelpers,Form } from "formik";
 import * as Yup from "yup";
 import Property from "../../Models/Property";
+import toast from "react-hot-toast";
 
 export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
+  const [currentUser,setCurrentUser] = useState<any>();
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     phone: Yup.string().required("Phone is required"),
     email: Yup.string().email("Invalid email").required("Email is required"),
-    message: Yup.string().required("Message is required"),
+    content: Yup.string().required("Message is required"),
     terms: Yup.boolean().oneOf([true], "You must accept the terms"),
   });
 
@@ -35,12 +37,13 @@ export default function PropertyDetails() {
     name: "",
     phone: "",
     email: "",
-    message: "",
+    content: "",
     terms: false,
   };
 
   useEffect(() => {
     getPropertyById(id);
+    getCurrentUser();
   }, [id]);
 
   const getPropertyById = async (id: any) => {
@@ -50,10 +53,69 @@ export default function PropertyDetails() {
     setSelectedImage(response.data.images[0]);
   };
 
-  async function handleSubmit(
-    values: typeof initialValues,
-    { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
-  ) {}
+  const getCurrentUser = async () => {
+    try{
+      const token = localStorage.getItem('token');
+      if(!token){
+        setCurrentUser(undefined);
+      } 
+      const response = await axios.get(
+        `${baseURL}/v1/api/users/getCurrentUser`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 201 || response.status === 200) {
+        setCurrentUser(response.data);
+      }
+    }catch(err:any){
+      console.log("An error occured : ", err);
+      if(err.status === 401){
+        localStorage.removeItem('token');
+      }
+      toast.error(`An error occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting, resetForm }: FormikHelpers<any>
+  ) => {
+    try {
+      const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+      const body = {
+        userId: currentUser?.userId,
+        propertyId: property?.id,
+        propertyName:property?.name,
+        ownerId:property?.owner.id,
+        ownerName:property?.owner.fullName,
+        enquiry: values,
+        subject: "PROPERTY_ENQUIRY"
+      };
+
+      const response = await axios.post(
+        `${baseURL}/v1/api/enquiry/email`,body);
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(`Email sent Successfully`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+        resetForm();
+      } else {
+        throw new Error('Failed to send email');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(`Couldn't send Email, Try again`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const randomReview = () => {
     let random = Math.floor(Math.random() * 5) * 0.5;
@@ -165,7 +227,7 @@ export default function PropertyDetails() {
                     onSubmit={handleSubmit}
                   >
                     {({ isSubmitting }) => (
-                      <form className="space-y-4">
+                      <Form className="space-y-4">
                         <h2 className="font-bold text-xl">
                           Contact over email
                         </h2>
@@ -210,14 +272,14 @@ export default function PropertyDetails() {
                         </div>
                         <div>
                           <Field
-                            name="message"
+                            name="content"
                             as="textarea"
                             rows="4"
                             placeholder="Hello, I am interested in your property. Please provide more details."
                             className="w-full p-2 border rounded"
                           />
                           <ErrorMessage
-                            name="message"
+                            name="content"
                             component="div"
                             className="text-red-500 text-sm"
                           />
@@ -250,7 +312,7 @@ export default function PropertyDetails() {
                         >
                           Send Message
                         </motion.button>
-                      </form>
+                      </Form>
                     )}
                   </Formik>
                 </div>

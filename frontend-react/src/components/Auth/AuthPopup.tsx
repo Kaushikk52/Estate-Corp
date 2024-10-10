@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -17,14 +17,14 @@ export default function AuthPopup(props: any) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     if (props.popup === true) {
       setIsOpen(true);
     }
     if (token !== null && props.popup === true) {
       setIsOpen(false);
     }
-  }, [props.popup])
+  }, [props.popup]);
 
   const registerSchema = Yup.object({
     fullName: Yup.string()
@@ -63,7 +63,7 @@ export default function AuthPopup(props: any) {
       .min(6, "Password must be at least 6 characters")
       .required("Required"),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), ""], 'Passwords must match')
+      .oneOf([Yup.ref("password"), ""], "Passwords must match")
       .required("Required"),
   });
 
@@ -97,7 +97,7 @@ export default function AuthPopup(props: any) {
           localStorage.setItem("token", response.data.jwtToken);
         }
         setIsOpen(false);
-        navigate('/dashboard/add-property');
+        navigate("/dashboard/add-property");
         console.log("User Logged in Successfully");
       }
     } catch (err) {
@@ -108,14 +108,16 @@ export default function AuthPopup(props: any) {
   async function handleForgotPassword(values: any) {
     try {
       // console.log("Sending reset email to:", values.email);
-      const response = await axios.post(`${baseURL}/v1/api/auth/send-otp?email=${values.email}`);
-      if(response.status === 200){
-        toast.error(`OTP sent successfully`, {
+      const response = await axios.post(
+        `${baseURL}/v1/api/auth/send-otp?email=${values.email}`
+      );
+      if (response.status === 200) {
+        toast.success(`OTP sent successfully`, {
           position: "bottom-right",
           duration: 3000,
         });
         setResetStep("otp");
-      }else{
+      } else {
         toast.error(`Couldn't send Otp , Try again`, {
           position: "bottom-right",
           duration: 3000,
@@ -129,8 +131,10 @@ export default function AuthPopup(props: any) {
   async function handleOTPVerification(values: any) {
     try {
       // console.log("Verifying OTP:", values.otp);
-      const response = await axios.post(`${baseURL}/v1/api/auth/verify-otp?email=${values.email}&otp=${values.otp}&newPass=${values.confirmPassword}`);
-      if(response.status === 200){
+      const response = await axios.post(
+        `${baseURL}/v1/api/auth/verify-otp?email=${values.email}&otp=${values.otp}&newPass=${values.confirmPassword}`
+      );
+      if (response.status === 200) {
         // console.log("Resetting password");
         setActiveTab("login");
         setResetStep("email");
@@ -138,7 +142,7 @@ export default function AuthPopup(props: any) {
           position: "bottom-right",
           duration: 3000,
         });
-      }else{
+      } else {
         toast.error(`Couldn't send Otp , Try again`, {
           position: "bottom-right",
           duration: 3000,
@@ -166,7 +170,9 @@ export default function AuthPopup(props: any) {
             {activeTab !== "forgotPassword" && (
               <>
                 <p className="text-center text-gray-600 mb-6">
-                  {activeTab === "login" ? "Sign in to your account" : "Sign Up to create a new account"}
+                  {activeTab === "login"
+                    ? "Sign in to your account"
+                    : "Sign Up to create a new account"}
                 </p>
                 <div className="flex mb-4">
                   <button
@@ -396,7 +402,7 @@ export default function AuthPopup(props: any) {
                                   className="form-radio h-5 w-5 text-blue-600"
                                 />
                                 <label className="ml-2 text-gray-700">
-                                  {role.replace('ROLE_', '')}
+                                  {role.replace("ROLE_", "")}
                                 </label>
                               </div>
                             ))}
@@ -475,13 +481,18 @@ export default function AuthPopup(props: any) {
                 )}
                 {resetStep === "otp" && (
                   <Formik
-                    initialValues={{ otp: "",email:"",password:"",confirmPassword:"", }}
+                    initialValues={{
+                      otp: "",
+                      email: "",
+                      password: "",
+                      confirmPassword: "",
+                    }}
                     validationSchema={otpSchema}
                     onSubmit={(values) => handleOTPVerification(values)}
                   >
                     {({ errors, touched, isSubmitting }) => (
                       <Form className="space-y-4">
-                         <div>
+                        <div>
                           <label
                             htmlFor="email"
                             className="block text-sm font-medium text-gray-700"

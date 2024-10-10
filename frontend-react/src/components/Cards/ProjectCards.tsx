@@ -105,7 +105,7 @@ export default function ProjectsCarousel() {
                     </div>
                     <span className="absolute inline-flex top-2 right-5 items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                         <Home className="h-3 w-3 mr-1" />
-                        {project.underConstruction ? "Under Construction" : "Ready"}
+                        {project.underConstruction === "Yes" ? "Under Construction" : "Ready"}
                       </span>
                   </div>
                   <div className="p-4">
@@ -125,7 +125,7 @@ export default function ProjectsCarousel() {
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4 mt-3">
                       {
-                        project.underConstruction ?
+                        project.underConstruction === "Yes" ?
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <Calendar className="h-3 w-3 mr-1" />
                         Possesion: {new Date(project.possesion).getDate()}/{new Date(project.possesion).getMonth() + 1}/{new Date(project.possesion).getFullYear()}

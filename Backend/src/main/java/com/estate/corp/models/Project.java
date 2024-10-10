@@ -48,6 +48,7 @@ public class Project {
     private String possesion;
 
     @Lob
+    @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
     @Min(value = 1, message = "Total floors must be at least 1")
