@@ -21,7 +21,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
 
-export default function ProjectsCarousel() {
+export default function ProjectsCarousel(props:any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -35,11 +35,16 @@ export default function ProjectsCarousel() {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(`${baseURL}/v1/api/projects/all`);
-      if(response.data.length === 0 ){
-        setProjects([])
+      let response;
+      if(props.projects){
+        setProjects(props.projects);
+      }else{
+        response = await axios.get(`${baseURL}/v1/api/projects/all`);
+        if(response.data.length === 0 ){
+          setProjects([])
+        }
+        setProjects(response.data);
       }
-      setProjects(response.data);
     } catch (error) {
       console.error("Failed to fetch projects:", error);
     }

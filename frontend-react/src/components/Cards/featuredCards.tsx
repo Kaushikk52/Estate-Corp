@@ -15,37 +15,13 @@ import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, A11y } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
+import Property from "../../Models/Property";
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-interface Property {
-  id: string;
-  name: string;
-  images: string[];
-  type: string;
-  address: {
-    street: string;
-    locality: string;
-    landmark: string;
-    zipCode: string;
-  };
-  details: {
-    bedrooms: number;
-    bathrooms: number;
-    carpetArea: string;
-    areaUnit: string;
-    rent: number;
-    price: number;
-    amtUnit: string;
-    isNegotiable: string;
-    furnishedStatus: string;
-    location: string;
-  };
-}
-
-export default function FeaturedCardsCarousel() {
+export default function FeaturedCardsCarousel(props:any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
@@ -58,8 +34,13 @@ export default function FeaturedCardsCarousel() {
   }, []);
 
   const fetchProperties = async () => {
-    const response = await axios.get(`${baseURL}/v1/api/users/adminProperties`);
-    if(response.status == 200){
+    let response;
+    if(props.properties){
+     setProperties(props.properties)
+    }else{
+      response = await axios.get(`${baseURL}/v1/api/users/adminProperties`);
+    }
+    if(response?.status == 200){
         setProperties(response.data.properties);
     }
   };

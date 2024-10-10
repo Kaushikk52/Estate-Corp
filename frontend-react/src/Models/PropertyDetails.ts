@@ -1,6 +1,8 @@
 interface PropertyDetails{
     bedrooms: number;
     bathrooms: number;
+    balconies:number;
+    floorNo:number;
     carpetArea: string;
     areaUnit: string;
     rent: number;

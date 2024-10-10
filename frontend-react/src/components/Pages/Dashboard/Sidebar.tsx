@@ -9,20 +9,49 @@ import {
   LogOut,
   Building2
 } from "lucide-react";
+import axios from "axios";
 
 const navItems = [
   { icon: Home, label: "Home", href: "/" },
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/main" },
   { icon: Building2, label: "Projects", href: "/dashboard/add-project" },
-  { icon: Users, label: "Users", href: "/users" },
+  { icon: Users, label: "Users", href: `users` },
 ];
 
 export default function SidebarNavigation() {
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentUser, setCurrentUser] = useState({
+    userId: "",
+    role: "",
+  });
+
+  const getCurrentUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${baseURL}/v1/api/users/getCurrentUser`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 201 || response.status === 200) {
+        setCurrentUser({
+          userId: response.data.userId,
+          role: response.data.role,
+        });
+      }
+    } catch (err: any) {
+      console.log("An error occured : ", err);
+      if (err.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/");
+      }
+    }
+  };
 
   useEffect(() => {
+    getCurrentUser();
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
       setIsOpen(window.innerWidth >= 768);
@@ -90,7 +119,7 @@ export default function SidebarNavigation() {
           {isOpen && !isMobile && <span className="ml-2">Logout</span>}
           {(!isOpen || isMobile) && <span className="sr-only">Logout</span>}
         </button>
-        <button
+        <Link to={`/user/${currentUser.userId}`}
           className={`flex items-center text-gray-800 hover:bg-gray-100 rounded-md p-2 w-full ${
             (!isOpen || isMobile) && "justify-center"
           }`}
@@ -98,7 +127,7 @@ export default function SidebarNavigation() {
           <User className="h-5 w-5 flex-shrink-0" />
           {isOpen && !isMobile && <span className="ml-2">Account</span>}
           {(!isOpen || isMobile) && <span className="sr-only">Account</span>}
-        </button>
+        </Link>
       </div>
     </div>
   );
