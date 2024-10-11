@@ -181,7 +181,7 @@ export default function PropertyListing() {
                           {property.details.bathrooms} Baths
                         </span>
                       </div>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 lineclamp2">
                         {property.details.description}
                       </p>
                     </div>
