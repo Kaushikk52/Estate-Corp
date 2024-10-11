@@ -231,7 +231,7 @@ export default function AddProjectLayout() {
           "address",
         ];
       case 2:
-        return ["floorPlans"];
+        return ["floorPlans.name"];
       case 3:
         return ["images"];
       case 4:
@@ -242,6 +242,7 @@ export default function AddProjectLayout() {
   };
 
   const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
+    console.log(errors,touched,stepNumber);
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
       const fieldParts = field.split(".");
@@ -920,6 +921,11 @@ export default function AddProjectLayout() {
                                       className="text-red-500 text-sm mt-1"
                                     />
                                   </div>
+                                  {values.floorPlans[index].image && (
+                                      <p className="mt-2 text-sm text-gray-500">
+                                        <span className="font-semibold">Uploaded file:</span> {values.floorPlans[index].image.name}
+                                      </p>
+                                    )}
                                 </div>
                               )}
                             </div>
