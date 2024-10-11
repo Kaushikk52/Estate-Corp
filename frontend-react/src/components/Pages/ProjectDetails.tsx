@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import {
   MapPin,
   Calendar,
-  X,
   ChevronLeft,
   IndianRupee,
   BedDoubleIcon,
@@ -44,6 +43,9 @@ export default function ProjectDetails() {
   const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const projectsPath = `${environment}/Projects`;
+  const propertiesPath = `${environment}/Properties`;
   const [selectedPlan, setSelectedPlan] = useState<FloorPlan>();
   const [project, setProject] = useState<Project | any>();
   const [currentUser,setCurrentUser] = useState<any>();
@@ -185,7 +187,7 @@ export default function ProjectDetails() {
                 </span>
               </div>
               <img
-                src={`${imgPrefix}${selectedImage}`}
+                src={`${imgPrefix}${projectsPath}/${selectedImage}`}
                 alt={project?.name}
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
               />
@@ -193,7 +195,7 @@ export default function ProjectDetails() {
                 {project?.images.map((image:any, index:any) => (
                   <img
                     key={index}
-                    src={`${imgPrefix}${image}`}
+                    src={`${imgPrefix}${projectsPath}/${image}`}
                     alt={`${project?.name} - Image ${index + 1}`}
                     className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
                       selectedImage === image
@@ -297,7 +299,7 @@ export default function ProjectDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
               <img
-                src={`${imgPrefix}${selectedPlan?.image}`}
+                src={`${imgPrefix}${propertiesPath}/${selectedPlan?.image}`}
                 alt={selectedPlan?.name}
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
               />

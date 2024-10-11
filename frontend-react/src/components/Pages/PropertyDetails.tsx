@@ -20,6 +20,8 @@ import toast from "react-hot-toast";
 export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const propertiesPath = `${environment}/Properties`;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
   const [currentUser,setCurrentUser] = useState<any>();
@@ -179,7 +181,7 @@ export default function PropertyDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="relative">
                 <img
-                  src={`${imgPrefix}${selectedImage}`}
+                  src={`${imgPrefix}${propertiesPath}/${selectedImage}`}
                   alt={property.name}
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 />
@@ -209,7 +211,7 @@ export default function PropertyDetails() {
                   {property.images.map((image, index) => (
                     <img
                       key={index}
-                      src={`${imgPrefix}${image}`}
+                      src={`${imgPrefix}${propertiesPath}/${image}`}
                       alt={`${property.name} - Image ${index + 1}`}
                       className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
                         selectedImage === image
