@@ -180,11 +180,12 @@ export default function PropertyListing() {
                           <Bath className="h-3 w-3 mr-1" />{" "}
                           {property.details.bathrooms} Baths
                         </span>
-                        <br />
+                      </div>
+                      <div>
+                      </div>
                       <p className="text-gray-600 lineclamp2">
                         {property.details.description}
                       </p>
-                      </div>
                     </div>
 
                     <motion.button
