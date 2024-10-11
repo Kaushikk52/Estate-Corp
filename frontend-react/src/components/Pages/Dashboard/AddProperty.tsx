@@ -101,10 +101,9 @@ export default function AddPropertyLayout() {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
-          formData.append("folder", propertiesPath);
 
           const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${propertiesPath}`,
             formData
           );
 

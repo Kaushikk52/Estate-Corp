@@ -139,15 +139,23 @@ export default function AddProjectLayout() {
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
 
-          type === "properties" ? formData.append("folder", propertiesPath):formData.append("folder", projectsPath);
-          const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-            formData
-          );
+          let response;
+          if(type === "properties"){
 
-          if (res && res.data && res.data.display_name) {
-            // console.log("Image uploaded...", res.data.display_name);
-            imgUrls.push(res.data.display_name);
+            response = await axios.post(
+              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${propertiesPath}`,
+              formData
+            );
+          }else{
+            response = await axios.post(
+              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${projectsPath}`,
+              formData
+            );
+          }
+
+          if (response && response.data && response.data.display_name) {
+            // console.log("Image uploaded...", response.data.display_name);
+            imgUrls.push(response.data.display_name);
           }
         })
       );
