@@ -143,12 +143,12 @@ export default function AddProjectLayout() {
           if(type === "properties"){
 
             response = await axios.post(
-              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${propertiesPath}`,
+              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${propertiesPath}/`,
               formData
             );
           }else{
             response = await axios.post(
-              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${projectsPath}`,
+              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${projectsPath}/`,
               formData
             );
           }
