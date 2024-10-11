@@ -25,6 +25,8 @@ export default function ProjectsCarousel(props:any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const projectsPath = `${environment}/Projects`;
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
@@ -100,7 +102,7 @@ export default function ProjectsCarousel(props:any) {
                 >
                   <div className="relative">
                     <img 
-                      src={project.images.length > 0 ? `${imgPrefix}${project.images[0]}` : defaultImg} 
+                      src={project.images.length > 0 ? `${imgPrefix}${projectsPath}/${project.images[0]}` : defaultImg} 
                       alt={project.name} 
                       className="w-full h-48 object-cover"
                     />

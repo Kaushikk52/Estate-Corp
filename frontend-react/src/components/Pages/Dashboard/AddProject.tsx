@@ -33,6 +33,9 @@ export default function AddProjectLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const projectsPath = `${environment}/Projects`;
+  const propertiesPath = `${environment}/Properties`;
   const [step, setStep] = useState(1);
 
   const LOCATION_OPTIONS = [
@@ -118,7 +121,7 @@ export default function AddProjectLayout() {
     }
   }, []);
 
-  async function uploadImages(images: any) {
+  async function uploadImages(images: any,type:string) {
     if (!images || images.length === 0) {
       toast.error("Please select an image first", {
         position: "bottom-right",
@@ -136,13 +139,14 @@ export default function AddProjectLayout() {
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
 
+          type === "properties" ? formData.append("folder", propertiesPath):formData.append("folder", projectsPath);
           const res = await axios.post(
             `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
             formData
           );
 
           if (res && res.data && res.data.display_name) {
-            console.log("Image uploaded...", res.data.display_name);
+            // console.log("Image uploaded...", res.data.display_name);
             imgUrls.push(res.data.display_name);
           }
         })
@@ -169,12 +173,12 @@ export default function AddProjectLayout() {
     try {
       const updatedFloorPlans = await Promise.all(
         values.floorPlans.map(async (floorPlan) => {
-          const url = await uploadImages([floorPlan.image]);
+          const url = await uploadImages([floorPlan.image],"properties");
           return { ...floorPlan, image: url[0] };
         })
       );
 
-      const projectImages = await uploadImages(values.images);
+      const projectImages = await uploadImages(values.images,"projects");
 
       const projectData = {
         ...values,
