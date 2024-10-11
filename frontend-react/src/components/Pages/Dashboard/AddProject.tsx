@@ -34,8 +34,8 @@ export default function AddProjectLayout() {
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const projectsPath = `${environment}/Projects`;
-  const propertiesPath = `${environment}/Properties`;
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
+  const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const [step, setStep] = useState(1);
 
   const LOCATION_OPTIONS = [
@@ -138,20 +138,15 @@ export default function AddProjectLayout() {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
-
-          let response;
           if(type === "properties"){
-
-            response = await axios.post(
-              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${propertiesPath}/`,
-              formData
-            );
+            formData.append("folder",propertiesPath);
           }else{
-            response = await axios.post(
-              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${projectsPath}/`,
-              formData
-            );
+            formData.append("folder",projectsPath);
           }
+          const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
+            formData
+          );
 
           if (response && response.data && response.data.display_name) {
             // console.log("Image uploaded...", response.data.display_name);

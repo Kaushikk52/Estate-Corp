@@ -25,8 +25,9 @@ export default function FeaturedCardsCarousel(props:any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const propertiesPath = `${environment}/Properties`;
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [swiper, setSwiper] = useState<SwiperType | null>(null);

@@ -20,8 +20,9 @@ import toast from "react-hot-toast";
 export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const propertiesPath = `${environment}/Properties`;
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
   const [currentUser,setCurrentUser] = useState<any>();

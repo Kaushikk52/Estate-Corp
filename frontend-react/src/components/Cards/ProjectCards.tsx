@@ -25,8 +25,9 @@ export default function ProjectsCarousel(props:any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const projectsPath = `${environment}/Projects`;
+  const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [swiper, setSwiper] = useState<SwiperType | null>(null);

@@ -21,7 +21,6 @@ import axios from "axios";
 import Project from "../../Models/Project";
 import FloorPlan from "../../Models/FloorPlan";
 import toast from "react-hot-toast";
-import User from "../../Models/User";
 
 const initialValues = {
   name: "",
@@ -43,9 +42,10 @@ export default function ProjectDetails() {
   const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const projectsPath = `${environment}/Projects`;
-  const propertiesPath = `${environment}/Properties`;
+  const projectsPath = `${uploadPreset}/${environment}/Projects`;
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [selectedPlan, setSelectedPlan] = useState<FloorPlan>();
   const [project, setProject] = useState<Project | any>();
   const [currentUser,setCurrentUser] = useState<any>();

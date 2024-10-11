@@ -25,7 +25,7 @@ export default function AddPropertyLayout() {
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const propertiesPath = `${environment}/Properties`;
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [step, setStep] = useState(1);
 
   const initialValues = {
@@ -101,9 +101,10 @@ export default function AddPropertyLayout() {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
+          formData.append("folder",propertiesPath);
 
           const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/${propertiesPath}/`,
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
             formData
           );
 
