@@ -116,7 +116,7 @@ export default function PropertyCardsCarousel() {
             }}
           >
             {properties.map((property) => (
-              <SwiperSlide key={property.id}>
+              <SwiperSlide key={property.id} className="p-2">
                 <AnimatePresence>
                   <motion.div
                     className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full"

@@ -92,7 +92,7 @@ export default function ProjectsCarousel(props:any) {
           }}
         >
           {projects.map((project) => (
-            <SwiperSlide key={project.id}>
+            <SwiperSlide key={project.id} className="p-2">
               <AnimatePresence>
                 <motion.div
                   className="bg-white rounded-xl shadow-xl overflow-hidden h-full transform transition-all duration-300 hover:scale-105"

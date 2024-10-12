@@ -28,7 +28,7 @@ function App() {
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
               <Route path='/dashboard/add-project' element={<AddProjectLayout />} />
             </Route>
-            <Route path="/residential/buy"  element={<Residential />}>  
+            <Route path="/properties/residential"  element={<Residential />}>  
             </Route>
           </Route>
         </Routes>
