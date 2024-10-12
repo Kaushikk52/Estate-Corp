@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import FeaturedCardsCarousel from '../../Cards/featuredCards';
 import CityCardsCarousel from '../../Cards/CityProperties';
 import ProjectsCarousel from '../../Cards/ProjectCards';
+import Testimonials from '../../testimonials';
 function Home() {
 
   const titleWords = [
@@ -71,8 +72,8 @@ function Home() {
         <FeaturedCardsCarousel/>
         <BentoGrid />
         <ProjectsCarousel/>
+        <Testimonials/>
         <CityCardsCarousel/>
-
       </>
     );
   }
