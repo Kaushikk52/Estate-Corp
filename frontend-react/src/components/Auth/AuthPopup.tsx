@@ -98,7 +98,7 @@ export default function AuthPopup(props: any) {
         }
         setIsOpen(false);
         navigate("/dashboard/add-property");
-        console.log("User Logged in Successfully");
+        // console.log("User Logged in Successfully");
       }
     } catch (err) {
       console.log(err);

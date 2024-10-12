@@ -150,7 +150,7 @@ export default function Navbar() {
                   className="absolute left-0 mt-2 w-screen max-w-lg bg-white rounded-md shadow-lg py-1 z-10"
                 >
                   <div className="flex">
-                    <div className="w-1/3 bg-gray-50 p-4 h-full">
+                    <div className="w-1/3 bg-gray-50 p-2 h-full">
                       <button
                         className={`w-full text-left p-3 rounded-lg transition-colors duration-200 ${
                           selectedCategory === "properties"
@@ -164,7 +164,7 @@ export default function Navbar() {
                           Properties
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
-                          Explore residential and commercial properties
+                          Explore residential & commercial properties
                         </p>
                       </button>
                       <button
@@ -180,7 +180,7 @@ export default function Navbar() {
                           Projects
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
-                          Discover upcoming and ongoing real estate projects
+                          Discover upcoming & ongoing real estate projects
                         </p>
                       </button>
                     </div>
