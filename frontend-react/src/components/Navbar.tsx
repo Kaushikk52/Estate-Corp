@@ -1,10 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, ChevronDown, PlusSquare, Menu, X, Building, Briefcase } from "lucide-react";
+import {
+  User,
+  ChevronDown,
+  PlusSquare,
+  Menu,
+  X,
+  Building,
+  Briefcase,
+} from "lucide-react";
 import AuthPopup from "./Auth/AuthPopup";
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+const NavLink = ({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) => (
   <Link
     to={href}
     className="group relative text-base font-semibold text-gray-800 hover:text-gray-900"
@@ -14,7 +28,17 @@ const NavLink = ({ href, children }: { href: string; children: React.ReactNode }
   </Link>
 );
 
-const DropdownLink = ({ href, title, description, onClick }: { href: string; title: string; description: string; onClick?: () => void }) => (
+const DropdownLink = ({
+  href,
+  title,
+  description,
+  onClick,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  onClick?: () => void;
+}) => (
   <Link
     to={href}
     className="block p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
@@ -28,7 +52,9 @@ const DropdownLink = ({ href, title, description, onClick }: { href: string; tit
 export default function Navbar() {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<"properties" | "projects">("properties");
+  const [selectedCategory, setSelectedCategory] = useState<
+    "properties" | "projects"
+  >("properties");
   const [toggle, setToggle] = useState(false);
   const [navigateTo, setNavigateTo] = useState("");
   const navigate = useNavigate();
@@ -39,17 +65,22 @@ export default function Navbar() {
     projects: false,
   });
 
-  const checkIfLogin = (route: string) => {
-    const token = localStorage.getItem("token");
-    setNavigateTo(route);
-    if (token !== null && !toggle) {
-      navigate(route);
-    } else if (token !== null && toggle) {
+  useEffect(()=>{
+    setToggle(false);
+  });
+
+  const checkIfLogin = (route:string) => {
+    console.log("checking...",toggle);
+    const token = localStorage.getItem('token')
+    setNavigateTo(route)
+    if(token !== null && toggle === false){//user logged in and no popup
+      navigate(route)
+    }else if(token !== null && toggle === true){//user logged in and still popup
       setToggle(false);
-    } else if (token === null) {
+    }else if(token === null){//user not logged in 
       setToggle(true);
     }
-  };
+  }
 
   const dropdownVariants = {
     hidden: { opacity: 0, y: -10 },
@@ -61,8 +92,10 @@ export default function Navbar() {
     open: { opacity: 1, x: 0 },
   };
 
-  const toggleMobileDropdown = (category: "explore" | "properties" | "projects") => {
-    setMobileDropdowns(prev => ({
+  const toggleMobileDropdown = (
+    category: "explore" | "properties" | "projects"
+  ) => {
+    setMobileDropdowns((prev) => ({
       ...prev,
       [category]: !prev[category],
       ...(category !== "explore" && {
@@ -87,12 +120,7 @@ export default function Navbar() {
             to="/"
             className="text-xl font-semibold text-gray-800 uppercase flex items-center"
           >
-            <img
-              src="/Estatecorp-logo.png"
-              alt="Logo"
-              height={70}
-              width={70}
-            />
+            <img src="/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
             <span className="phone-non"> Estatecorp</span>
           </Link>
         </div>
@@ -125,7 +153,9 @@ export default function Navbar() {
                     <div className="w-1/3 bg-gray-50 p-4 h-full">
                       <button
                         className={`w-full text-left p-3 rounded-lg transition-colors duration-200 ${
-                          selectedCategory === "properties" ? "bg-blue-100" : "hover:bg-gray-100"
+                          selectedCategory === "properties"
+                            ? "bg-blue-100"
+                            : "hover:bg-gray-100"
                         }`}
                         onClick={() => setSelectedCategory("properties")}
                       >
@@ -139,7 +169,9 @@ export default function Navbar() {
                       </button>
                       <button
                         className={`w-full text-left p-3 rounded-lg transition-colors duration-200 ${
-                          selectedCategory === "projects" ? "bg-blue-100" : "hover:bg-gray-100"
+                          selectedCategory === "projects"
+                            ? "bg-blue-100"
+                            : "hover:bg-gray-100"
                         }`}
                         onClick={() => setSelectedCategory("projects")}
                       >
@@ -154,7 +186,9 @@ export default function Navbar() {
                     </div>
                     <div className="w-2/3 p-4">
                       <h3 className="font-semibold mb-4">
-                        {selectedCategory === "properties" ? "Properties" : "Projects"}
+                        {selectedCategory === "properties"
+                          ? "Properties"
+                          : "Projects"}
                       </h3>
                       <div className="grid gap-4">
                         <DropdownLink
@@ -203,8 +237,12 @@ export default function Navbar() {
           </div>
         </div>
         <div className="flex items-center space-x-4 cursor-pointer">
-         
+          <button onClick={() => checkIfLogin("/dashboard/main")}>
+            <User size={20} />
+          </button>
+
           <AuthPopup popup={toggle} navigateTo={navigateTo} />
+
           <div className="space-x-4">
             <button
               className="group inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-md hover:bg-blue-600 transition-colors duration-200"
@@ -219,9 +257,6 @@ export default function Navbar() {
               </span>
             </button>
           </div>
-          <button onClick={() => checkIfLogin("/dashboard/main")}>
-            <User size={20} />
-          </button>
         </div>
       </div>
 
@@ -237,8 +272,16 @@ export default function Navbar() {
             className="fixed inset-0 bg-white z-50 overflow-y-auto"
           >
             <div className="flex justify-between items-center p-4 border-b">
-              <Link to="/" className="text-xl font-semibold text-gray-800 uppercase flex items-center">
-                <img src="/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
+              <Link
+                to="/"
+                className="text-xl font-semibold text-gray-800 uppercase flex items-center"
+              >
+                <img
+                  src="/Estatecorp-logo.png"
+                  alt="Logo"
+                  height={70}
+                  width={70}
+                />
                 <span className="ml-2">Estatecorp</span>
               </Link>
               <button
@@ -274,18 +317,30 @@ export default function Navbar() {
                     {["properties", "projects"].map((category) => (
                       <div key={category}>
                         <button
-                          onClick={() => toggleMobileDropdown(category as "properties" | "projects")}
+                          onClick={() =>
+                            toggleMobileDropdown(
+                              category as "properties" | "projects"
+                            )
+                          }
                           className="flex items-center justify-between w-full py-2 text-gray-800 hover:text-gray-600"
                         >
-                          <span className="font-semibold capitalize">{category}</span>
+                          <span className="font-semibold capitalize">
+                            {category}
+                          </span>
                           <ChevronDown
                             size={16}
                             className={`transition-transform duration-200 ${
-                              mobileDropdowns[category as keyof typeof mobileDropdowns] ? "rotate-180" : ""
+                              mobileDropdowns[
+                                category as keyof typeof mobileDropdowns
+                              ]
+                                ? "rotate-180"
+                                : ""
                             }`}
                           />
                         </button>
-                        {mobileDropdowns[category as keyof typeof mobileDropdowns] && (
+                        {mobileDropdowns[
+                          category as keyof typeof mobileDropdowns
+                        ] && (
                           <div className="mt-2 grid grid-cols-2 gap-2">
                             <DropdownLink
                               href={`/${category}/rent`}
