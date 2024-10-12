@@ -203,9 +203,7 @@ export default function Navbar() {
           </div>
         </div>
         <div className="flex items-center space-x-4 cursor-pointer">
-          <button onClick={() => checkIfLogin("/dashboard/main")}>
-            <User size={20} />
-          </button>
+         
           <AuthPopup popup={toggle} navigateTo={navigateTo} />
           <div className="space-x-4">
             <button
@@ -221,6 +219,9 @@ export default function Navbar() {
               </span>
             </button>
           </div>
+          <button onClick={() => checkIfLogin("/dashboard/main")}>
+            <User size={20} />
+          </button>
         </div>
       </div>
 
@@ -237,7 +238,7 @@ export default function Navbar() {
           >
             <div className="flex justify-between items-center p-4 border-b">
               <Link to="/" className="text-xl font-semibold text-gray-800 uppercase flex items-center">
-                <img src="/Estatecorp-logo.png" alt="Logo" className="h-10 w-10" />
+                <img src="/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
                 <span className="ml-2">Estatecorp</span>
               </Link>
               <button
