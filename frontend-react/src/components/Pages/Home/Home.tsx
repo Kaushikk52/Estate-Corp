@@ -3,6 +3,7 @@ import Cards from '../../Cards/Cards';
 import { motion } from 'framer-motion'
 import FeaturedCardsCarousel from '../../Cards/featuredCards';
 import CityCardsCarousel from '../../Cards/CityProperties';
+import ProjectsCarousel from '../../Cards/ProjectCards';
 function Home() {
 
   const titleWords = [
@@ -69,6 +70,7 @@ function Home() {
         <Cards />
         <FeaturedCardsCarousel/>
         <BentoGrid />
+        <ProjectsCarousel/>
         <CityCardsCarousel/>
 
       </>

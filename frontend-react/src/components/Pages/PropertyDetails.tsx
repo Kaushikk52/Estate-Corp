@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link, Form } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -12,21 +12,27 @@ import {
   Compass,
 } from "lucide-react";
 import axios from "axios";
-import { ErrorMessage, Field, Formik, FormikHelpers } from "formik";
+import { ErrorMessage, Field, Formik, FormikHelpers,Form } from "formik";
 import * as Yup from "yup";
 import Property from "../../Models/Property";
+import toast from "react-hot-toast";
 
 export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
+  const [currentUser,setCurrentUser] = useState<any>();
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     phone: Yup.string().required("Phone is required"),
     email: Yup.string().email("Invalid email").required("Email is required"),
-    message: Yup.string().required("Message is required"),
+    content: Yup.string().required("Message is required"),
     terms: Yup.boolean().oneOf([true], "You must accept the terms"),
   });
 
@@ -34,12 +40,13 @@ export default function PropertyDetails() {
     name: "",
     phone: "",
     email: "",
-    message: "",
+    content: "",
     terms: false,
   };
 
   useEffect(() => {
     getPropertyById(id);
+    getCurrentUser();
   }, [id]);
 
   const getPropertyById = async (id: any) => {
@@ -49,10 +56,69 @@ export default function PropertyDetails() {
     setSelectedImage(response.data.images[0]);
   };
 
-  async function handleSubmit(
-    values: typeof initialValues,
-    { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
-  ) {}
+  const getCurrentUser = async () => {
+    try{
+      const token = localStorage.getItem('token');
+      if(!token){
+        setCurrentUser(undefined);
+      } 
+      const response = await axios.get(
+        `${baseURL}/v1/api/users/getCurrentUser`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 201 || response.status === 200) {
+        setCurrentUser(response.data);
+      }
+    }catch(err:any){
+      console.log("An error occured : ", err);
+      if(err.status === 401){
+        localStorage.removeItem('token');
+      }
+      toast.error(`An error occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting, resetForm }: FormikHelpers<any>
+  ) => {
+    try {
+      const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+      const body = {
+        userId: currentUser?.userId,
+        propertyId: property?.id,
+        propertyName:property?.name,
+        ownerId:property?.owner.id,
+        ownerName:property?.owner.fullName,
+        enquiry: values,
+        subject: "PROPERTY_ENQUIRY"
+      };
+
+      const response = await axios.post(
+        `${baseURL}/v1/api/enquiry/email`,body);
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(`Email sent Successfully`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+        resetForm();
+      } else {
+        throw new Error('Failed to send email');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(`Couldn't send Email, Try again`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const randomReview = () => {
     let random = Math.floor(Math.random() * 5) * 0.5;
@@ -116,7 +182,7 @@ export default function PropertyDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="relative">
                 <img
-                  src={selectedImage}
+                  src={`${imgPrefix}${propertiesPath}/${selectedImage}`}
                   alt={property.name}
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 />
@@ -146,7 +212,7 @@ export default function PropertyDetails() {
                   {property.images.map((image, index) => (
                     <img
                       key={index}
-                      src={image}
+                      src={`${imgPrefix}${propertiesPath}/${image}`}
                       alt={`${property.name} - Image ${index + 1}`}
                       className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
                         selectedImage === image
@@ -164,7 +230,7 @@ export default function PropertyDetails() {
                     onSubmit={handleSubmit}
                   >
                     {({ isSubmitting }) => (
-                      <form className="space-y-4">
+                      <Form className="space-y-4">
                         <h2 className="font-bold text-xl">
                           Contact over email
                         </h2>
@@ -209,14 +275,14 @@ export default function PropertyDetails() {
                         </div>
                         <div>
                           <Field
-                            name="message"
+                            name="content"
                             as="textarea"
                             rows="4"
                             placeholder="Hello, I am interested in your property. Please provide more details."
                             className="w-full p-2 border rounded"
                           />
                           <ErrorMessage
-                            name="message"
+                            name="content"
                             component="div"
                             className="text-red-500 text-sm"
                           />
@@ -249,7 +315,7 @@ export default function PropertyDetails() {
                         >
                           Send Message
                         </motion.button>
-                      </form>
+                      </Form>
                     )}
                   </Formik>
                 </div>
@@ -285,8 +351,8 @@ export default function PropertyDetails() {
                     <Calendar className="w-5 h-5 mr-2 text-gray-600" />
                     {
                       property.type === "RENT" ?
-                      <span>Built in {property.details.builtIn}</span>
-                      : <span>Possesion in {property.details.possesion}</span>
+                      <span>Built in {new Date(property.details.builtIn).getDate()}/{new Date(property.details.builtIn).getMonth()+1}/{new Date(property.details.builtIn).getFullYear()}</span>
+                      : <span>Possesion in {new Date(property.details.possesion).getDate()}/{new Date(property.details.possesion).getMonth()+1}/{new Date(property.details.possesion).getFullYear()}</span>
                     }
                   </div>
                   <div className="flex items-center">
@@ -296,15 +362,27 @@ export default function PropertyDetails() {
                 </div>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
                 <p className="text-gray-600">{property.details.description}</p>
-                <h3 className="text-xl font-semibold mt-6 mb-2">Amenities</h3>
-                <ul className="grid grid-cols-2 gap-2">
-                  {property.details.ammenities.map((amenity, index) => (
-                    <li key={index} className="flex items-center">
+                <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white overflow-hidden mt-5 mb-12"
+              >
+                <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {property.details.ammenities?.map((amenity, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-center p-3 bg-gray-100 rounded-lg"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                       {amenity}
-                    </li>
+                    </motion.div>
                   ))}
-                </ul>
+                </div>
+              </motion.div>
                 {/* Address Section */}
                 <motion.div
                   className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
@@ -375,14 +453,14 @@ export default function PropertyDetails() {
                           <>
                             <td className="font-medium">Year Built:</td>
                             <td className="text-gray-600">
-                              {property.details.builtIn}
+                              {new Date(property.details.builtIn).getDate()}/{new Date(property.details.builtIn).getMonth()+1}/{new Date(property.details.builtIn).getFullYear()}
                             </td>
                           </>
                         ) : (
                           <>
                             <td className="font-medium">Possession Date:</td>
                             <td className="text-gray-600">
-                              {property.details.possesion}
+                            {new Date(property.details.possesion).getDate()}/{new Date(property.details.possesion).getMonth()+1}/{new Date(property.details.possesion).getFullYear()}
                             </td>
                           </>
                         )}

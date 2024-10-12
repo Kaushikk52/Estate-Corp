@@ -52,12 +52,15 @@ public class SecurityConfig {
 
                         // Projects endpoints
                         .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN", "AGENT")
-                        .requestMatchers(HttpMethod.GET, "/v1/api/projects/all", "/v1/api/projects/id/*", "/v1/api/projects/name/*").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/api/projects/all", "/v1/api/projects/id/*", "/v1/api/projects/name/*").permitAll()
 
                         // Properties endpoints
                         .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter", "/v1/api/properties/all", "/v1/api/properties/isApproved", "/v1/api/properties/id/*", "/v1/api/properties/name/*").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/v1/api/properties/approvalStatus/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/v1/api/properties/post").authenticated()
+
+                        //Notifications endpoints
+                        .requestMatchers("/v1/api/enquiry/email","/v1/api/enquiry/all").permitAll()
 
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))

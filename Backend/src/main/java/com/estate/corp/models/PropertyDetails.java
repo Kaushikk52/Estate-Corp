@@ -1,10 +1,7 @@
 package com.estate.corp.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import lombok.*;
 
@@ -43,7 +40,7 @@ public class PropertyDetails {
 
     @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private String possession;
+    private String possesion;
 
     private double rent;
 
@@ -52,7 +49,8 @@ public class PropertyDetails {
 
     private String amtUnit;
 
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)

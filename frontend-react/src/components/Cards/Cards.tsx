@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -28,6 +28,10 @@ interface FilterState {
 export default function PropertyCardsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
@@ -120,10 +124,10 @@ export default function PropertyCardsCarousel() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -50 }}
                     transition={{ duration: 0.5 }}
-                  >
+                  > 
                     <div className="relative">
                       <img 
-                        src={property.images.length > 0 ? property.images[0] : defaultImg} 
+                        src={property.images.length > 0 ?  `${imgPrefix}${propertiesPath}/${property.images[0]}` : defaultImg} 
                         alt={property.name} 
                         className="w-full h-48 object-cover"
                       />

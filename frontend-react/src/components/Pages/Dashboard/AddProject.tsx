@@ -2,48 +2,101 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers,FieldArray } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FormikHelpers,
+  FieldArray,
+} from "formik";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
-import { propertyValidationSchema } from "../../../Validations/propertyValidations";
+import { jwtDecode } from "jwt-decode";
+import { projectValidationSchema } from "../../../Validations/projectValidations";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+
+const DatePickerField = ({ field, form }: any) => {
+  return (
+    <DatePicker
+      {...field}
+      selected={(field.value && new Date(field.value)) || null}
+      dateFormat="dd/MM/yyyy" // Set the date format to DD/MM/YYYY
+      onChange={(date) => form.setFieldValue(field.name, date)}
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    />
+  );
+};
 
 export default function AddProjectLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
+  const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const [step, setStep] = useState(1);
+
+  const LOCATION_OPTIONS = [
+    {
+      label: "Bhayandar",
+      options: ["Bhayandar East", "Bhayandar West"],
+    },
+    {
+      label: "Mira Road",
+      options: ["Mira Road East"],
+    },
+    {
+      label: "Dahisar",
+      options: ["Dahisar East", "Dahisar West"],
+    },
+    {
+      label: "Borivali",
+      options: ["Borivali East", "Borivali West"],
+    },
+    {
+      label: "Malad",
+      options: ["Malad East", "Malad West"],
+    },
+    {
+      label: "Goregaon",
+      options: ["Goregaon East", "Goregaon West"],
+    },
+  ];
 
   const initialValues = {
     name: "",
-    type: "",
-    propertyVariant: "",
-    subVariant: "",
+    description: "",
+    images: [] as File[],
+    totalFloors: 0,
+    location: "",
+    builtIn: "",
+    possesion: "",
+    ammenities: [] as string[],
     address: {
       landmark: "",
       locality: "",
       street: "",
       zipCode: "",
     },
-    details: {
-      bedrooms: "",
-      bathrooms: "",
-      balconies: "",
-      floorNo: "",
-      location: "",
-      facing: "",
-      carpetArea: "",
-      areaUnit: "sqft",
-      builtIn: "",
-      possesion:"",
-      rent: 0,
-      price: 0,
-      amtUnit: "",
-      isNegotiable: "",
-      furnishedStatus: "",
-      ammenities: [] as string[],
-      description:""
-    },
-    images: [] as File[],
+    floorPlans: [
+      {
+        name: "",
+        bedrooms: 0,
+        bathrooms: 0,
+        balconies: 0,
+        price: 0,
+        rent:0,
+        amtUnit: "",
+        carpetArea: 0,
+        areaUnit: "",
+        description: "",
+        image: null as File | null,
+        isMinimized: false,
+      },
+    ],
+    underConstruction: "",
   };
 
   useEffect(() => {
@@ -66,9 +119,9 @@ export default function AddProjectLayout() {
     } catch (err) {
       console.log(err);
     }
-  });
+  }, []);
 
-  async function uploadImages(images: any) {
+  async function uploadImages(images: any,type:string) {
     if (!images || images.length === 0) {
       toast.error("Please select an image first", {
         position: "bottom-right",
@@ -80,26 +133,29 @@ export default function AddProjectLayout() {
     const imgUrls: string[] = [];
 
     try {
-      // Use Promise.all to ensure all uploads complete before proceeding
       await Promise.all(
         images.map(async (img: any) => {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
-
-          const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          if(type === "properties"){
+            formData.append("folder",propertiesPath);
+          }else{
+            formData.append("folder",projectsPath);
+          }
+          const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
             formData
           );
 
-          if (res && res.data && res.data.secure_url) {
-            console.log("Image uploaded...", res.data.secure_url);
-            imgUrls.push(res.data.secure_url);
+          if (response && response.data && response.data.display_name) {
+            // console.log("Image uploaded...", response.data.display_name);
+            imgUrls.push(response.data.display_name);
           }
         })
       );
 
-      return imgUrls; // Return only after all uploads are done
+      return imgUrls;
     } catch (err) {
       toast.error(`Upload failed: ${err}`, {
         position: "bottom-right",
@@ -113,101 +169,80 @@ export default function AddProjectLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    if (step !== 4) {
+    if (step !== 4 || values.ammenities.length < 1) {
       setSubmitting(false);
       return;
     }
-
-    if (values.type === "RENT") {
-      values.details.price = 0;
-    } else if (values.type === "BUY") {
-      values.details.rent = 0;
-    }
-
     try {
-      const urls: any = await uploadImages(values.images);
-      if (urls.length > 0) {
-        console.log("uploaded urls", urls);
-        values.images = [...urls];
-        console.log("values.images : ", values.images);
+      const updatedFloorPlans = await Promise.all(
+        values.floorPlans.map(async (floorPlan) => {
+          const url = await uploadImages([floorPlan.image],"properties");
+          return { ...floorPlan, image: url[0] };
+        })
+      );
+
+      const projectImages = await uploadImages(values.images,"projects");
+
+      const projectData = {
+        ...values,
+        floorPlans: updatedFloorPlans,
+        images: projectImages,
+        underConstruction: values.underConstruction,
+      };
+
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${baseURL}/v1/api/projects/add`,
+        projectData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 201) {
+        toast.success("Project created successfully!", {
+          position: "bottom-right",
+          duration: 3000,
+        });
+        resetForm();
+        setStep(1);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
-      toast.error(`An Error Occurred : ${err}`, {
+      toast.error(`An error occurred: ${err.message}`, {
         position: "bottom-right",
         duration: 3000,
       });
     } finally {
-      Object.assign(values.details, { isApproved: false });
-      const token = localStorage.getItem("token");
-      try {
-        const response = await axios.post(
-          `${baseURL}/v1/api/properties/post`,
-          values,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (response.status === 201) {
-          toast.success("Form submitted successfully!", {
-            position: "bottom-right",
-            duration: 3000,
-          });
-          resetForm();
-          setSubmitting(false);
-        }
-      } catch (err: any) {
-        console.log(err);
-        if (err.status === 401) {
-          toast.error("Access denied ! Authentication is required", {
-            position: "bottom-right",
-            duration: 3000,
-          });
-        }
-      }
+      setSubmitting(false);
     }
   }
 
-  const steps = ["General", "Details", "Images", "Amenities"];
+  const steps = ["Project Details", "Floor Plans", "Images", "Amenities"];
 
   const getStepFields = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
         return [
           "name",
-          "type",
-          "propertyVariant",
-          "subVariant",
-          "address.landmark",
-          "address.locality",
-          "address.street",
-          "address.zipCode",
-          "details.location",
+          "description",
+          "totalFloors",
+          "location",
+          "builtIn",
+          "possesion",
+          "address",
         ];
       case 2:
-        return [
-          "details.bedrooms",
-          "details.bathrooms",
-          "details.balconies",
-          "details.floorNo",
-          "details.facing",
-          "details.carpetArea",
-          "details.builtIn",
-          "details.possesion",
-          "details.rent",
-          "details.price",
-          "details.amtUnit",
-          "details.furnishedStatus",
-          "details.description"
-        ];
+        return ["floorPlans.name"];
       case 3:
         return ["images"];
       case 4:
-        return ["details.ammenities"];
+        return ["ammentites"];
       default:
         return [];
     }
   };
 
   const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
+    console.log(errors,touched,stepNumber);
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
       const fieldParts = field.split(".");
@@ -227,7 +262,7 @@ export default function AddProjectLayout() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl w-full space-y-8 bg-white p-10  rounded-xl shadow-lg"
+        className="max-w-4xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg"
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -288,8 +323,9 @@ export default function AddProjectLayout() {
 
         <Formik
           initialValues={initialValues}
-          validationSchema={propertyValidationSchema}
+          validationSchema={projectValidationSchema}
           onSubmit={handleSubmit}
+          
         >
           {({ values, errors, touched, setFieldValue, isSubmitting }) => (
             <Form className="mt-8 space-y-6">
@@ -308,7 +344,7 @@ export default function AddProjectLayout() {
                         htmlFor="name"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Property Name
+                        Project Name
                       </label>
                       <Field
                         id="name"
@@ -322,47 +358,56 @@ export default function AddProjectLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-5">
+                    <div>
+                      <label
+                        htmlFor="description"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Project Description
+                      </label>
+                      <Field
+                        as="textarea"
+                        id="description"
+                        name="description"
+                        rows={4}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <ErrorMessage
+                        name="description"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className=" text-sm font-medium text-gray-700">
-                          Property Type
+                        <label
+                          htmlFor="totalFloors"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Total Floors
                         </label>
-                        <div className="mt-2 space-x-4">
-                          <label className="inline-flex items-center">
-                            <Field
-                              type="radio"
-                              name="type"
-                              value="RENT"
-                              className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="ml-2">Rent</span>
-                          </label>
-                          <label className="inline-flex items-center">
-                            <Field
-                              type="radio"
-                              name="type"
-                              value="BUY"
-                              className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="ml-2">Sell</span>
-                          </label>
-                        </div>
+                        <Field
+                          id="totalFloors"
+                          name="totalFloors"
+                          type="number"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                         <ErrorMessage
-                          name="type"
+                          name="totalFloors"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
                       <div>
-                        <label className=" text-sm font-medium text-gray-700">
-                          Is Negotiable
+                        <label className="block text-sm font-medium text-gray-700">
+                          Under Construction
                         </label>
                         <div className="mt-2 space-x-4">
                           <label className="inline-flex items-center">
                             <Field
                               type="radio"
-                              name="details.isNegotiable"
-                              value="YES"
+                              name="underConstruction"
+                              value="Yes"
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Yes</span>
@@ -370,79 +415,65 @@ export default function AddProjectLayout() {
                           <label className="inline-flex items-center">
                             <Field
                               type="radio"
-                              name="details.isNegotiable"
-                              value="NO"
+                              name="underConstruction"
+                              value="No"
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">No</span>
                           </label>
                         </div>
                         <ErrorMessage
-                          name="details.isNegotiable"
+                          name="underConstruction"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
+                      {values.underConstruction === "Yes" ? (
                       <div>
                         <label
-                          htmlFor="propertyVariant"
+                          htmlFor="possesion"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Property Variant
+                          Possession Date
                         </label>
                         <Field
-                          as="select"
-                          id="propertyVariant"
-                          name="propertyVariant"
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
-                        >
-                          <option value="">Select variant</option>
-                          <option value="COMMERCIAL">Commercial</option>
-                          <option value="RESIDENTIAL">Residential</option>
-                        </Field>
+                          id="possesion"
+                          name="possesion"
+                          type="date"
+                          component={DatePickerField}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                         <ErrorMessage
-                          name="propertyVariant"
+                          name="possesion"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
+                    ) : (
                       <div>
                         <label
-                          htmlFor="subVariant"
+                          htmlFor="builtIn"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Sub Variant
+                          Built-in Date
                         </label>
                         <Field
-                          as="select"
-                          id="subVariant"
-                          name="subVariant"
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
-                        >
-                          <option value="">Select sub variant</option>
-                          {values.propertyVariant === "RESIDENTIAL" ? (
-                            <>
-                              <option value="Apartment">Apartment</option>
-                              <option value="Villa">Villa</option>
-                              <option value="Townhouse">Townhouse</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="Office">Office</option>
-                              <option value="Retail">Retail</option>
-                              <option value="Warehouse">Warehouse</option>
-                            </>
-                          )}
-                        </Field>
+                          id="builtIn"
+                          name="builtIn"
+                          component={DatePickerField}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                         <ErrorMessage
-                          name="subVariant"
+                          name="builtIn"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
                       </div>
+                    )}
                     </div>
+
+                    
+
                     <div>
                       <label
                         htmlFor="address.landmark"
@@ -484,49 +515,30 @@ export default function AddProjectLayout() {
                       </div>
                       <div>
                         <label
-                          htmlFor="details.location"
+                          htmlFor="location"
                           className="block text-sm font-medium text-gray-700"
                         >
                           Location
                         </label>
                         <Field
                           as="select"
-                          id="details.location"
-                          name="details.location"
+                          id="location"
+                          name="location"
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                           <option value="">Select location</option>
-                          <optgroup label="Bhayandar">
-                            <option value="Bhayandar East">Bhayandar East</option>
-                            <option value="Bhayandar West">Bhayandar West</option>
-                          </optgroup>
-
-                          <optgroup label="Mira Road">
-                            <option value="Mira Road East">Mira Road East</option>
-                          </optgroup>
-
-                          <optgroup label="Dahisar">
-                            <option value="Dahisar East">Dahisar East</option>
-                            <option value="Dahisar West">Dahisar West</option>
-                          </optgroup>
-
-                          <optgroup label="Borivali">
-                            <option value="Borivali East">Borivali East</option>
-                            <option value="Borivali West">Borivali West</option>
-                          </optgroup>
-
-                          <optgroup label="Malad">
-                            <option value="Malad East">Malad East</option>
-                            <option value="Malad West">Malad West</option>
-                          </optgroup>
-                          
-                          <optgroup label="Goregaon">
-                            <option value="Goregaon East">Goregaon East</option>
-                            <option value="Goregaon West">Goregaon West</option>
-                          </optgroup>
+                          {LOCATION_OPTIONS.map((group) => (
+                            <optgroup key={group.label} label={group.label}>
+                              {group.options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
                         </Field>
                         <ErrorMessage
-                          name="details.location"
+                          name="location"
                           component="div"
                           className="text-red-500 text-sm mt-1"
                         />
@@ -584,311 +596,377 @@ export default function AddProjectLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                     <div>
-                      <label
-                        htmlFor="details.description"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Description
-                      </label>
-                      <Field
-                        as="textarea"
-                        id="details.description"
-                        name="details.description"
-                        rows={4}
-                        className="mt-1 block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 touch-manipulation"
-                      />
-                      <ErrorMessage
-                        name="details.description"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label
-                          htmlFor="details.bedrooms"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Bedrooms
-                        </label>
-                        <Field
-                          id="details.bedrooms"
-                          name="details.bedrooms"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <ErrorMessage
-                          name="details.bedrooms"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="details.bathrooms"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Bathrooms
-                        </label>
-                        <Field
-                          id="details.bathrooms"
-                          name="details.bathrooms"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <ErrorMessage
-                          name="details.bathrooms"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <label
-                          htmlFor="details.balconies"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Balconies
-                        </label>
-                        <Field
-                          id="details.balconies"
-                          name="details.balconies"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <ErrorMessage
-                          name="details.balconies"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="details.floorNo"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Floor No.
-                        </label>
-                        <Field
-                          id="details.floorNo"
-                          name="details.floorNo"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                        <ErrorMessage
-                          name="details.floorNo"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="details.facing"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Facing
-                      </label>
-                      <Field
-                        as="select"
-                        id="details.facing"
-                        name="details.facing"
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
-                      >
-                        <option value="">Select facing</option>
-                        <option value="north">North</option>
-                        <option value="south">South</option>
-                        <option value="east">East</option>
-                        <option value="west">West</option>
-                      </Field>
-                      <ErrorMessage
-                        name="details.facing"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="details.carpetArea"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Carpet Area
-                      </label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
-                        <Field
-                          id="details.carpetArea"
-                          name="details.carpetArea"
-                          type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Enter carpet area"
-                        />
-                        <Field
-                          as="select"
-                          name="details.areaUnit"
-                          className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="sqft">sq ft</option>
-                          <option value="sqm">sq m</option>
-                          <option value="sqyd">sq yd</option>
-                          <option value="acre">acre</option>
-                        </Field>
-                      </div>
-                      <ErrorMessage
-                        name="details.carpetArea"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                      <ErrorMessage
-                        name="details.areaUnit"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    {values.type === "RENT" ?
-                      <div>
-                      <label
-                        htmlFor="details.builtIn"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Built In
-                      </label>
-                      <Field
-                        id="details.builtIn"
-                        name="details.builtIn"
-                        type="date"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="details.builtIn"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>  
-                    : <div>
-                    <label
-                      htmlFor="details.possesion"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Possession date
-                    </label>
-                    <Field
-                      id="details.possesion"
-                      name="details.possesion"
-                      type="date"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <ErrorMessage
-                      name="details.possesion"
-                      component="div"
-                      className="text-red-500 text-sm mt-1"
-                    />
-                  </div>  
-                  }
-                    
-                    {values.type === "RENT" && (
-                      <div>
-                        <label
-                          htmlFor="details.rent"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Rent (per month)
-                        </label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
-                          <Field
-                            id="details.rent"
-                            name="details.rent"
-                            type="number"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter rent per month"
-                          />
-                          <Field
-                            as="select"
-                            name="details.amtUnit"
-                            className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
+                    <FieldArray name="floorPlans">
+                      {({ push, remove }) => (
+                        <div>
+                          {values.floorPlans.map((floorPlan, index) => (
+                            <div
+                              key={index}
+                              className="mb-8 p-4 border rounded-lg"
+                            >
+                              <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-semibold">
+                                  {floorPlan.name || `Floor Plan ${index + 1}`}
+                                </h3>
+                                <div className="flex space-x-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newFloorPlans = [
+                                        ...values.floorPlans,
+                                      ];
+                                      newFloorPlans[index].isMinimized =
+                                        !newFloorPlans[index].isMinimized;
+                                      setFieldValue(
+                                        "floorPlans",
+                                        newFloorPlans
+                                      );
+                                    }}
+                                    className="text-gray-500 hover:text-gray-700"
+                                  >
+                                    {floorPlan.isMinimized ? (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    ) : (
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    )}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-5 w-5"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                              {!floorPlan.isMinimized && (
+                                <div className="space-y-4">
+                                  <div>
+                                    <label
+                                      htmlFor={`floorPlans.${index}.name`}
+                                      className="block text-sm font-medium text-gray-700"
+                                    >
+                                      Floor Plan Name
+                                    </label>
+                                    <Field
+                                      id={`floorPlans.${index}.name`}
+                                      name={`floorPlans.${index}.name`}
+                                      type="text"
+                                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    />
+                                    <ErrorMessage
+                                      name={`floorPlans.${index}.name`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label
+                                      htmlFor={`floorPlans.${index}.bedrooms`}
+                                      className="block text-sm font-medium text-gray-700"
+                                    >
+                                      Bedrooms
+                                    </label>
+                                    <Field
+                                      id={`floorPlans.${index}.bedrooms`}
+                                      name={`floorPlans.${index}.bedrooms`}
+                                      type="number"
+                                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    />
+                                    <ErrorMessage
+                                      name={`floorPlans.${index}.bedrooms`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
+                                    />
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label
+                                        htmlFor={`floorPlans.${index}.price`}
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Price
+                                      </label>
+                                      <Field
+                                        id={`floorPlans.${index}.price`}
+                                        name={`floorPlans.${index}.price`}
+                                        type="number"
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                      />
+                                      <ErrorMessage
+                                        name={`floorPlans.${index}.price`}
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label
+                                        htmlFor={`floorPlans.${index}.amtUnit`}
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Price Unit
+                                      </label>
+                                      <Field
+                                        as="select"
+                                        id={`floorPlans.${index}.amtUnit`}
+                                        name={`floorPlans.${index}.amtUnit`}
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                                      >
+                                        <option value="">Select Unit</option>
+                                        <option value="K">Thousand</option>
+                                        <option value="L">Lakh</option>
+                                        <option value="Cr">Crore</option>
+                                      </Field>
+                                      <ErrorMessage
+                                        name={`floorPlans.${index}.amtUnit`}
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label
+                                        htmlFor={`floorPlans.${index}.carpetArea`}
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Carpet Area
+                                      </label>
+                                      <Field
+                                        id={`floorPlans.${index}.carpetArea`}
+                                        name={`floorPlans.${index}.carpetArea`}
+                                        type="number"
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                      />
+                                      <ErrorMessage
+                                        name={`floorPlans.${index}.carpetArea`}
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label
+                                        htmlFor={`floorPlans.${index}.areaUnit`}
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Area Unit
+                                      </label>
+                                      <Field
+                                        as="select"
+                                        id={`floorPlans.${index}.areaUnit`}
+                                        name={`floorPlans.${index}.areaUnit`}
+                                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                                      >
+                                        <option value="">Select Unit</option>
+                                        <option value="sqft">sq ft</option>
+                                        <option value="sqm">sq m</option>
+                                        <option value="sqyd">sq yd</option>
+                                      </Field>
+                                      <ErrorMessage
+                                        name={`floorPlans.${index}.areaUnit`}
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label
+                                        htmlFor={`floorPlans.${index}.bathrooms`}
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Bathrooms
+                                      </label>
+                                      <Field
+                                        id={`floorPlans.${index}.bathrooms`}
+                                        name={`floorPlans.${index}.bathrooms`}
+                                        type="number"
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                      />
+                                      <ErrorMessage
+                                        name={`floorPlans.${index}.bathrooms`}
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label
+                                        htmlFor={`floorPlans.${index}.balconies`}
+                                        className="block text-sm font-medium text-gray-700"
+                                      >
+                                        Balconies
+                                      </label>
+                                      <Field
+                                        id={`floorPlans.${index}.balconies`}
+                                        name={`floorPlans.${index}.balconies`}
+                                        type="number"
+                                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                      />
+                                      <ErrorMessage
+                                        name={`floorPlans.${index}.balconies`}
+                                        component="div"
+                                        className="text-red-500 text-sm mt-1"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label
+                                      htmlFor={`floorPlans.${index}.description`}
+                                      className="block text-sm font-medium text-gray-700"
+                                    >
+                                      Description
+                                    </label>
+                                    <Field
+                                      as="textarea"
+                                      id={`floorPlans.${index}.description`}
+                                      name={`floorPlans.${index}.description`}
+                                      rows={3}
+                                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    />
+                                    <ErrorMessage
+                                      name={`floorPlans.${index}.description`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                      Floor Plan Image
+                                    </label>
+                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                      <div className="space-y-1 text-center">
+                                        <svg
+                                          className="mx-auto h-12 w-12 text-gray-400"
+                                          stroke="currentColor"
+                                          fill="none"
+                                          viewBox="0 0 48 48"
+                                          aria-hidden="true"
+                                        >
+                                          <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                            strokeWidth={2}
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                          />
+                                        </svg>
+                                        <div className="flex text-sm text-gray-600">
+                                          <label
+                                            htmlFor={`floorPlans.${index}.image`}
+                                            className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                                          >
+                                            <span>Upload a file</span>
+                                            <input
+                                              id={`floorPlans.${index}.image`}
+                                              name={`floorPlans.${index}.image`}
+                                              type="file"
+                                              className="sr-only"
+                                              onChange={(event) => {
+                                                const file =
+                                                  event.currentTarget
+                                                    .files?.[0];
+                                                if (file) {
+                                                  setFieldValue(
+                                                    `floorPlans.${index}.image`,
+                                                    file
+                                                  );
+                                                }
+                                              }}
+                                            />
+                                          </label>
+                                          <p className="pl-1">
+                                            or drag and drop
+                                          </p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">
+                                          PNG, JPG, GIF up to 10MB
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <ErrorMessage
+                                      name={`floorPlans.${index}.image`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
+                                    />
+                                  </div>
+                                  {values.floorPlans[index].image && (
+                                      <p className="mt-2 text-sm text-gray-500">
+                                        <span className="font-semibold">Uploaded file:</span> {values.floorPlans[index].image.name}
+                                      </p>
+                                    )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              push({
+                                name: "",
+                                bedrooms: 0,
+                                price: 0,
+                                amtUnit: "",
+                                carpetArea: 0,
+                                areaUnit: "",
+                                bathrooms: 0,
+                                balconies: 0,
+                                location: "",
+                                description: "",
+                                image: null,
+                                isMinimized: false,
+                              })
+                            }
+                            className="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                           >
-                            <option value="">Select Rent Unit</option>
-                            <option value="K">Thousand</option>
-                            <option value="L">Lakh</option>
-                            <option value="Cr">Cr</option>
-                          </Field>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 mr-2"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Add Floor Plan
+                          </button>
                         </div>
-                        <ErrorMessage
-                          name="details.rent"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                        <ErrorMessage
-                          name="details.amtUnit"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                    )}
-                    {values.type === "BUY" && (
-                      <div>
-                        <label
-                          htmlFor="details.price"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Price
-                        </label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
-                          <Field
-                            id="details.price"
-                            name="details.price"
-                            type="number"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Enter property price"
-                          />
-                          <Field
-                            as="select"
-                            name="details.amtUnit"
-                            className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
-                          >
-                            <option value="">Select Price Unit</option>
-                            <option value="K">Thousand</option>
-                            <option value="L">Lakh</option>
-                            <option value="Cr">Cr</option>
-                          </Field>
-                        </div>
-                        <ErrorMessage
-                          name="details.price"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                        <ErrorMessage
-                          name="details.amtUnit"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <label
-                        htmlFor="details.furnishedStatus"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Furnished Status
-                      </label>
-                      <Field
-                        as="select"
-                        id="details.furnishedStatus"
-                        name="details.furnishedStatus"
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
-                      >
-                        <option value="">Select status</option>
-                        <option value="UNFURNISHED">Unfurnished</option>
-                        <option value="SEMIFURNISHED">Semi-furnished</option>
-                        <option value="FURNISHED">Fully-furnished</option>
-                      </Field>
-                      <ErrorMessage
-                        name="details.furnishedStatus"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
+                      )}
+                    </FieldArray>
                   </motion.div>
                 )}
 
@@ -903,7 +981,7 @@ export default function AddProjectLayout() {
                   >
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
-                        Upload Property Images
+                        Upload Project Images
                       </label>
                       <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                         <div className="space-y-1 text-center">
@@ -926,7 +1004,7 @@ export default function AddProjectLayout() {
                               htmlFor="file-upload"
                               className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                             >
-                              <span>Upload a file</span>
+                              <span>Upload files</span>
                               <input
                                 id="file-upload"
                                 name="file-upload"
@@ -937,7 +1015,6 @@ export default function AddProjectLayout() {
                                 onChange={(event) => {
                                   const files = event.currentTarget.files;
                                   if (files) {
-                                    console.log(files);
                                     setFieldValue("images", [
                                       ...values.images,
                                       ...Array.from(files),
@@ -1014,7 +1091,7 @@ export default function AddProjectLayout() {
                             <Field
                               type="checkbox"
                               id={amenity}
-                              name="details.ammenities"
+                              name="ammenities"
                               value={amenity}
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                             />
@@ -1028,7 +1105,7 @@ export default function AddProjectLayout() {
                         ))}
                       </div>
                       <ErrorMessage
-                        name="details.ammenities"
+                        name="ammenities"
                         component="div"
                         className="text-red-500 text-sm mt-1"
                       />

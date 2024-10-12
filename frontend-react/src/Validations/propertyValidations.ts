@@ -9,7 +9,8 @@ export const propertyValidationSchema = Yup.object().shape({
     landmark: Yup.string().required("Landmark is required"),
     locality: Yup.string().required("Locality is required"),
     street: Yup.string().required("Street is required"),
-    zipCode: Yup.string().required("Zip Code is required"),
+    zipCode: Yup.string().matches(/^\d{6}$/, "Zip Code must be exactly 6 digits and contain only numbers")
+    .required("Zip Code is required"),
   }),
   details: Yup.object().shape({
     location: Yup.string().required("Location is required"),

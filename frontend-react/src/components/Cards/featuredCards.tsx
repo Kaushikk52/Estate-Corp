@@ -15,39 +15,19 @@ import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, A11y } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
+import Property from "../../Models/Property";
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-interface Property {
-  id: string;
-  name: string;
-  images: string[];
-  type: string;
-  address: {
-    street: string;
-    locality: string;
-    landmark: string;
-    zipCode: string;
-  };
-  details: {
-    bedrooms: number;
-    bathrooms: number;
-    carpetArea: string;
-    areaUnit: string;
-    rent: number;
-    price: number;
-    amtUnit: string;
-    isNegotiable: string;
-    furnishedStatus: string;
-    location: string;
-  };
-}
-
-export default function FeaturedCardsCarousel() {
+export default function FeaturedCardsCarousel(props:any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
@@ -57,8 +37,13 @@ export default function FeaturedCardsCarousel() {
   }, []);
 
   const fetchProperties = async () => {
-    const response = await axios.get(`${baseURL}/v1/api/users/adminProperties`);
-    if(response.status == 200){
+    let response;
+    if(props.properties){
+     setProperties(props.properties)
+    }else{
+      response = await axios.get(`${baseURL}/v1/api/users/adminProperties`);
+    }
+    if(response?.status == 200){
         setProperties(response.data.properties);
     }
   };
@@ -110,7 +95,7 @@ export default function FeaturedCardsCarousel() {
                 >
                   <div className="relative">
                     <img 
-                      src={property.images.length > 0 ? property.images[0] : defaultImg} 
+                      src={property.images.length > 0 ? `${imgPrefix}${propertiesPath}/${property.images[0]}` : defaultImg} 
                       alt={property.name} 
                       className="w-full h-48 object-cover"
                     />

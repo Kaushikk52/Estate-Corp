@@ -43,27 +43,27 @@ export default function Filter({ onFilterChange }: FilterProps) {
   const carpetAreaUnitOptions = ['sqft', 'sqm', 'sqyd', 'acre']
   const locationGroups: LocationGroup[] = [
     {
-      label: "- Bhayandar",
+      label: "Bhayandar",
       options: ["Bhayandar East", "Bhayandar West"]
     },
     {
-      label: "- Mira Road",
+      label: "Mira Road",
       options: ["Mira Road East"]
     },
     {
-      label: "- Dahisar",
+      label: "Dahisar",
       options: ["Dahisar East", "Dahisar West"]
     },
     {
-      label: "- Borivali",
+      label: "Borivali",
       options: ["Borivali East", "Borivali West"]
     },
     {
-      label: "- Malad",
+      label: "Malad",
       options: ["Malad East", "Malad West"]
     },
     {
-      label: "- Goregaon",
+      label: "Goregaon",
       options: ["Goregaon East", "Goregaon West"]
     }
   ]
@@ -85,6 +85,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
     } else {
       setBedrooms([...bedrooms, option])
     }
+    setIsBedroomDropdownOpen(false)
   }
 
   const handlePriceSelect = (value: string, isMin: boolean) => {
@@ -92,8 +93,8 @@ export default function Filter({ onFilterChange }: FilterProps) {
       setMinPrice(value)
     } else {
       setMaxPrice(value)
-      setIsPriceDropdownOpen(false)
     }
+    setIsPriceDropdownOpen(false)
   }
 
   const handleCarpetAreaSelect = (value: string, isMin: boolean) => {
@@ -101,8 +102,15 @@ export default function Filter({ onFilterChange }: FilterProps) {
       setMinCarpetArea(value)
     } else {
       setMaxCarpetArea(value)
-      setIsCarpetAreaDropdownOpen(false)
     }
+    setIsCarpetAreaDropdownOpen(false)
+  }
+
+  const handleOpenDropdown = (dropdown: string) => {
+    setIsLocationDropdownOpen(prev => dropdown === 'location' ? !prev : false)
+    setIsBedroomDropdownOpen(prev => dropdown === 'bedroom' ? !prev : false)
+    setIsPriceDropdownOpen(prev => dropdown === 'price' ? !prev : false)
+    setIsCarpetAreaDropdownOpen(prev => dropdown === 'carpetArea' ? !prev : false)
   }
 
   const applyFilters = () => {
@@ -168,7 +176,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
           <div className={`md:flex md:items-center md:space-x-4 ${isFilterOpen ? '' : 'hidden md:flex'}`}>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
               <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
-                <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
+                <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0 cursor-pointer" onClick={() => handleOpenDropdown('location')} />
                 <div className="flex flex-wrap items-center gap-2 w-full">
                   {locations.map((location) => (
                     <span key={location} className="bg-white text-gray-700 px-2 py-1 rounded-full text-sm flex items-center">
@@ -180,7 +188,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                     </span>
                   ))}
                   <button
-                    onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+                    onClick={() => handleOpenDropdown('location')}
                     className="flex items-center text-gray-700 focus:outline-none"
                   >
                     {locations.length === 0 ? 'Location' : 'Add more'}
@@ -188,8 +196,8 @@ export default function Filter({ onFilterChange }: FilterProps) {
                   </button>
                 </div>
                 {isLocationDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       <button
                         onClick={() => setIsLocationDropdownOpen(false)}
                         className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
@@ -221,17 +229,17 @@ export default function Filter({ onFilterChange }: FilterProps) {
             </div>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
               <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
-                <BedDoubleIcon className="h-5 w-5 text-gray-400 mr-2" />
+                <BedDoubleIcon className="h-5 w-5 text-gray-400 mr-2 cursor-pointer" onClick={() => handleOpenDropdown('bedroom')} />
                 <button
-                  onClick={() => setIsBedroomDropdownOpen(!isBedroomDropdownOpen)}
+                  onClick={() => handleOpenDropdown('bedroom')}
                   className="flex items-center text-gray-700 focus:outline-none"
                 >
                   {bedrooms.length > 0 ? `${bedrooms.join(', ')} BHK` : 'Bedrooms'}
                   <ChevronDownIcon className="h-4 w-4 ml-1" />
                 </button>
                 {isBedroomDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       {bedroomOptions.map((option) => (
                         <button
                           key={option}
@@ -251,17 +259,17 @@ export default function Filter({ onFilterChange }: FilterProps) {
             </div>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
               <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
-                <IndianRupeeIcon className="h-5 w-5 text-gray-400 mr-2" />
+                <IndianRupeeIcon className="h-5 w-5 text-gray-400 mr-2 cursor-pointer" onClick={() => handleOpenDropdown('price')} />
                 <button
-                  onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
+                  onClick={() => handleOpenDropdown('price')}
                   className="flex items-center text-gray-700 focus:outline-none"
                 >
                   {minPrice && maxPrice ? `${minPrice} - ${maxPrice} ${amtUnit}` : minPrice ? `${minPrice}+ ${amtUnit}` : 'Price'}
                   <ChevronDownIcon className="h-4 w-4 ml-1" />
                 </button>
                 {isPriceDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       <div className="px-4 py-2 text-sm text-gray-700">Amount Unit</div>
                       <div className="flex justify-around mb-2">
                         {amtUnitOptions.map((unit) => (
@@ -307,17 +315,17 @@ export default function Filter({ onFilterChange }: FilterProps) {
             </div>
             <div className="w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0">
               <div className="flex items-center bg-gray-100 rounded-full p-2 relative">
-                <Scaling className="h-5 w-5 text-gray-400 mr-2" />
+                <Scaling className="h-5 w-5 text-gray-400 mr-2 cursor-pointer" onClick={() => handleOpenDropdown('carpetArea')} />
                 <button
-                  onClick={() => setIsCarpetAreaDropdownOpen(!isCarpetAreaDropdownOpen)}
+                  onClick={() => handleOpenDropdown('carpetArea')}
                   className="flex items-center text-gray-700 focus:outline-none"
                 >
                   {minCarpetArea && maxCarpetArea ? `${minCarpetArea} - ${maxCarpetArea} ${areaUnit}` : minCarpetArea ? `${minCarpetArea}+ ${areaUnit}` : 'Area'}
                   <ChevronDownIcon className="h-4 w-4 ml-1" />
                 </button>
                 {isCarpetAreaDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       <div className="px-4 py-2 text-sm text-gray-700">Area Unit</div>
                       <div className="flex flex-wrap justify-around mb-2">
                         {carpetAreaUnitOptions.map((unit) => (

@@ -6,11 +6,26 @@ import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { propertyValidationSchema } from "../../../Validations/propertyValidations";
+import DatePicker from "react-datepicker";
+
+const DatePickerField = ({ field, form }: any) => {
+  return (
+    <DatePicker
+      {...field}
+      selected={(field.value && new Date(field.value)) || null}
+      dateFormat="dd/MM/yyyy"
+      onChange={(date) => form.setFieldValue(field.name, date)}
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    />
+  );
+};
 
 export default function AddPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [step, setStep] = useState(1);
 
   const initialValues = {
@@ -86,15 +101,16 @@ export default function AddPropertyLayout() {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
+          formData.append("folder",propertiesPath);
 
           const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
             formData
           );
 
-          if (res && res.data && res.data.secure_url) {
-            console.log("Image uploaded...", res.data.secure_url);
-            imgUrls.push(res.data.secure_url);
+          if (res && res.data && res.data.display_name) {
+            // console.log("Image uploaded...", res.data.display_name);
+            imgUrls.push(res.data.display_name);
           }
         })
       );
@@ -113,7 +129,7 @@ export default function AddPropertyLayout() {
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
   ) {
-    if (step !== 4) {
+    if (step !== 4 || values.details.ammenities.length < 1) {
       setSubmitting(false);
       return;
     }
@@ -153,6 +169,7 @@ export default function AddPropertyLayout() {
           });
           resetForm();
           setSubmitting(false);
+          setStep(1);
         }
       } catch (err: any) {
         console.log(err);
@@ -755,11 +772,12 @@ export default function AddPropertyLayout() {
                         Built In
                       </label>
                       <Field
-                        id="details.builtIn"
-                        name="details.builtIn"
-                        type="date"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
+                          id="details.builtIn"
+                          name="details.builtIn"
+                          type="date"
+                          component={DatePickerField}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                       <ErrorMessage
                         name="details.builtIn"
                         component="div"
@@ -774,11 +792,12 @@ export default function AddPropertyLayout() {
                       Possession date
                     </label>
                     <Field
-                      id="details.possesion"
-                      name="details.possesion"
-                      type="date"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
+                          id="details.possesion"
+                          name="details.possesion"
+                          type="date"
+                          component={DatePickerField}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
                     <ErrorMessage
                       name="details.possesion"
                       component="div"

@@ -24,7 +24,7 @@ public class ProjectController {
         List<Project> projects = projectServ.getAllProjects();
         if (projects.isEmpty()) {
             log.warn("Property Repository is Empty");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(projects);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(projects);
         }
         log.info("Retrieved all projects :{}", projects);
         return ResponseEntity.status(HttpStatus.OK).body(projects);

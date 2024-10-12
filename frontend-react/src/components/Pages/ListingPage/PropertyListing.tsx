@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import toast from "react-hot-toast";
 import BlogSidebar from "./BlogSidebar";
-import Filter from '../../Filter';
+import Filter from "../../Filter";
 import Property from "../../../Models/Property";
 
 interface FilterState {
@@ -21,6 +21,10 @@ interface FilterState {
 
 export default function PropertyListing() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
@@ -110,14 +114,14 @@ export default function PropertyListing() {
                 onClick={() => handlePropertyClick(property.id)}
               >
                 <div className="flex flex-col md:flex-row">
-                  <div className="w-full md:w-2/5 lg:w-1/3 relative">
+                  <div className="w-full md:w-2/5 lg:w-1/3 h-64 md:h-auto h-auto relative">
                     <img
                       src={
-                        property.images[0] ||
+                        `${imgPrefix}${propertiesPath}/${property.images[0]}` ||
                         "/placeholder.svg?height=400&width=600"
                       }
                       alt={property.name}
-                      className="w-full h-64 object-cover" // Fixed height, object-fit cover
+                      className="w-full h-full object-cover"
                     />
                     <div
                       className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
@@ -177,8 +181,15 @@ export default function PropertyListing() {
                           {property.details.bathrooms} Baths
                         </span>
                       </div>
-                      <p className="text-gray-600">
-                        {property.details.description}
+                      <p className="text-gray-600 lineclamp2">
+                        {/* {property.details.description} */}
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Temporibus alias corrupti rem eum, molestiae ullam sed.
+                        Sapiente veniam cum, minus laborum unde nemo ex dolorum
+                        esse, architecto est earum ut molestias, quae
+                        consequuntur cumque corporis culpa quam ratione. Itaque
+                        facilis quo veritatis alias, aliquid voluptas rem
+                        inventore? Tenetur, a aut.
                       </p>
                     </div>
 
