@@ -70,7 +70,7 @@ export default function Navbar() {
   });
 
   const checkIfLogin = (route:string) => {
-    console.log("checking...",toggle);
+    // console.log("checking...",toggle);
     const token = localStorage.getItem('token')
     setNavigateTo(route)
     if(token !== null && toggle === false){//user logged in and no popup
@@ -147,7 +147,7 @@ export default function Navbar() {
                   exit="hidden"
                   variants={dropdownVariants}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-0 mt-2 w-screen max-w-3xl bg-white rounded-md shadow-lg py-1 z-10"
+                  className="absolute left-0 mt-2 w-screen max-w-lg bg-white rounded-md shadow-lg py-1 z-10"
                 >
                   <div className="flex">
                     <div className="w-1/3 bg-gray-50 p-4 h-full">
@@ -237,12 +237,7 @@ export default function Navbar() {
           </div>
         </div>
         <div className="flex items-center space-x-4 cursor-pointer">
-          <button onClick={() => checkIfLogin("/dashboard/main")}>
-            <User size={20} />
-          </button>
-
           <AuthPopup popup={toggle} navigateTo={navigateTo} />
-
           <div className="space-x-4">
             <button
               className="group inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-md hover:bg-blue-600 transition-colors duration-200"
@@ -257,6 +252,9 @@ export default function Navbar() {
               </span>
             </button>
           </div>
+          <button onClick={() => checkIfLogin("/dashboard/main")}>
+            <User size={20} />
+          </button>
         </div>
       </div>
 
