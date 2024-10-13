@@ -244,7 +244,7 @@ export default function Navbar() {
               onClick={() => checkIfLogin("/dashboard/add-property")}
             >
               <PlusSquare size={16} className="mr-2" />
-              <span className="phone-non"> Add </span>Property
+              <span className="phone-non mr-1">Add</span>Property
               <span className="ml-1 text-xs bg-white px-1 rounded">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-300">
                   FREE
