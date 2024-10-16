@@ -345,14 +345,20 @@ export default function Navbar() {
                           category as keyof typeof mobileDropdowns
                         ] && (
                           <div className="mt-2 grid grid-cols-2 gap-2">
+                             <DropdownLink
+                              href={`/listings/${category}/all`}
+                              title="All"
+                              description={`Discover all ${category}`}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            />
                             <DropdownLink
-                              href={`/${category}/rent`}
+                              href={`/listings/${category}/rent`}
                               title="Rent"
                               description={`Find ${category} available for rent`}
                               onClick={() => setIsMobileMenuOpen(false)}
                             />
                             <DropdownLink
-                              href={`/${category}/buy`}
+                              href={`/listings/${category}/buy`}
                               title="Buy"
                               description={`Discover ${category} for sale`}
                               onClick={() => setIsMobileMenuOpen(false)}
@@ -360,13 +366,13 @@ export default function Navbar() {
                             {category === "properties" ? (
                               <>
                                 <DropdownLink
-                                  href="/properties/commercial"
+                                  href={`/listings/${category}/commercial`}
                                   title="Commercial"
                                   description="Explore commercial real estate options"
                                   onClick={() => setIsMobileMenuOpen(false)}
                                 />
                                 <DropdownLink
-                                  href="/properties/residential"
+                                  href={`/listings/${category}/residential`}
                                   title="Residential"
                                   description="Find your perfect home"
                                   onClick={() => setIsMobileMenuOpen(false)}
@@ -375,13 +381,13 @@ export default function Navbar() {
                             ) : (
                               <>
                                 <DropdownLink
-                                  href="/projects/upcoming"
+                                  href={`/listings/${category}/upcoming`}
                                   title="Upcoming"
                                   description="Get early access to future developments"
                                   onClick={() => setIsMobileMenuOpen(false)}
                                 />
                                 <DropdownLink
-                                  href="/projects/ongoing"
+                                  href={`/listings/${category}/ongoing`}
                                   title="Ongoing"
                                   description="Invest in projects under construction"
                                   onClick={() => setIsMobileMenuOpen(false)}
