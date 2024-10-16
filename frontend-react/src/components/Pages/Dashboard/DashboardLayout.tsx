@@ -420,7 +420,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-2">
         {currentUser.role === "ROLE_ADMIN" ||
         currentUser.role === "ROLE_AGENT" ? (
           <div className="bg-white p-6 rounded-lg shadow-sm">
