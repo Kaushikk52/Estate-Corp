@@ -126,7 +126,11 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
+    if (searchTerm === "") {
+      getProperties(currentUser.role);
+    }else{
       searchFilter();
+    }
   }, [searchTerm]);
 
   const searchFilter = () => {
