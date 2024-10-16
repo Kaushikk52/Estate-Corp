@@ -38,6 +38,7 @@ public class PropertyController {
 
     @GetMapping("/filter")
     public ResponseEntity<?>  filterProperties(
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) List<Integer> bedrooms,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
@@ -50,6 +51,7 @@ public class PropertyController {
         try{
             Map<String,Object> filters = new HashMap<>();
             // Add only non-null filters
+            if(category != null) filters.put("type",category);
             if (bedrooms != null) filters.put("bedrooms", bedrooms);
             if (minPrice != null){
                 filters.put("minPrice", minPrice);

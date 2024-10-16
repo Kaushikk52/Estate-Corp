@@ -6,7 +6,7 @@ import DashBoard from './components/Pages/Dashboard/Dashboard.tsx';
 import DashboardLayout from './components/Pages/Dashboard/DashboardLayout.tsx';
 import AddPropertyLayout from './components/Pages/Dashboard/AddProperty.tsx';
 import AddProjectLayout from './components/Pages/Dashboard/AddProject.tsx';
-import Residential from './components/Pages/ListingPage/Residential.tsx';
+import Listing from './components/Pages/ListingPage/Listing.tsx';
 import PropertyDetails from './components/Pages/PropertyDetails.tsx';
 import ProjectDetails from './components/Pages/ProjectDetails.tsx';
 import NotFound from './components/Pages/NotFound.tsx';
@@ -28,7 +28,7 @@ function App() {
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
               <Route path='/dashboard/add-project' element={<AddProjectLayout />} />
             </Route>
-            <Route path="/properties/residential"  element={<Residential />}>  
+            <Route path="/listings/:type/:category"  element={<Listing />}>  
             </Route>
           </Route>
         </Routes>

@@ -16,6 +16,11 @@ public class PropertySpecification {
             // Always filter for approved properties
             predicates.add(criteriaBuilder.equal(root.get("details").get("isApproved"), true));
 
+            if(filters.containsKey("type")){
+                String type = (String) filters.get("type");
+                predicates.add(criteriaBuilder.equal(root.get("type"),type));
+            }
+
             // Handle bedrooms (List of values)
             if (filters.containsKey("bedrooms")) {
                 List<Integer> bedrooms = (List<Integer>) filters.get("bedrooms");

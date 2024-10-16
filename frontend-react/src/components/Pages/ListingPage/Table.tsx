@@ -19,7 +19,7 @@ interface FilterState {
   areaUnit: string;
 }
 
-export default function PropertyListing() {
+export default function Table(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
@@ -31,8 +31,14 @@ export default function PropertyListing() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    if (props.pageType === "properties") {
+      setProperties([]);
+      fetchProperties();
+    } else {
+      setProperties([]);
+      fetchProjects();
+    }
+  }, [props.pageType]);
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
@@ -53,7 +59,9 @@ export default function PropertyListing() {
           url += `maxCarpetArea=${filters.maxCarpetArea}&`;
         if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       } else {
-        url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
+        // type=${props.pageType.toUpperCase()}&category=${props.pageCategory}
+        url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`;
+        // `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
       }
       const response = await axios.get(url);
       setProperties(response.data.properties);
@@ -66,6 +74,8 @@ export default function PropertyListing() {
     }
   };
 
+  const fetchProjects = async () => {};
+
   const handlePropertyClick = (propertyId: string) => {
     navigate(`/property/${propertyId}`);
   };
@@ -77,8 +87,8 @@ export default function PropertyListing() {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
       <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-blue-800">
-          Find Your Dream Home
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 text-blue-800 capitalize">
+          Find Your Dream {props.pageType}
         </h1>
         <Filter onFilterChange={handleFilterChange} />
         {loading && (
@@ -114,7 +124,7 @@ export default function PropertyListing() {
                 onClick={() => handlePropertyClick(property.id)}
               >
                 <div className="flex flex-col md:flex-row">
-                  <div className="w-full md:w-2/5 lg:w-1/3 h-64 md:h-auto h-auto relative">
+                  <div className="w-full md:w-2/5 lg:w-1/3 h-64 md:h-auto relative">
                     <img
                       src={
                         `${imgPrefix}${propertiesPath}/${property.images[0]}` ||
@@ -211,7 +221,7 @@ export default function PropertyListing() {
             className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
             role="alert"
           >
-            <strong className="font-bold">No properties found!</strong>
+            <strong className="font-bold">No {props.pageType} found!</strong>
             <span className="block sm:inline">
               {" "}
               Please try adjusting your filters.

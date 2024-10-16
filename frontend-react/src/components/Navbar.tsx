@@ -192,24 +192,24 @@ export default function Navbar() {
                       </h3>
                       <div className="grid gap-4">
                         <DropdownLink
-                          href={`/${selectedCategory}/rent`}
+                          href={`/listings/${selectedCategory}/rent`}
                           title="Rent"
                           description={`Find ${selectedCategory} available for rent`}
                         />
                         <DropdownLink
-                          href={`/${selectedCategory}/buy`}
+                          href={`/listings/${selectedCategory}/buy`}
                           title="Buy"
                           description={`Discover ${selectedCategory} for sale`}
                         />
                         {selectedCategory === "properties" ? (
                           <>
                             <DropdownLink
-                              href="/properties/commercial"
+                              href={`/listings/${selectedCategory}/commercial`}
                               title="Commercial"
                               description="Explore commercial real estate options"
                             />
                             <DropdownLink
-                              href="/properties/residential"
+                              href={`/listings/${selectedCategory}/residential`}
                               title="Residential"
                               description="Find your perfect home"
                             />
@@ -217,12 +217,12 @@ export default function Navbar() {
                         ) : (
                           <>
                             <DropdownLink
-                              href="/projects/upcoming"
+                              href={`/listings/${selectedCategory}/upcoming`}
                               title="Upcoming"
                               description="Get early access to future developments"
                             />
                             <DropdownLink
-                              href="/projects/ongoing"
+                              href={`listings/${selectedCategory}/ongoing`}
                               title="Ongoing"
                               description="Invest in projects under construction"
                             />
