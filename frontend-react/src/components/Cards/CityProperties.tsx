@@ -136,7 +136,7 @@ export default function LocationsCardsCarousel() {
           </div>
         </div>
 
-        <div className="w-full lg:w-3/4 relative">
+        <div className="w-full sm:w-11/12 md:w-5/6 lg:w-5/6 xl:w-5/6 relative">
           <Swiper
             modules={[Navigation, A11y]}
             spaceBetween={20}

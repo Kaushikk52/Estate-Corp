@@ -42,7 +42,7 @@ function Home() {
           <img 
             src="/carousel3.jpg" 
             alt="Modern furniture" 
-            className="w-full h-full object-cover object-center opacity-70"
+            className="w-full h-full object-cover object-center opacity-60"
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.h1 
