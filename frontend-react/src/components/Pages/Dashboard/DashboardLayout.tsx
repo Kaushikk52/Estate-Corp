@@ -125,6 +125,14 @@ export default function Dashboard() {
     getCurrentUser();
   }, []);
 
+  const searchFilter = () => {
+    const filteredProperties = properties.filter((property) =>
+      property.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setProperties(filteredProperties);
+  };
+  
+
   const getCurrentUser = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -236,17 +244,10 @@ export default function Dashboard() {
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Properties Dashboard</h1>
-        <input
-          type="search"
-          placeholder="Search..."
-          className="px-4 py-2 border rounded-md"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
       </div>
 
       {currentUser.role == "ROLE_ADMIN" || currentUser.role == "ROLE_AGENT" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {cards.map((card, index) => (
             <div
               key={index}
@@ -292,8 +293,21 @@ export default function Dashboard() {
         currentUser.role === "ROLE_AGENT" ||
         currentUser.role === "ROLE_RESALER" ? (
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
-            <div className="overflow-x-auto">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
+              <input
+                type="search"
+                placeholder="Search..."
+                className=" px-4 py-2 
+                  border rounded-md 
+                  w-full sm:w-60 md:w- lg:w-1/3 xl:w-1/4
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                  transition-all duration-200"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="overflow-x-auto mt-3">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
