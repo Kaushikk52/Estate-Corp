@@ -356,20 +356,20 @@ export default function Navbar() {
                               description={`Discover all ${category}`}
                               onClick={() => setIsMobileMenuOpen(false)}
                             />
-                            <DropdownLink
-                              href={`/listings/${category}/rent`}
-                              title="Rent"
-                              description={`Find ${category} available for rent`}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            />
-                            <DropdownLink
-                              href={`/listings/${category}/buy`}
-                              title="Buy"
-                              description={`Discover ${category} for sale`}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            />
                             {category === "properties" ? (
                               <>
+                                <DropdownLink
+                                  href={`/listings/${category}/rent`}
+                                  title="Rent"
+                                  description={`Find ${category} available for rent`}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                />
+                                <DropdownLink
+                                  href={`/listings/${category}/buy`}
+                                  title="Buy"
+                                  description={`Discover ${category} for sale`}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                />
                                 <DropdownLink
                                   href={`/listings/${category}/commercial`}
                                   title="Commercial"

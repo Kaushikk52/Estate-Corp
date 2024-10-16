@@ -268,12 +268,12 @@ export default function Dashboard() {
               <CardBackground color="white" />
               <div className="relative z-10">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-base sm:text-lg md:text-lg lg:text-xl font-medium">
+                  <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-medium">
                     {card.title}
                   </h2>
                   <card.icon className="h-6 w-6" />
                 </div>
-                <div className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+                <div className="text-lg sm:text-lg md:text-xl lg:text-2xl font-bold mb-2">
                   {card.value}
                 </div>
                 <p className="text-sm opacity-75">{card.change}</p>
