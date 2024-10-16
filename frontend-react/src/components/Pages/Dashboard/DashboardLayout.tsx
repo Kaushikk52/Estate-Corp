@@ -90,7 +90,7 @@ export default function Dashboard() {
     {
       title: "Total Revenue",
       icon: IndianRupee,
-      value: "Rs. 45,231.89",
+      value: "Rs. 45,231",
       change: "+20.1% from last month",
       color: "bg-blue-500",
       textColor: "text-blue-700",
@@ -128,7 +128,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (searchTerm === "") {
       getProperties(currentUser.role);
-    }else{
+    } else {
       searchFilter();
     }
   }, [searchTerm]);
@@ -137,10 +137,10 @@ export default function Dashboard() {
     const filteredProperties = properties.filter((property) =>
       property.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    if(filteredProperties.length > 0){
+    if (filteredProperties.length > 0) {
       console.log(filteredProperties);
       setProperties(filteredProperties);
-    }else{
+    } else {
       getProperties(currentUser.role);
     }
   };
@@ -263,15 +263,19 @@ export default function Dashboard() {
           {cards.map((card, index) => (
             <div
               key={index}
-              className={`relative overflow-hidden ${card.color} text-white p-6 rounded-lg shadow-lg`}
+              className={`relative overflow-hidden ${card.color} text-white p-4 sm:p-4 md:p-5 lg:p-6 xl:p-8 rounded-lg shadow-lg`}
             >
               <CardBackground color="white" />
               <div className="relative z-10">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-sm font-medium">{card.title}</h2>
+                  <h2 className="text-base sm:text-lg md:text-lg lg:text-xl font-medium">
+                    {card.title}
+                  </h2>
                   <card.icon className="h-6 w-6" />
                 </div>
-                <div className="text-3xl font-bold mb-2">{card.value}</div>
+                <div className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+                  {card.value}
+                </div>
                 <p className="text-sm opacity-75">{card.change}</p>
               </div>
             </div>
@@ -416,101 +420,103 @@ export default function Dashboard() {
         )}
       </div>
 
-      {currentUser.role === "ROLE_ADMIN" ||
-      currentUser.role === "ROLE_AGENT" ? (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Property Enquiries</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Your most recent actions and updates.
-          </p>
-          <div className="space-y-4">
-            {notifications?.map((notification: any, i: number) =>
-              notification.propertyId ? (
-                <div key={i} className="flex items-center">
-                  <span className="relative flex h-3 w-3 mr-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
-                  </span>
-                  <p className="text-sm">
-                    <span className="font-semibold">User : </span>{" "}
-                    <Link to={`/user/${notification.userId}`}>
-                      <span className="underline">
-                        {notification.enquiry.name}
-                      </span>
-                    </Link>{" "}
-                    has enquired for{" "}
-                    <span className="font-semibold">Property : </span>
-                    <span className="underline">
-                      <Link to={`/property/${notification.propertyId}`}>
-                        {notification.propertyName}
-                      </Link>
+      <div className="flex flex-row gap-2">
+        {currentUser.role === "ROLE_ADMIN" ||
+        currentUser.role === "ROLE_AGENT" ? (
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg font-semibold mb-4">Property Enquiries</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Your most recent actions and updates.
+            </p>
+            <div className="space-y-4">
+              {notifications?.map((notification: any, i: number) =>
+                notification.propertyId ? (
+                  <div key={i} className="flex items-center">
+                    <span className="relative flex h-3 w-3 mr-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
                     </span>
-                    <span className="font-semibold"> owned by : </span>
-                    <Link to={`/user/${notification.ownerId}`}>
+                    <p className="text-sm">
+                      <span className="font-semibold">User : </span>{" "}
+                      <Link to={`/user/${notification.userId}`}>
+                        <span className="underline">
+                          {notification.enquiry.name}
+                        </span>
+                      </Link>{" "}
+                      has enquired for{" "}
+                      <span className="font-semibold">Property : </span>
                       <span className="underline">
-                        {notification.ownerName}
+                        <Link to={`/property/${notification.propertyId}`}>
+                          {notification.propertyName}
+                        </Link>
                       </span>
-                    </Link>
-                  </p>
-                  <ArrowUpRight className="h-4 w-4 ml-auto text-green-500" />
-                </div>
-              ) : (
-                <></>
-              )
-            )}
+                      <span className="font-semibold"> owned by : </span>
+                      <Link to={`/user/${notification.ownerId}`}>
+                        <span className="underline">
+                          {notification.ownerName}
+                        </span>
+                      </Link>
+                    </p>
+                    <ArrowUpRight className="h-4 w-4 ml-auto text-green-500" />
+                  </div>
+                ) : (
+                  <></>
+                )
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div></div>
-      )}
+        ) : (
+          <div></div>
+        )}
 
-      {currentUser.role === "ROLE_ADMIN" ||
-      currentUser.role === "ROLE_AGENT" ? (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Project Enquiries</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Your most recent actions and updates.
-          </p>
-          <div className="space-y-4">
-            {notifications?.map((notification: any, i: number) =>
-              notification.projectId ? (
-                <div key={i} className="flex items-center">
-                  <span className="relative flex h-3 w-3 mr-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
-                  </span>
-                  <p className="text-sm">
-                    <span className="font-semibold">User : </span>
-                    <Link to={`/user/${notification.userId}`}>
-                      <span className="underline">
-                        {notification.enquiry.name}
-                      </span>
-                    </Link>{" "}
-                    has enquired for{" "}
-                    <span className="font-semibold">Project : </span>
-                    <span className="underline">
-                      <Link to={`/project/${notification.projectId}`}>
-                        {notification.projectName}
-                      </Link>
+        {currentUser.role === "ROLE_ADMIN" ||
+        currentUser.role === "ROLE_AGENT" ? (
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg font-semibold mb-4">Project Enquiries</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Your most recent actions and updates.
+            </p>
+            <div className="space-y-4">
+              {notifications?.map((notification: any, i: number) =>
+                notification.projectId ? (
+                  <div key={i} className="flex items-center">
+                    <span className="relative flex h-3 w-3 mr-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
                     </span>
-                    <span className="font-semibold"> owned by : </span>
-                    <Link to={`/user/${notification.ownerId}`}>
+                    <p className="text-sm">
+                      <span className="font-semibold">User : </span>
+                      <Link to={`/user/${notification.userId}`}>
+                        <span className="underline">
+                          {notification.enquiry.name}
+                        </span>
+                      </Link>{" "}
+                      has enquired for{" "}
+                      <span className="font-semibold">Project : </span>
                       <span className="underline">
-                        {notification.ownerName}
+                        <Link to={`/project/${notification.projectId}`}>
+                          {notification.projectName}
+                        </Link>
                       </span>
-                    </Link>
-                  </p>
-                  <ArrowUpRight className="h-4 w-4 ml-auto text-green-500" />
-                </div>
-              ) : (
-                <></>
-              )
-            )}
+                      <span className="font-semibold"> owned by : </span>
+                      <Link to={`/user/${notification.ownerId}`}>
+                        <span className="underline">
+                          {notification.ownerName}
+                        </span>
+                      </Link>
+                    </p>
+                    <ArrowUpRight className="h-4 w-4 ml-auto text-green-500" />
+                  </div>
+                ) : (
+                  <></>
+                )
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div></div>
-      )}
+        ) : (
+          <div></div>
+        )}
+      </div>
     </div>
   );
 }

@@ -150,7 +150,7 @@ export default function Navbar() {
                   exit="hidden"
                   variants={dropdownVariants}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-0 mt-2 w-screen max-w-lg bg-white rounded-md shadow-lg py-1 z-10"
+                  className="absolute left-0 mt-2 w-screen max-w-lg bg-white rounded-md shadow-lg py-1 z-20"
                 >
                   <div className="flex">
                     <div className="w-1/3 bg-gray-50 p-2 h-full">
@@ -307,7 +307,7 @@ export default function Navbar() {
               >
                 Home
               </Link>
-              <div className="mt-4">
+              <div className="mt-0">
                 <button
                   onClick={() => toggleMobileDropdown("explore")}
                   className="flex items-center justify-between w-full py-2 text-lg font-semibold text-gray-800 hover:text-gray-600"
@@ -321,7 +321,7 @@ export default function Navbar() {
                   />
                 </button>
                 {mobileDropdowns.explore && (
-                  <div className="mt-2 space-y-4">
+                  <div className="mt-2 ml-5 space-y-4">
                     {["properties", "projects"].map((category) => (
                       <div key={category}>
                         <button
