@@ -191,6 +191,11 @@ export default function Navbar() {
                           : "Projects"}
                       </h3>
                       <div className="grid gap-4">
+                      <DropdownLink
+                          href={`/listings/${selectedCategory}/all`}
+                          title="All"
+                          description={`Discover all ${selectedCategory}`}
+                        />
                         <DropdownLink
                           href={`/listings/${selectedCategory}/rent`}
                           title="Rent"

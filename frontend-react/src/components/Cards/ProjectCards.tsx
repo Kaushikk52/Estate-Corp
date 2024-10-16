@@ -21,12 +21,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
 
-export default function ProjectsCarousel(props:any) {
+export default function ProjectsCarousel(props: any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -39,12 +39,12 @@ export default function ProjectsCarousel(props:any) {
   const fetchProjects = async () => {
     try {
       let response;
-      if(props.projects){
+      if (props.projects) {
         setProjects(props.projects);
-      }else{
+      } else {
         response = await axios.get(`${baseURL}/v1/api/projects/all`);
-        if(response.data.length === 0 ){
-          setProjects([])
+        if (response.data.length === 0) {
+          setProjects([]);
         }
         setProjects(response.data);
       }
@@ -70,7 +70,7 @@ export default function ProjectsCarousel(props:any) {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-12 bg-gradient-to-r from-slate-100 to-slate-200"> 
+    <div className="w-full max-w-7xl mx-auto px-4 py-12 bg-gradient-to-r from-slate-100 to-slate-200">
       <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-gray-800">
         Explore Projects
       </h2>
@@ -102,47 +102,68 @@ export default function ProjectsCarousel(props:any) {
                   transition={{ duration: 0.5 }}
                 >
                   <div className="relative">
-                    <img 
-                      src={project.images.length > 0 ? `${imgPrefix}${projectsPath}/${project.images[0]}` : defaultImg} 
-                      alt={project.name} 
+                    <img
+                      src={
+                        project.images.length > 0
+                          ? `${imgPrefix}${projectsPath}/${project.images[0]}`
+                          : defaultImg
+                      }
+                      alt={project.name}
                       className="w-full h-48 object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
                       <Camera className="h-3 w-3 mr-1" />
                       {project.images.length}
                     </div>
-                    <span className="absolute inline-flex top-2 right-5 items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        <Home className="h-3 w-3 mr-1" />
-                        {project.underConstruction === "Yes" ? "Under Construction" : "Ready"}
+                    {project.underConstruction === "Yes" ? (
+                      <span className="absolute inline-flex top-2 left-2 items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Possesion: {new Date(project.possesion).getDate()}/
+                        {new Date(project.possesion).getMonth() + 1}/
+                        {new Date(project.possesion).getFullYear()}
                       </span>
+                    ) : (
+                      <span className="absolute inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        Built: {new Date(project.builtIn).getDate()}/
+                        {new Date(project.builtIn).getMonth() + 1}/
+                        {new Date(project.builtIn).getFullYear()}
+                      </span>
+                    )}
+                    <span className="absolute inline-flex top-2 right-5 items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <Home className="h-3 w-3 mr-1" />
+                      {project.underConstruction === "Yes"
+                        ? "Under Construction"
+                        : "Ready"}
+                    </span>
                   </div>
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-xl font-bold text-gray-800 truncate">
                         {project.name}
                       </h3>
-                      <span className="text-sm font-semibold text-blue-600">
-                        {project.floorPlans.length} Floor Plans
-                      </span>
+                      <div className="">
+                        <span className="mr-2 text-sm font-semibold text-blue-600">
+                          {project.floorPlans
+                            .map((plan: any) => plan.bedrooms)
+                            .sort((a: number, b: number) => a - b)
+                            .join(",")}{" "}
+                          BHK
+                        </span>
+                        <span className="text-sm font-semibold text-blue-600">
+                          {project.floorPlans.length} Floor Plans
+                        </span>
+                      </div>
                     </div>
-                      <p className="text-sm text-gray-600 mt-1 flex items-center">
+                    <p className="text-sm text-gray-600 mt-1 flex items-center">
                       <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
                       <span className="truncate lineclamp1">
-                      {project.address.street} {project.address.locality} {project.location} {project.address.landmark} - {project.address.zipCode}
+                        {project.address.street} {project.address.locality}{" "}
+                        {project.location} {project.address.landmark} -{" "}
+                        {project.address.zipCode}
                       </span>
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4 mt-3">
-                      {
-                        project.underConstruction === "Yes" ?
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        Possesion: {new Date(project.possesion).getDate()}/{new Date(project.possesion).getMonth() + 1}/{new Date(project.possesion).getFullYear()}
-                      </span> : 
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      Built: {new Date(project.builtIn).getDate()}/{new Date(project.builtIn).getMonth() + 1}/{new Date(project.builtIn).getFullYear()}
-                    </span>
-                      }
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         <Building className="h-3 w-3 mr-1" />
                         Floors: {project.totalFloors}

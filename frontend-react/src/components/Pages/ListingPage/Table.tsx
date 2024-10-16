@@ -38,7 +38,7 @@ export default function Table(props: any) {
       setProperties([]);
       fetchProjects();
     }
-  }, [props.pageType]);
+  }, [props.pageCategory,props.pageType]);
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
@@ -59,9 +59,27 @@ export default function Table(props: any) {
           url += `maxCarpetArea=${filters.maxCarpetArea}&`;
         if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       } else {
-        // type=${props.pageType.toUpperCase()}&category=${props.pageCategory}
-        url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`;
-        // `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
+        switch(props.pageCategory){
+          case "rent":
+          url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`
+          break;
+
+          case "buy":
+          url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`
+          break;
+
+          case "commercial":
+          url = `${baseURL}/v1/api/properties/filter?&variant=${props.pageCategory.toUpperCase()}`
+          break;
+
+          case "residential":
+          url = `${baseURL}/v1/api/properties/filter?&variant=${props.pageCategory.toUpperCase()}`
+          break;
+
+          default:
+            url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
+
+        }
       }
       const response = await axios.get(url);
       setProperties(response.data.properties);

@@ -21,6 +21,11 @@ public class PropertySpecification {
                 predicates.add(criteriaBuilder.equal(root.get("type"),type));
             }
 
+            if(filters.containsKey("variant")){
+                String variant = (String) filters.get("variant");
+                predicates.add(criteriaBuilder.equal(root.get("propertyVariant"),variant));
+            }
+
             // Handle bedrooms (List of values)
             if (filters.containsKey("bedrooms")) {
                 List<Integer> bedrooms = (List<Integer>) filters.get("bedrooms");
