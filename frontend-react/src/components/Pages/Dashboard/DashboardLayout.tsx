@@ -125,13 +125,21 @@ export default function Dashboard() {
     getCurrentUser();
   }, []);
 
+  useEffect(() => {
+      searchFilter();
+  }, [searchTerm]);
+
   const searchFilter = () => {
     const filteredProperties = properties.filter((property) =>
       property.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setProperties(filteredProperties);
+    if(filteredProperties.length > 0){
+      console.log(filteredProperties);
+      setProperties(filteredProperties);
+    }else{
+      getProperties(currentUser.role);
+    }
   };
-  
 
   const getCurrentUser = async () => {
     try {
@@ -297,7 +305,7 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
               <input
                 type="search"
-                placeholder="Search..."
+                placeholder={`Property Name ...`}
                 className=" px-4 py-2 
                   border rounded-md 
                   w-full sm:w-60 md:w- lg:w-1/3 xl:w-1/4
@@ -339,60 +347,68 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {properties.map((property, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {index + 1}
+                  {properties.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-4">
+                        No Data
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {property.owner.fullName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {property.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {property.type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {property.details.location}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {property.address.locality}
-                      </td>
-                      {currentUser.role === "ROLE_ADMIN" ? (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {property.details.hasOwnProperty("isApproved") !==
-                            null && property.details.isApproved === false ? (
-                            <button
-                              className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={() =>
-                                changeApprovalStatus(property.id, false)
-                              }
-                            >
-                              Unapproved
-                            </button>
-                          ) : (
-                            <button
-                              className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                              onClick={() =>
-                                changeApprovalStatus(property.id, true)
-                              }
-                            >
-                              Approved
-                            </button>
-                          )}
-                        </td>
-                      ) : (
-                        <td></td>
-                      )}
                     </tr>
-                  ))}
+                  ) : (
+                    properties.map((property, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {property.owner.fullName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {property.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {property.type}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {property.details.location}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {property.address.locality}
+                        </td>
+                        {currentUser.role === "ROLE_ADMIN" ? (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {property.details.hasOwnProperty("isApproved") !==
+                              null && property.details.isApproved === false ? (
+                              <button
+                                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                                onClick={() =>
+                                  changeApprovalStatus(property.id, false)
+                                }
+                              >
+                                Unapproved
+                              </button>
+                            ) : (
+                              <button
+                                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                onClick={() =>
+                                  changeApprovalStatus(property.id, true)
+                                }
+                              >
+                                Approved
+                              </button>
+                            )}
+                          </td>
+                        ) : (
+                          <td></td>
+                        )}
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         ) : (
-          <div></div>
+          <div>No data</div>
         )}
       </div>
 
