@@ -138,7 +138,7 @@ export default function Dashboard() {
       property.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     if (filteredProperties.length > 0) {
-      console.log(filteredProperties);
+      // console.log(filteredProperties);
       setProperties(filteredProperties);
     } else {
       getProperties(currentUser.role);

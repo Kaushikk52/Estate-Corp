@@ -143,9 +143,9 @@ export default function AddPropertyLayout() {
     try {
       const urls: any = await uploadImages(values.images);
       if (urls.length > 0) {
-        console.log("uploaded urls", urls);
+        // console.log("uploaded urls", urls);
         values.images = [...urls];
-        console.log("values.images : ", values.images);
+        // console.log("values.images : ", values.images);
       }
     } catch (err) {
       console.log(err);
@@ -956,7 +956,7 @@ export default function AddPropertyLayout() {
                                 onChange={(event) => {
                                   const files = event.currentTarget.files;
                                   if (files) {
-                                    console.log(files);
+                                    // console.log(files);
                                     setFieldValue("images", [
                                       ...values.images,
                                       ...Array.from(files),
