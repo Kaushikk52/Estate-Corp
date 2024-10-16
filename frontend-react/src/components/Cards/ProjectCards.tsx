@@ -123,7 +123,7 @@ export default function ProjectsCarousel(props: any) {
                         {new Date(project.possesion).getFullYear()}
                       </span>
                     ) : (
-                      <span className="absolute inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <span className="absolute inline-flex top-2 left-2 items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <Calendar className="h-3 w-3 mr-1" />
                         Built: {new Date(project.builtIn).getDate()}/
                         {new Date(project.builtIn).getMonth() + 1}/
