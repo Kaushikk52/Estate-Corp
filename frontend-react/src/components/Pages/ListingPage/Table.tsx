@@ -181,7 +181,7 @@ export default function Table(props: any) {
                           </p>
                         )}
                       </div>
-                      <p className="text-gray-600 mb-4 flex items-center">
+                      <p className="text-gray-600 mb-4 flex items-center lineclamp1">
                         <MapPin className="h-4 w-4 mr-1" />{" "}
                         {property.address.street} {property.address.locality}{" "}
                         {property.details.location} {property.address.landmark}{" "}

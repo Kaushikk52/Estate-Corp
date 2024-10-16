@@ -16,7 +16,7 @@ import {
   Activity,
 } from "lucide-react";
 import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 const data = [
@@ -477,8 +477,6 @@ export default function Dashboard() {
       ) : (
         <div></div>
       )}
-
-      <Toaster />
     </div>
   );
 }

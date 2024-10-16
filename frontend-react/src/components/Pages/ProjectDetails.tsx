@@ -12,6 +12,7 @@ import {
   Scan,
   Bed,
   Bath,
+  ExternalLink,
 } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -122,6 +123,11 @@ export default function ProjectDetails() {
         .join(",");
       setBedroomList(bedroomList);
     } else {
+      toast.error(`Failed to fetch project details. Please try again.`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+
     }
   };
 
@@ -148,6 +154,23 @@ export default function ProjectDetails() {
         duration: 3000,
       });
     }
+  };
+
+  const handleCopyUrl = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        toast.success(`URL copied to clipboard!`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      })
+      .catch(() => {
+        toast.error(`Failed to copy URL`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      });
   };
 
   return (
@@ -515,13 +538,23 @@ export default function ProjectDetails() {
                     </tbody>
                   </table>
                 </motion.div>
-                <div className="flex flex-col md:flex-row justify-center items-center mt-4 gap-8">
+                <div className="flex flex-row md:flex-row justify-center items-center mt-4 gap-4">
+                <a href="tel:7700994313">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Contact Owner
+                  </motion.button>
+                  </a>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleCopyUrl}
+                    className="max-w-64 bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-700 transition-colors"
+                  >
+                    <ExternalLink />
                   </motion.button>
                 </div>
               </div>

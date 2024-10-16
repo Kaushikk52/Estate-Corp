@@ -10,9 +10,10 @@ import {
   Calendar,
   Maximize,
   Compass,
+  ExternalLink,
 } from "lucide-react";
 import axios from "axios";
-import { ErrorMessage, Field, Formik, FormikHelpers,Form } from "formik";
+import { ErrorMessage, Field, Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
 import Property from "../../Models/Property";
 import toast from "react-hot-toast";
@@ -21,11 +22,11 @@ export default function PropertyDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const { id } = useParams<{ id: string }>();
   const [property, setProperty] = useState<Property | null>(null);
-  const [currentUser,setCurrentUser] = useState<any>();
+  const [currentUser, setCurrentUser] = useState<any>();
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
 
   const validationSchema = Yup.object().shape({
@@ -57,11 +58,11 @@ export default function PropertyDetails() {
   };
 
   const getCurrentUser = async () => {
-    try{
-      const token = localStorage.getItem('token');
-      if(!token){
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
         setCurrentUser(undefined);
-      } 
+      }
       const response = await axios.get(
         `${baseURL}/v1/api/users/getCurrentUser`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -69,16 +70,33 @@ export default function PropertyDetails() {
       if (response.status === 201 || response.status === 200) {
         setCurrentUser(response.data);
       }
-    }catch(err:any){
+    } catch (err: any) {
       console.log("An error occured : ", err);
-      if(err.status === 401){
-        localStorage.removeItem('token');
+      if (err.status === 401) {
+        localStorage.removeItem("token");
       }
       toast.error(`An error occurred : ${err}`, {
         position: "bottom-right",
         duration: 3000,
       });
     }
+  };
+
+  const handleCopyUrl = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        toast.success(`URL copied to clipboard!`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      })
+      .catch(() => {
+        toast.error(`Failed to copy URL`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      });
   };
 
   const handleSubmit = async (
@@ -90,15 +108,17 @@ export default function PropertyDetails() {
       const body = {
         userId: currentUser?.userId,
         propertyId: property?.id,
-        propertyName:property?.name,
-        ownerId:property?.owner.id,
-        ownerName:property?.owner.fullName,
+        propertyName: property?.name,
+        ownerId: property?.owner.id,
+        ownerName: property?.owner.fullName,
         enquiry: values,
-        subject: "PROPERTY_ENQUIRY"
+        subject: "PROPERTY_ENQUIRY",
       };
 
       const response = await axios.post(
-        `${baseURL}/v1/api/enquiry/email`,body);
+        `${baseURL}/v1/api/enquiry/email`,
+        body
+      );
 
       if (response.status === 200 || response.status === 201) {
         toast.success(`Email sent Successfully`, {
@@ -107,7 +127,7 @@ export default function PropertyDetails() {
         });
         resetForm();
       } else {
-        throw new Error('Failed to send email');
+        throw new Error("Failed to send email");
       }
     } catch (err) {
       console.error(err);
@@ -349,40 +369,49 @@ export default function PropertyDetails() {
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-gray-600" />
-                    {
-                      property.type === "RENT" ?
-                      <span>Built in {new Date(property.details.builtIn).getDate()}/{new Date(property.details.builtIn).getMonth()+1}/{new Date(property.details.builtIn).getFullYear()}</span>
-                      : <span>Possesion in {new Date(property.details.possesion).getDate()}/{new Date(property.details.possesion).getMonth()+1}/{new Date(property.details.possesion).getFullYear()}</span>
-                    }
+                    {property.type === "RENT" ? (
+                      <span>
+                        Built in {new Date(property.details.builtIn).getDate()}/
+                        {new Date(property.details.builtIn).getMonth() + 1}/
+                        {new Date(property.details.builtIn).getFullYear()}
+                      </span>
+                    ) : (
+                      <span>
+                        Possesion in{" "}
+                        {new Date(property.details.possesion).getDate()}/
+                        {new Date(property.details.possesion).getMonth() + 1}/
+                        {new Date(property.details.possesion).getFullYear()}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center">
                     <Compass className="w-5 h-5 mr-2 text-gray-600" />
-                      <span>Facing {property.details.facing}</span>
+                    <span>Facing {property.details.facing}</span>
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
                 <p className="text-gray-600">{property.details.description}</p>
                 <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white overflow-hidden mt-5 mb-12"
-              >
-                <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {property.details.ammenities?.map((amenity, index) => (
-                    <motion.div
-                      key={index}
-                      className="flex items-center p-3 bg-gray-100 rounded-lg"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                      {amenity}
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white overflow-hidden mt-5 mb-12"
+                >
+                  <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {property.details.ammenities?.map((amenity, index) => (
+                      <motion.div
+                        key={index}
+                        className="flex items-center p-3 bg-gray-100 rounded-lg"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                        {amenity}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
                 {/* Address Section */}
                 <motion.div
                   className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3"
@@ -404,7 +433,9 @@ export default function PropertyDetails() {
                       </tr>
                       <tr className="flex flex-col">
                         <td className="font-medium">Zip Code</td>
-                        <td className="text-gray-600">{property.address.zipCode}</td>
+                        <td className="text-gray-600">
+                          {property.address.zipCode}
+                        </td>
                       </tr>
                     </tbody>
                     <tbody>
@@ -453,14 +484,24 @@ export default function PropertyDetails() {
                           <>
                             <td className="font-medium">Year Built:</td>
                             <td className="text-gray-600">
-                              {new Date(property.details.builtIn).getDate()}/{new Date(property.details.builtIn).getMonth()+1}/{new Date(property.details.builtIn).getFullYear()}
+                              {new Date(property.details.builtIn).getDate()}/
+                              {new Date(property.details.builtIn).getMonth() +
+                                1}
+                              /
+                              {new Date(property.details.builtIn).getFullYear()}
                             </td>
                           </>
                         ) : (
                           <>
                             <td className="font-medium">Possession Date:</td>
                             <td className="text-gray-600">
-                            {new Date(property.details.possesion).getDate()}/{new Date(property.details.possesion).getMonth()+1}/{new Date(property.details.possesion).getFullYear()}
+                              {new Date(property.details.possesion).getDate()}/
+                              {new Date(property.details.possesion).getMonth() +
+                                1}
+                              /
+                              {new Date(
+                                property.details.possesion
+                              ).getFullYear()}
                             </td>
                           </>
                         )}
@@ -502,13 +543,23 @@ export default function PropertyDetails() {
                     </tbody>
                   </table>
                 </motion.div>
-                <div className="flex flex-col md:flex-row justify-center items-center mt-4 gap-8">
+                <div className="flex flex-row md:flex-row justify-center items-center mt-4 gap-4">
+                  <a href="tel:7700994313">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Contact Owner
+                    </motion.button>
+                  </a>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                    onClick={handleCopyUrl}
+                    className="max-w-64 bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-700 transition-colors"
                   >
-                    Contact Owner
+                    <ExternalLink />
                   </motion.button>
                 </div>
               </div>

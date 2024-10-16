@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Formik,
   Form,
@@ -1154,7 +1154,6 @@ export default function AddProjectLayout() {
           )}
         </Formik>
       </motion.div>
-      <Toaster />
     </div>
   );
 }
