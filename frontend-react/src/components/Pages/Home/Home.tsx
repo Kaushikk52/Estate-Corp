@@ -70,10 +70,10 @@ function Home() {
       </div>
         <Cards />
         <FeaturedCardsCarousel/>
-        <BentoGrid />
         <ProjectsCarousel/>
-        <Testimonials/>
         <CityCardsCarousel/>
+        <BentoGrid />
+        <Testimonials/>
       </>
     );
   }
