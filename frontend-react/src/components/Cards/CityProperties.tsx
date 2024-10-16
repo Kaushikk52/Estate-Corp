@@ -41,8 +41,6 @@ export default function LocationsCardsCarousel() {
     "Dashisar West",
     "Borivali East",
     "Borivali West",
-    "Malad East",
-    "Malad West",
   ];
   const [activeFilter, setActiveFilter] = useState("All");
 

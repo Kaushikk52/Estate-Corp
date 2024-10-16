@@ -65,22 +65,25 @@ export default function Navbar() {
     projects: false,
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setToggle(false);
   });
 
-  const checkIfLogin = (route:string) => {
+  const checkIfLogin = (route: string) => {
     // console.log("checking...",toggle);
-    const token = localStorage.getItem('token')
-    setNavigateTo(route)
-    if(token !== null && toggle === false){//user logged in and no popup
-      navigate(route)
-    }else if(token !== null && toggle === true){//user logged in and still popup
+    const token = localStorage.getItem("token");
+    setNavigateTo(route);
+    if (token !== null && toggle === false) {
+      //user logged in and no popup
+      navigate(route);
+    } else if (token !== null && toggle === true) {
+      //user logged in and still popup
       setToggle(false);
-    }else if(token === null){//user not logged in 
+    } else if (token === null) {
+      //user not logged in
       setToggle(true);
     }
-  }
+  };
 
   const dropdownVariants = {
     hidden: { opacity: 0, y: -10 },
@@ -191,23 +194,23 @@ export default function Navbar() {
                           : "Projects"}
                       </h3>
                       <div className="grid gap-4">
-                      <DropdownLink
+                        <DropdownLink
                           href={`/listings/${selectedCategory}/all`}
                           title="All"
                           description={`Discover all ${selectedCategory}`}
                         />
-                        <DropdownLink
-                          href={`/listings/${selectedCategory}/rent`}
-                          title="Rent"
-                          description={`Find ${selectedCategory} available for rent`}
-                        />
-                        <DropdownLink
-                          href={`/listings/${selectedCategory}/buy`}
-                          title="Buy"
-                          description={`Discover ${selectedCategory} for sale`}
-                        />
                         {selectedCategory === "properties" ? (
                           <>
+                            <DropdownLink
+                              href={`/listings/${selectedCategory}/rent`}
+                              title="Rent"
+                              description={`Find ${selectedCategory} available for rent`}
+                            />
+                            <DropdownLink
+                              href={`/listings/${selectedCategory}/buy`}
+                              title="Buy"
+                              description={`Discover ${selectedCategory} for sale`}
+                            />
                             <DropdownLink
                               href={`/listings/${selectedCategory}/commercial`}
                               title="Commercial"
@@ -240,6 +243,8 @@ export default function Navbar() {
               )}
             </AnimatePresence>
           </div>
+          <NavLink href="/listings/properties/rent">Rent</NavLink>
+          <NavLink href="/listings/properties/buy">Buy</NavLink>
         </div>
         <div className="flex items-center space-x-4 cursor-pointer">
           <AuthPopup popup={toggle} navigateTo={navigateTo} />
@@ -345,7 +350,7 @@ export default function Navbar() {
                           category as keyof typeof mobileDropdowns
                         ] && (
                           <div className="mt-2 grid grid-cols-2 gap-2">
-                             <DropdownLink
+                            <DropdownLink
                               href={`/listings/${category}/all`}
                               title="All"
                               description={`Discover all ${category}`}
@@ -401,6 +406,20 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
+              <Link
+                to="/listings/properties/rent"
+                className="block py-2 text-lg font-semibold text-gray-800 hover:text-gray-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Rent
+              </Link>
+              <Link
+                to="/listings/properties/buy"
+                className="block py-2 text-lg font-semibold text-gray-800 hover:text-gray-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Buy
+              </Link>
             </div>
           </motion.div>
         )}

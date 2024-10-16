@@ -28,7 +28,6 @@ export default function Table(props: any) {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (props.pageType === "properties") {
@@ -42,7 +41,6 @@ export default function Table(props: any) {
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
-    setError(null);
     try {
       let url = `${baseURL}/v1/api/properties/filter?`;
       if (filters) {
@@ -85,8 +83,10 @@ export default function Table(props: any) {
       setProperties(response.data.properties);
     } catch (err) {
       console.error("An error occurred: ", err);
-      setError("Failed to fetch properties. Please try again.");
-      toast.error("Failed to fetch properties");
+      toast.error(`Failed to fetch properties`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -113,15 +113,6 @@ export default function Table(props: any) {
           <div className="text-center mt-8">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
             <p className="mt-2 text-blue-600">Loading properties...</p>
-          </div>
-        )}
-        {error && (
-          <div
-            className="text-center mt-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <strong className="font-bold">Error!</strong>
-            <span className="block sm:inline"> {error}</span>
           </div>
         )}
         <motion.div
