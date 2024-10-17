@@ -212,12 +212,14 @@ export default function ProjectDetails() {
               <img
                 src={`${imgPrefix}${projectsPath}/${selectedImage}`}
                 alt={project?.name}
+                loading="lazy"
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
               />
               <div className="flex mt-4 space-x-4 overflow-x-auto p-2">
                 {project?.images.map((image:any, index:any) => (
                   <img
                     key={index}
+                    loading="lazy"
                     src={`${imgPrefix}${projectsPath}/${image}`}
                     alt={`${project?.name} - Image ${index + 1}`}
                     className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
@@ -324,6 +326,7 @@ export default function ProjectDetails() {
               <img
                 src={`${imgPrefix}${propertiesPath}/${selectedPlan?.image}`}
                 alt={selectedPlan?.name}
+                loading="lazy"
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
               />
               <div className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3">

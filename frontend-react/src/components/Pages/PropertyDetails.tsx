@@ -203,6 +203,7 @@ export default function PropertyDetails() {
               <div className="relative">
                 <img
                   src={`${imgPrefix}${propertiesPath}/${selectedImage}`}
+                  loading="lazy"
                   alt={property.name}
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
                 />
@@ -232,6 +233,7 @@ export default function PropertyDetails() {
                   {property.images.map((image, index) => (
                     <img
                       key={index}
+                      loading="lazy"
                       src={`${imgPrefix}${propertiesPath}/${image}`}
                       alt={`${property.name} - Image ${index + 1}`}
                       className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${

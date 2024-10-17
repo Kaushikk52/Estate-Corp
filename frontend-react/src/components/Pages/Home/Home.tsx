@@ -41,7 +41,7 @@ function Home() {
         <div className="relative h-[200px] sm:h-[300px] md:h-[400px] mb-5 rounded-xl overflow-hidden bg-[#d0d9e6]">
           <img 
             src="/carousel3.jpg" 
-            alt="Modern furniture" 
+            alt="Modern furniture"
             className="w-full h-full object-cover object-center opacity-60"
           />
           <div className="absolute inset-0 flex items-center justify-center">

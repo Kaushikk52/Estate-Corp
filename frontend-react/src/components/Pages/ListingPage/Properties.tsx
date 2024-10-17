@@ -48,6 +48,7 @@ export default function Properties(props: any) {
                       : defaultImg
                   }
                   alt={property.name}
+                  loading="lazy"
                   className="w-full h-full object-cover aspect-[4/2]"
                 />
                 <div

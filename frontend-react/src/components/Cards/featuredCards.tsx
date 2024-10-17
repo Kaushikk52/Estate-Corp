@@ -97,6 +97,7 @@ export default function FeaturedCardsCarousel(props:any) {
                     <img 
                       src={property.images.length > 0 ? `${imgPrefix}${propertiesPath}/${property.images[0]}` : defaultImg} 
                       alt={property.name} 
+                      loading="lazy"
                       className="w-full h-48 object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
