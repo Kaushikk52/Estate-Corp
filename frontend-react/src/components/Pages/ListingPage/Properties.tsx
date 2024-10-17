@@ -39,7 +39,7 @@ export default function Properties(props: any) {
             onClick={() => handlePropertyClick(property.id)}
           >
             <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-2/5 lg:w-1/3 h-64 md:h-auto relative">
+              <div className="w-full md:w-64 md:h-[17.9rem] lg:w-1/3 h-64 lg:h-auto relative">
                 <img
                   src={
                     `${imgPrefix}${propertiesPath}/${property.images[0]}` ||
