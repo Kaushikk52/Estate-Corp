@@ -41,7 +41,7 @@ export default function Projects(props:any) {
             onClick={() => handleProjectClick(project.id)}
           >
             <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-64 md:h-[17.9rem] lg:w-1/3 h-64 lg:h-auto relative">
+              <div className="w-full md:w-64 md:h-[17.9rem] lg:[18rem] h-64 lg:h-[18rem] relative">
                 <img
                   src={project.images.length > 0 ? `${imgPrefix}${projectsPath}/${project.images[0]}` : defaultImg}
                   alt={project.name}
