@@ -41,7 +41,7 @@ export default function Projects(props:any) {
             onClick={() => handleProjectClick(project.id)}
           >
             <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-64 md:h-[17.9rem] lg:[18rem] h-64 lg:h-[18rem] relative">
+              <div className="w-full sm:w-2/5 relative">
                 <img
                   src={project.images.length > 0 ? `${imgPrefix}${projectsPath}/${project.images[0]}` : defaultImg}
                   alt={project.name}
@@ -52,7 +52,7 @@ export default function Projects(props:any) {
                   {project.underConstruction === "Yes" ? "Under Construction" : "Ready"}
                 </span>
               </div>
-              <div className="flex-1 p-6 flex flex-col justify-between">
+              <div className="flex-1 w-full sm:w-3/5 p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-2xl font-bold text-blue-700 truncate">

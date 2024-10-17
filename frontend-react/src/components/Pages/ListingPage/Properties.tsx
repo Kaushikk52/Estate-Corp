@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Property from "../../../Models/Property";
 
 export default function Properties(props: any) {
+  const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
@@ -39,11 +40,12 @@ export default function Properties(props: any) {
             onClick={() => handlePropertyClick(property.id)}
           >
             <div className="flex flex-col md:flex-row">
-            <div className="w-full md:w-64 md:h-[17.9rem] lg:[18rem] h-64 lg:h-[18rem] relative">
+              <div className="w-full sm:w-2/5 relative">
                 <img
                   src={
-                    `${imgPrefix}${propertiesPath}/${property.images[0]}` ||
-                    "/placeholder.svg?height=400&width=600"
+                    property.images.length > 0
+                      ? `${imgPrefix}${propertiesPath}/${property.images[0]}`
+                      : defaultImg
                   }
                   alt={property.name}
                   className="w-full h-full object-cover"
@@ -61,8 +63,19 @@ export default function Properties(props: any) {
                     ? "Negotiable"
                     : "Not Negotiable"}
                 </div>
+                <div
+                  className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                    property.details.furnishedStatus === "FURNISHED"
+                      ? "bg-green-500 text-white"
+                      : property.details.furnishedStatus === "SEMIFURNISHED"
+                      ? "bg-yellow-500 text-white"
+                      : "bg-red-500 text-white"
+                  }`}
+                >
+                  {property.details.furnishedStatus}
+                </div>
               </div>
-              <div className="flex-1 p-6 flex flex-col justify-between">
+              <div className="flex-1 w-full sm:w-3/5 p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-2xl font-bold text-blue-700 truncate">
