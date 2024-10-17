@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const teamMembers = [
-  { name: 'Mr. Rakesh Gaykar', role: 'Founder', image: '/founder1.jpg' },
-  { name: 'Mr. Ajay Singh Kushwah', role: 'Co-Founder', image: '/founder2.jpg' },
-  { name: 'Mr. Prem Dubey', role: 'Business Associate', image: '/founder3.png' },
+  { name: 'Mr. Rakesh Gaykar', role: 'Founder', image: '/founder1.webp'},
+  { name: 'Mr. Ajay Singh Kushwah', role: 'Co-Founder', image: '/founder2.webp' },
+  { name: 'Mr. Prem Dubey', role: 'Business Associate', image: '/founder3.webp' },
 ];
 
 export default function TeamCards() {

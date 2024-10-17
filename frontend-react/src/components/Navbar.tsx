@@ -123,7 +123,7 @@ export default function Navbar() {
             to="/"
             className="text-xl font-semibold text-gray-800 uppercase flex items-center"
           >
-            <img src="/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
+            <img src="/Estatecorp-logo.webp" alt="Logo" height={70} width={70} />
             <span className="phone-non"> Estatecorp</span>
           </Link>
         </div>
@@ -285,7 +285,7 @@ export default function Navbar() {
                 className="text-xl font-semibold text-gray-800 uppercase flex items-center"
               >
                 <img
-                  src="/Estatecorp-logo.png"
+                  src="/Estatecorp-logo.webp"
                   alt="Logo"
                   height={70}
                   width={70}

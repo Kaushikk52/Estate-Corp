@@ -40,9 +40,10 @@ function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-5">
         <div className="relative h-[200px] sm:h-[300px] md:h-[400px] mb-5 rounded-xl overflow-hidden bg-[#d0d9e6]">
           <img 
-            src="/carousel3.jpg" 
+            src="/carousel.webp"
             alt="Modern furniture"
             className="w-full h-full object-cover object-center opacity-60"
+            loading='lazy'
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.h1 
