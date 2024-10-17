@@ -75,7 +75,7 @@ public class PropertyController {
             List<Property> filteredProperties = propertyServ.getFilteredProperties(filters);
             Map<String, Object> response = new HashMap<>();
 
-            // Check for empty results
+//             Check for empty results
             if (filteredProperties.isEmpty() && (locations != null && !locations.isEmpty()) && (bedrooms != null && !bedrooms.isEmpty())) {
                 String location = locations.get(0);
                 int bedroom = bedrooms.get(0);
