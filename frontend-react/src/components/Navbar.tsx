@@ -225,6 +225,11 @@ export default function Navbar() {
                         ) : (
                           <>
                             <DropdownLink
+                              href={`listings/${selectedCategory}/ready`}
+                              title="Ready To Move"
+                              description="Explore Ready To Move Projects"
+                            />
+                            <DropdownLink
                               href={`listings/${selectedCategory}/ongoing`}
                               title="Ongoing"
                               description="Invest in projects under construction"
@@ -380,6 +385,12 @@ export default function Navbar() {
                               </>
                             ) : (
                               <>
+                                <DropdownLink
+                                  href={`/listings/${category}/ready`}
+                                  title="Ready To Move"
+                                  description="Explore Ready To Move Projects"
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                />
                                 <DropdownLink
                                   href={`/listings/${category}/ongoing`}
                                   title="Ongoing"

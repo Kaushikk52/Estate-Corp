@@ -23,7 +23,7 @@ interface FilterState {
 export default function Table(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const [properties, setProperties] = useState<Property[]>([]);
-  const [projects, setProjects] = useState<Property[] | Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -117,12 +117,8 @@ export default function Table(props: any) {
             url = `${baseURL}/v1/api/projects/filter?underConstruction=YES`;
             break;
 
-          case "residential":
-            url = `${baseURL}/v1/api/projects/filter?type=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "commercial":
-            url = `${baseURL}/v1/api/projects/filter?type=${props.pageCategory.toUpperCase()}`;
+          case "ready":
+            url = `${baseURL}/v1/api/projects/filter?underConstruction=NO`;
             break;
 
           default:
@@ -168,7 +164,7 @@ export default function Table(props: any) {
         ) : (
           <Projects projects={projects} />
         )}
-        {!loading && projects.length === 0 && properties.length ===0 && (
+        {!loading && projects.length === 0 && properties.length === 0 && (
           <div
             className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
             role="alert"
