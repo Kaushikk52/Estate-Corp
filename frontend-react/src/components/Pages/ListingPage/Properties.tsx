@@ -48,7 +48,7 @@ export default function Properties(props: any) {
                       : defaultImg
                   }
                   alt={property.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover aspect-[4/2]"
                 />
                 <div
                   className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${

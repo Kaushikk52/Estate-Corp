@@ -45,7 +45,7 @@ export default function Projects(props:any) {
                 <img
                   src={project.images.length > 0 ? `${imgPrefix}${projectsPath}/${project.images[0]}` : defaultImg}
                   alt={project.name}
-                  className="w-full h-full object-cover md:object-center"
+                  className="w-full h-full object-cover md:object-center aspect-[4/2]"
                 />
                 <span className="absolute inline-flex top-2 right-2 items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                   <Home className="h-3 w-3 mr-1" />
