@@ -225,11 +225,6 @@ export default function Navbar() {
                         ) : (
                           <>
                             <DropdownLink
-                              href={`/listings/${selectedCategory}/upcoming`}
-                              title="Upcoming"
-                              description="Get early access to future developments"
-                            />
-                            <DropdownLink
                               href={`listings/${selectedCategory}/ongoing`}
                               title="Ongoing"
                               description="Invest in projects under construction"
@@ -385,12 +380,6 @@ export default function Navbar() {
                               </>
                             ) : (
                               <>
-                                <DropdownLink
-                                  href={`/listings/${category}/upcoming`}
-                                  title="Upcoming"
-                                  description="Get early access to future developments"
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                />
                                 <DropdownLink
                                   href={`/listings/${category}/ongoing`}
                                   title="Ongoing"

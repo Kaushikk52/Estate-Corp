@@ -21,7 +21,7 @@ interface LocationGroup {
   options: string[];
 }
 
-export default function Filter({ onFilterChange }: FilterProps) {
+export default function ProjectFilter({ onFilterChange }: FilterProps) {
   const [locations, setLocations] = useState<string[]>([])
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
   const [bedrooms, setBedrooms] = useState<number[]>([])

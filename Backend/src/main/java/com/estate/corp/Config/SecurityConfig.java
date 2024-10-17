@@ -52,7 +52,7 @@ public class SecurityConfig {
 
                         // Projects endpoints
                         .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN", "AGENT")
-                        .requestMatchers(HttpMethod.GET, "/v1/api/projects/all", "/v1/api/projects/id/*", "/v1/api/projects/name/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/api/projects/all","/v1/api/projects/filter", "/v1/api/projects/id/*", "/v1/api/projects/name/*").permitAll()
 
                         // Properties endpoints
                         .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter", "/v1/api/properties/all", "/v1/api/properties/isApproved", "/v1/api/properties/id/*", "/v1/api/properties/name/*").permitAll()

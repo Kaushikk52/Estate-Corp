@@ -66,7 +66,7 @@ export default function FeaturedCardsCarousel(props:any) {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Owner Properties</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Hot Properties</h2>
       <div className="relative">
         <Swiper
           modules={[Navigation, A11y]}

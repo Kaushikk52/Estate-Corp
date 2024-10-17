@@ -46,7 +46,7 @@ export default function ProjectsCarousel(props: any) {
         if (response.data.length === 0) {
           setProjects([]);
         }
-        setProjects(response.data);
+        setProjects(response.data.projects);
       }
     } catch (error) {
       console.error("Failed to fetch projects:", error);
@@ -164,11 +164,11 @@ export default function ProjectsCarousel(props: any) {
                       </span>
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4 mt-3">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <Building className="h-3 w-3 mr-1" />
                         Floors: {project.totalFloors}
                       </span>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <MapPin className="h-3 w-3 mr-1" />
                         {project.location}
                       </span>

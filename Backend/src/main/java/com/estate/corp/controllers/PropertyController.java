@@ -55,6 +55,7 @@ public class PropertyController {
             if(variant != null) filters.put("variant",variant);
             if(category != null) filters.put("type",category);
             if (bedrooms != null) filters.put("bedrooms", bedrooms);
+            if (locations != null && !locations.isEmpty()) filters.put("locations", locations);
             if (minPrice != null){
                 filters.put("minPrice", minPrice);
                 filters.put("amtUnit",amtUnit);
@@ -62,7 +63,7 @@ public class PropertyController {
                 filters.remove("amtUnit");
             }
             if (maxPrice != null) filters.put("maxPrice", maxPrice);
-            if (locations != null && !locations.isEmpty()) filters.put("locations", locations);
+
             if (minCarpetArea != null) {
                 filters.put("minCarpetArea", minCarpetArea);
                 filters.put("areaUnit",areaUnit);

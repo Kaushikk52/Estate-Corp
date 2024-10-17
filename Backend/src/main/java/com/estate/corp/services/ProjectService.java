@@ -1,21 +1,21 @@
 package com.estate.corp.services;
 
-import com.estate.corp.models.Address;
-import com.estate.corp.models.FloorPlan;
-import com.estate.corp.models.Project;
-import com.estate.corp.models.User;
+import com.estate.corp.models.*;
 import com.estate.corp.repositories.AddressRepo;
 import com.estate.corp.repositories.FloorPlanRepo;
 import com.estate.corp.repositories.ProjectRepo;
 import com.estate.corp.repositories.UserRepo;
+import com.estate.corp.specifications.ProjectSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -73,6 +73,12 @@ public class ProjectService {
 
     public Project getProjectByName(String name){
         return projectRepo.findByName(name);
+    }
+
+    public List<Project> getFilteredProjects(Map<String,Object> filters) {
+        Specification<Project> spec = ProjectSpecification.filterByCriteria(filters);
+        List<Project> filteredProjects =  projectRepo.findAll(spec);
+        return filteredProjects;
     }
 
 }

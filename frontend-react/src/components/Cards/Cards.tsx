@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Bed, Bath, Home, Camera, MapPin, Scaling } from 'lucide-react'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
-import Filter from '../Filter'
+import PropertyFilter from '../PropertyFilter'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -96,7 +96,7 @@ export default function PropertyCardsCarousel() {
 
   return (
     <>
-      <Filter onFilterChange={handleFilterChange}/>
+      <PropertyFilter onFilterChange={handleFilterChange}/>
       <div className="w-full max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Latest Properties</h2>
         <div className="relative">
