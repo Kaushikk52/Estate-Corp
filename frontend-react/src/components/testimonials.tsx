@@ -44,6 +44,7 @@ export default function TeamCards() {
                   className="w-full h-full object-cover object-center"
                   src={member.image} 
                   alt={member.name} 
+                  loading='lazy'
                 />
                 <div className="w-5/6 absolute bottom-2 left-4 right-4 bg-white bg-opacity-90 p-2 rounded-lg text-center">
                   <h3 className="text-medium font-medium text-gray-900">{member.name}</h3>
