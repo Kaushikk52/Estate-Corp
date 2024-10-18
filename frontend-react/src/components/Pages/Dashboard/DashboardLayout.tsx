@@ -124,7 +124,7 @@ export default function Dashboard() {
   useEffect(() => {
     getCurrentUser();
   }, []);
-
+  
   useEffect(() => {
     if (searchTerm === "") {
       getProperties(currentUser.role);
@@ -194,7 +194,7 @@ export default function Dashboard() {
       });
       if (response.status === 200) {
         setProperties(response.data.properties);
-        // console.log("all properties...",response.data);
+        // console.log("all properties...",response.data.properties);
       } else if (response.status === 204) {
         setProperties([]);
         toast.error("No properties found", {
@@ -416,7 +416,7 @@ export default function Dashboard() {
             </div>
           </div>
         ) : (
-          <div>No data</div>
+          <div></div>
         )}
       </div>
 

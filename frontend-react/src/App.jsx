@@ -13,6 +13,7 @@ import NotFound from './components/Pages/NotFound.tsx';
 import Profile from './components/Pages/Profile.tsx';
 import ContactPage from './components/Pages/Contact.tsx'
 import AboutPage from './components/Pages/About.tsx';
+import UsersLayout from './components/Pages/Dashboard/UsersLayout.tsx';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
               <Route path='/dashboard/main' element={<DashboardLayout />} />
               <Route path='/dashboard/add-property' element={<AddPropertyLayout />} />
               <Route path='/dashboard/add-project' element={<AddProjectLayout />} />
+              <Route path='/dashboard/users' element={<UsersLayout/>} />
             </Route>
             <Route path="/listings/:type/:category"  element={<Listing />}/>
             <Route path="/contact-us" element={<ContactPage />}/>

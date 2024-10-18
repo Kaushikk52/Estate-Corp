@@ -242,7 +242,7 @@ export default function AddProjectLayout() {
   };
 
   const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
-    console.log(errors,touched,stepNumber);
+    // console.log(errors,touched,stepNumber);
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
       const fieldParts = field.split(".");
