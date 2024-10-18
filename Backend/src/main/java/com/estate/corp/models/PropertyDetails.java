@@ -34,6 +34,8 @@ public class PropertyDetails {
     @Column(name = "is_approved")
     private Boolean isApproved;
 
+    private String underConstruction;
+
     @Future
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private String builtIn;

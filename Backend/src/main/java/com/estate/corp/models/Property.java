@@ -26,6 +26,8 @@ public class Property {
 
     private String name;
 
+    private String mahareraNo;
+
     @Column(name = "images")
     private String[] images;
 

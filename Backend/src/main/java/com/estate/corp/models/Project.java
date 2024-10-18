@@ -25,6 +25,8 @@ public class Project {
     @Column(nullable = false, length = 100)
     private String name;
 
+    private String mahareraNo;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
