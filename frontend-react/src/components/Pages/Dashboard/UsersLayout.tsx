@@ -14,9 +14,9 @@ export default function UsersLayout() {
   });
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
+  // useEffect(() => {
+  //   // getCurrentUser();
+  // }, []);
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -52,37 +52,37 @@ export default function UsersLayout() {
     }
   };
 
-  const getCurrentUser = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setCurrentUser({ role: "", userId: "" });
-        navigate("/");
-      }
-      const response = await axios.get(
-        `${baseURL}/v1/api/users/getCurrentUser`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (response.status === 201 || response.status === 200) {
-        // console.log("Principal user : ", response);
-        setCurrentUser({
-          userId: response.data.userId,
-          role: response.data.role,
-        });
-      }
-      getUsers();
-    } catch (err: any) {
-      console.log("An error occured : ", err);
-      if (err.status === 401) {
-        localStorage.removeItem("token");
-        navigate("/");
-      }
-      toast.error(`An error occurred : ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
-    }
-  };
+  // const getCurrentUser = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       setCurrentUser({ role: "", userId: "" });
+  //       navigate("/");
+  //     }
+  //     const response = await axios.get(
+  //       `${baseURL}/v1/api/users/getCurrentUser`,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     if (response.status === 201 || response.status === 200) {
+  //       // console.log("Principal user : ", response);
+  //       setCurrentUser({
+  //         userId: response.data.userId,
+  //         role: response.data.role,
+  //       });
+  //     }
+  //     getUsers();
+  //   } catch (err: any) {
+  //     console.log("An error occured : ", err);
+  //     if (err.status === 401) {
+  //       localStorage.removeItem("token");
+  //       navigate("/");
+  //     }
+  //     toast.error(`An error occurred : ${err}`, {
+  //       position: "bottom-right",
+  //       duration: 3000,
+  //     });
+  //   }
+  // };
 
   const searchFilter = () => {
     const filteredUsers = users.filter((user) =>
