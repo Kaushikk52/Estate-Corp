@@ -48,7 +48,7 @@ export default function AddPropertyLayout() {
       location: "",
       facing: "",
       carpetArea: "",
-      areaUnit: "sqft",
+      areaUnit: "",
       builtIn: "",
       possesion: "",
       underConstruction: "",
@@ -757,43 +757,51 @@ export default function AddPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="details.carpetArea"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Carpet Area
-                      </label>
-                      <div className="mt-1 grid grid-cols-4 rounded-md shadow-sm">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          htmlFor={`details.carpetArea`}
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Carpet Area
+                        </label>
                         <Field
-                          id="details.carpetArea"
-                          name="details.carpetArea"
+                          id={`details.carpetArea`}
+                          name={`details.carpetArea`}
                           type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Enter carpet area"
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         />
+                        <ErrorMessage
+                          name={`details.carpetArea`}
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor={`details.areaUnit`}
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Area Unit
+                        </label>
                         <Field
                           as="select"
-                          name="details.areaUnit"
-                          className="inline-flex items-center px-2 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
+                          id={`details.areaUnit`}
+                          name={`details.areaUnit`}
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
-                          <option value="">Select Carpet Area Unit</option>
+                          <option value="">Select Unit</option>
                           <option value="sqft">sq ft</option>
                           <option value="sqm">sq m</option>
                           <option value="sqyd">sq yd</option>
                           <option value="acre">acre</option>
                         </Field>
+                        <ErrorMessage
+                          name={`details.areaUnit`}
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
                       </div>
-                      <ErrorMessage
-                        name="details.carpetArea"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                      <ErrorMessage
-                        name="details.areaUnit"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       {values.details.underConstruction === "Yes" ? (
@@ -1072,92 +1080,92 @@ export default function AddPropertyLayout() {
                       </label>
                       <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-4 md:gap-3 sm:gap-2">
                         {[
-                           "24x7 Security",
-                           "AC",
-                           "Amphitheatre",
-                           "Badminton Court",
-                           "Banquet hall",
-                           "Bar Area",
-                           "Barbecue Corner",
-                           "Box Cricket Area",
-                           "Branded CP Fittings",
-                           "Branded Switches",
-                           "Business Lounge",
-                           "Cabana",
-                           "Cafeteria",
-                           "Carrom",
-                           "CCTV",
-                           "Changing Rooms",
-                           "Chess",
-                           "Children's Play Area",
-                           "Club House",
-                           "Creche",
-                           "Cycle track",
-                           "Dance Studio",
-                           "Double Height Lobby",
-                           "EV Charging",
-                           "Exhaust Fan",
-                           "Fire alarm system",
-                           "Fire Fighting System",
-                           "Football Turf",
-                           "Garden",
-                           "Gas Pipeline",
-                           "Gated Community",
-                           "Gazebo",
-                           "Geyser",
-                           "Golf",
-                           "Granite kitchen platform",
-                           "Guest Waiting Lounge",
-                           "Gym",
-                           "Hub & chimney in kitchen",
-                           "Indoor Games",
-                           "Intercom Facility",
-                           "Jacuzzi",
-                           "Jogging track",
-                           "Kids' Pool",
-                           "Landscaped Garden",
-                           "Library",
-                           "Lift",
-                           "Meditation",
-                           "Modular kitchen",
-                           "Multipurpose Hall",
-                           "Multipurpose Play Court",
-                           "Open To Sky Gym",
-                           "Pantry",
-                           "Parking",
-                           "Party Area",
-                           "Party Lawn",
-                           "Power Backup",
-                           "Rainwater Harvesting",
-                           "Rock-climbing Wall",
-                           "Roof-top Garden",
-                           "Roof-top Lounge",
-                           "Seating Area",
-                           "Senior Citizen Area",
-                           "Sewage Treatment Plants",
-                           "Skating Rink",
-                           "Sky Cafe",
-                           "Sky Garden",
-                           "Society Office",
-                           "Solar panels",
-                           "Spa",
-                           "Stainless steel kitchen sink",
-                           "Star Gazing Area",
-                           "Steam Room",
-                           "Sunrise Deck",
-                           "Sunset Deck",
-                           "Swimming Pool",
-                           "Swing Garden",
-                           "Table Tennis",
-                           "Toddler Zone",
-                           "Valet Service",
-                           "Vastu Compliant",
-                           "Video Door Phone",
-                           "Walking Track",
-                           "Water Purifier",
-                           "Wi-fi Enabled",
-                           "Yoga",
-                           "Zen garden",
+                          "24x7 Security",
+                          "AC",
+                          "Amphitheatre",
+                          "Badminton Court",
+                          "Banquet hall",
+                          "Bar Area",
+                          "Barbecue Corner",
+                          "Box Cricket Area",
+                          "Branded CP Fittings",
+                          "Branded Switches",
+                          "Business Lounge",
+                          "Cabana",
+                          "Cafeteria",
+                          "Carrom",
+                          "CCTV",
+                          "Changing Rooms",
+                          "Chess",
+                          "Children's Play Area",
+                          "Club House",
+                          "Creche",
+                          "Cycle track",
+                          "Dance Studio",
+                          "Double Height Lobby",
+                          "EV Charging",
+                          "Exhaust Fan",
+                          "Fire alarm system",
+                          "Fire Fighting System",
+                          "Football Turf",
+                          "Garden",
+                          "Gas Pipeline",
+                          "Gated Community",
+                          "Gazebo",
+                          "Geyser",
+                          "Golf",
+                          "Granite kitchen platform",
+                          "Guest Waiting Lounge",
+                          "Gym",
+                          "Hub & chimney in kitchen",
+                          "Indoor Games",
+                          "Intercom Facility",
+                          "Jacuzzi",
+                          "Jogging track",
+                          "Kids' Pool",
+                          "Landscaped Garden",
+                          "Library",
+                          "Lift",
+                          "Meditation",
+                          "Modular kitchen",
+                          "Multipurpose Hall",
+                          "Multipurpose Play Court",
+                          "Open To Sky Gym",
+                          "Pantry",
+                          "Parking",
+                          "Party Area",
+                          "Party Lawn",
+                          "Power Backup",
+                          "Rainwater Harvesting",
+                          "Rock-climbing Wall",
+                          "Roof-top Garden",
+                          "Roof-top Lounge",
+                          "Seating Area",
+                          "Senior Citizen Area",
+                          "Sewage Treatment Plants",
+                          "Skating Rink",
+                          "Sky Cafe",
+                          "Sky Garden",
+                          "Society Office",
+                          "Solar panels",
+                          "Spa",
+                          "Stainless steel kitchen sink",
+                          "Star Gazing Area",
+                          "Steam Room",
+                          "Sunrise Deck",
+                          "Sunset Deck",
+                          "Swimming Pool",
+                          "Swing Garden",
+                          "Table Tennis",
+                          "Toddler Zone",
+                          "Valet Service",
+                          "Vastu Compliant",
+                          "Video Door Phone",
+                          "Walking Track",
+                          "Water Purifier",
+                          "Wi-fi Enabled",
+                          "Yoga",
+                          "Zen garden",
                         ].map((amenity) => (
                           <div key={amenity} className="flex items-center">
                             <Field
