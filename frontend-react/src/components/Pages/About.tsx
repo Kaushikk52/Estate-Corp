@@ -86,7 +86,7 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <img src="/public/carousel.webp" alt="Beautiful Home" className="rounded-lg shadow-lg" />
+              <img src="/carousel.webp" alt="Beautiful Home" className="rounded-lg shadow-lg" />
             </motion.div>
             <div className="lg:w-1/2">
               {[
