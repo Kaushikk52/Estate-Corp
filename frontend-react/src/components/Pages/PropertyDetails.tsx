@@ -371,7 +371,7 @@ export default function PropertyDetails() {
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-gray-600" />
-                    {property.type === "RENT" ? (
+                    {property.details.underConstruction === "No" ? (
                       <span>
                         Built in {new Date(property.details.builtIn).getDate()}/
                         {new Date(property.details.builtIn).getMonth() + 1}/
@@ -482,7 +482,7 @@ export default function PropertyDetails() {
                         </td>
                       </tr>
                       <tr className="flex flex-col">
-                        {property.type === "RENT" ? (
+                        {property.details.underConstruction === "No" ? (
                           <>
                             <td className="font-medium">Year Built:</td>
                             <td className="text-gray-600">
@@ -540,6 +540,12 @@ export default function PropertyDetails() {
                         <td className="font-medium">Bathrooms:</td>
                         <td className="text-gray-600">
                           {property.details.bathrooms}
+                        </td>
+                      </tr>
+                      <tr className="flex flex-col">
+                        <td className="font-medium">Maharera No. :</td>
+                        <td className="text-gray-600">
+                          {property.mahareraNo}
                         </td>
                       </tr>
                     </tbody>

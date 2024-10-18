@@ -10,6 +10,7 @@ export enum Type{
 interface Property {
     id: string;
     name: string;
+    mahareraNo:string;
     owner:User;
     images: string[];
     type: Type;

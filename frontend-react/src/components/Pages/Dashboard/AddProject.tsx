@@ -67,6 +67,7 @@ export default function AddProjectLayout() {
 
   const initialValues = {
     name: "",
+    mahareraNo:"",
     description: "",
     images: [] as File[],
     totalFloors: 0,
@@ -223,6 +224,7 @@ export default function AddProjectLayout() {
       case 1:
         return [
           "name",
+          "mahareraNo",
           "description",
           "totalFloors",
           "location",
@@ -339,24 +341,45 @@ export default function AddProjectLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Project Name
-                      </label>
-                      <Field
-                        id="name"
-                        name="name"
-                        type="text"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="name"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Project Name
+                        </label>
+                        <Field
+                          id="name"
+                          name="name"
+                          type="text"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="name"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="mahareraNo"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Maharera No.
+                        </label>
+                        <Field
+                          id="mahareraNo"
+                          name="mahareraNo"
+                          type="text"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="mahareraNo"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label
@@ -794,6 +817,7 @@ export default function AddProjectLayout() {
                                         <option value="sqft">sq ft</option>
                                         <option value="sqm">sq m</option>
                                         <option value="sqyd">sq yd</option>
+                                        <option value="acre">acre</option>
                                       </Field>
                                       <ErrorMessage
                                         name={`floorPlans.${index}.areaUnit`}
