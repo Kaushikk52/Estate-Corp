@@ -217,7 +217,7 @@ export default function AddProjectLayout() {
     }
   }
 
-  const steps = ["Project Details", "Floor Plans", "Images", "Amenities"];
+  const steps = ["Details", "Floor Plans", "Images", "Amenities"];
 
   const getStepFields = (stepNumber: number) => {
     switch (stepNumber) {
@@ -259,12 +259,12 @@ export default function AddProjectLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-2 sm:px-3 lg:px-8">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-1 px-2 sm:px-3 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg"
+        className="max-w-4xl w-full space-y-8 bg-white p-[1.70rem] rounded-xl shadow-lg"
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -275,7 +275,7 @@ export default function AddProjectLayout() {
           </p>
         </div>
 
-        <div className="flex justify-between items-center mb-8 flex-wrap">
+        <div className="flex justify-start items-center mb-8 flex-wrap">
           {steps.map((s, index) => (
             <React.Fragment key={s}>
               <div className="flex flex-col items-center">
@@ -1088,7 +1088,7 @@ export default function AddProjectLayout() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Amenities
                       </label>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-4 md:gap-3 sm:gap-2">
                         {[
                           "24x7 Security",
                           "AC",
@@ -1105,7 +1105,7 @@ export default function AddProjectLayout() {
                           "Cafeteria",
                           "Carrom",
                           "CCTV",
-                          "CHANGING ROOMS",
+                          "Changing Rooms",
                           "Chess",
                           "Children's Play Area",
                           "Club House",
