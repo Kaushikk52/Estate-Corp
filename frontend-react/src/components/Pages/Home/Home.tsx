@@ -43,7 +43,6 @@ function Home() {
             src="/carousel.webp"
             alt="Modern furniture"
             className="w-full h-full object-cover object-center opacity-60"
-            // 
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.h1 
