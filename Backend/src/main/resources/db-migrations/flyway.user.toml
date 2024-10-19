@@ -1,0 +1,3 @@
+[environments.prodTarget]
+user = "root"
+password = "${localSecret.Flyway Desktop b04076fa-7f82-4c5c-8870-7e1af74d678c}"
