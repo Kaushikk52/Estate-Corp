@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   MessageCircle,
-  HelpCircle,
   MapPin,
   Phone,
   Mail,
@@ -153,21 +152,24 @@ export default function ContactPage() {
           {[
             {
               icon: MessageCircle,
-              title: "Chat to sales",
+              title: "Mail us",
               description: "Speak to our friendly team.",
-              link: "estatecorpbw@gmail.com",
+              linkText: "estatecorpbw@gmail.com",
+              link:"mailto:estatecorpbw@gmail.com"
             },
             {
               icon: MapPin,
               title: "Visit us",
               description: "Visit our office HQ.",
-              link: "View on Google Maps",
+              linkText: "View on Google Maps",
+              link:"https://maps.app.goo.gl/rAuSTvW36SmdVS9r9"
             },
             {
               icon: Phone,
               title: "Call us",
               description: "Mon-Fri from 8am to 5pm.",
-              link: "7700994313",
+              linkText: "7700994313",
+              link:"tel:+917700994313"
             },
           ].map((item, index) => (
             <motion.div
@@ -183,8 +185,8 @@ export default function ContactPage() {
                 </h3>
                 <p className="text-gray-600 mb-6">{item.description}</p>
               </div>
-              <a href="#" className="text-blue-600 hover:underline font-medium">
-                {item.link}
+              <a href={item.link} className="text-blue-600 hover:underline font-medium">
+                {item.linkText}
               </a>
             </motion.div>
           ))}

@@ -183,13 +183,13 @@ export default function ProjectDetails() {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8"
       >
-        <Link
-          to="/"
+        <button
+          onClick={() => {navigate(-1)}}
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-5"
         >
           <ChevronLeft className="w-5 h-5 mr-2" />
           Back to Listings
-        </Link>
+        </button>
       </motion.div>
 
       <div className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8">

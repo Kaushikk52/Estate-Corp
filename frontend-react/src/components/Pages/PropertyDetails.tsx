@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -19,6 +19,7 @@ import Property from "../../Models/Property";
 import toast from "react-hot-toast";
 
 export default function PropertyDetails() {
+  const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
@@ -164,13 +165,13 @@ export default function PropertyDetails() {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8"
       >
-        <Link
-          to="/"
+        <button
+          onClick={() => {navigate(-1)}}
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6"
         >
           <ChevronLeft className="w-5 h-5 mr-2" />
           Back to Listings
-        </Link>
+        </button>
 
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="p-6 sm:p-10">
