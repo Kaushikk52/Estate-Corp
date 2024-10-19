@@ -37,6 +37,9 @@ public class NotificationService {
                 }else if(notification.getSubject() == Notification.Subject.PROPERTY_ENQUIRY){
                     message.setSubject("Enquiry for Property");
                     message.setText("Your enquiry for Property : "+notification.getPropertyName()+" has been successfully received");
+                }else if(notification.getSubject() == Notification.Subject.CASUAL_ENQUIRY){
+                    message.setSubject("Contact Enquiry");
+                    message.setText("Your enquiry has been successfully received");
                 }
 
                 emailSender.send(message);

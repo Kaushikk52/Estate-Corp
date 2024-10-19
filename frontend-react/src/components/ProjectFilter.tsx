@@ -21,7 +21,7 @@ interface LocationGroup {
   options: string[];
 }
 
-export default function Filter({ onFilterChange }: FilterProps) {
+export default function ProjectFilter({ onFilterChange }: FilterProps) {
   const [locations, setLocations] = useState<string[]>([])
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
   const [bedrooms, setBedrooms] = useState<number[]>([])
@@ -197,7 +197,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                 </div>
                 {isLocationDropdownOpen && (
                   <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                    <div className="py-1 max-h-60 overflow-auto custom-scrollbar" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       <button
                         onClick={() => setIsLocationDropdownOpen(false)}
                         className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100 hover:text-gray-900"
@@ -239,7 +239,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                 </button>
                 {isBedroomDropdownOpen && (
                   <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                    <div className="py-1 max-h-60 overflow-auto custom-scrollbar" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       {bedroomOptions.map((option) => (
                         <button
                           key={option}
@@ -269,7 +269,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                 </button>
                 {isPriceDropdownOpen && (
                   <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                    <div className="py-1 max-h-60 overflow-auto custom-scrollbar" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       <div className="px-4 py-2 text-sm text-gray-700">Amount Unit</div>
                       <div className="flex justify-around mb-2">
                         {amtUnitOptions.map((unit) => (
@@ -325,7 +325,7 @@ export default function Filter({ onFilterChange }: FilterProps) {
                 </button>
                 {isCarpetAreaDropdownOpen && (
                   <div className="absolute top-full left-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1 max-h-60 overflow-auto" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                    <div className="py-1 max-h-60 overflow-auto custom-scrollbar" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                       <div className="px-4 py-2 text-sm text-gray-700">Area Unit</div>
                       <div className="flex flex-wrap justify-around mb-2">
                         {carpetAreaUnitOptions.map((unit) => (

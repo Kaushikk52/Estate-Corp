@@ -33,10 +33,10 @@ export default function BentoGrid() {
           <h3 className="font-semibold text-gray-800 group-hover:text-purple-700">New Features</h3>
         </div>
 
-        {/* <div className="col-span-2 p-6 bg-white hover:bg-gray-100 transition-all duration-300 rounded-lg shadow-md">
+        <div className="col-span-2 p-6 bg-white hover:bg-gray-100 transition-all duration-300 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-2 text-gray-800">Recent Activity</h2>
           <p className="text-gray-600">Here's a summary of your recent activity and achievements.</p>
-        </div> */}
+        </div>
 
         <div className="row-span-2 col-span-2 p-6 bg-white text-gray-800 hover:bg-gradient-to-r hover:from-orange-400 hover:to-pink-500 hover:text-white transition-all duration-300 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-2">Special Announcement</h2>

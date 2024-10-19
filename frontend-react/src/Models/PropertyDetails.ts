@@ -14,6 +14,7 @@ interface PropertyDetails{
     description: string;
     builtIn:string;
     possesion:string;
+    underConstruction:string,
     facing:string;
     ammenities:string[];
 }

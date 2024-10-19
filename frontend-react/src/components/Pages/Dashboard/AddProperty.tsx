@@ -24,12 +24,13 @@ export default function AddPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [step, setStep] = useState(1);
 
   const initialValues = {
     name: "",
+    mahareraNo: "",
     type: "",
     propertyVariant: "",
     subVariant: "",
@@ -47,16 +48,17 @@ export default function AddPropertyLayout() {
       location: "",
       facing: "",
       carpetArea: "",
-      areaUnit: "sqft",
+      areaUnit: "",
       builtIn: "",
-      possesion:"",
+      possesion: "",
+      underConstruction: "",
       rent: 0,
       price: 0,
       amtUnit: "",
       isNegotiable: "",
       furnishedStatus: "",
       ammenities: [] as string[],
-      description:""
+      description: "",
     },
     images: [] as File[],
   };
@@ -101,7 +103,7 @@ export default function AddPropertyLayout() {
           const formData = new FormData();
           formData.append("file", img);
           formData.append("upload_preset", uploadPreset);
-          formData.append("folder",propertiesPath);
+          formData.append("folder", propertiesPath);
 
           const res = await axios.post(
             `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
@@ -143,9 +145,9 @@ export default function AddPropertyLayout() {
     try {
       const urls: any = await uploadImages(values.images);
       if (urls.length > 0) {
-        console.log("uploaded urls", urls);
+        // console.log("uploaded urls", urls);
         values.images = [...urls];
-        console.log("values.images : ", values.images);
+        // console.log("values.images : ", values.images);
       }
     } catch (err) {
       console.log(err);
@@ -191,6 +193,7 @@ export default function AddPropertyLayout() {
         return [
           "name",
           "type",
+          "mahareraNo",
           "propertyVariant",
           "subVariant",
           "address.landmark",
@@ -209,11 +212,12 @@ export default function AddPropertyLayout() {
           "details.carpetArea",
           "details.builtIn",
           "details.possesion",
+          "details.underConstruction",
           "details.rent",
           "details.price",
           "details.amtUnit",
           "details.furnishedStatus",
-          "details.description"
+          "details.description",
         ];
       case 3:
         return ["images"];
@@ -239,12 +243,12 @@ export default function AddPropertyLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-2 sm:px-3 lg:px-8">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-1 px-2 sm:px-3 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl w-full space-y-8 bg-white p-10  rounded-xl shadow-lg"
+        className="max-w-4xl w-full space-y-8 bg-white p-[1.70rem]  rounded-xl shadow-lg"
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -255,7 +259,7 @@ export default function AddPropertyLayout() {
           </p>
         </div>
 
-        <div className="flex justify-between items-center mb-8 flex-wrap">
+        <div className="flex justify-start items-center mb-8 flex-wrap">
           {steps.map((s, index) => (
             <React.Fragment key={s}>
               <div className="flex flex-col items-center">
@@ -320,24 +324,45 @@ export default function AddPropertyLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Property Name
-                      </label>
-                      <Field
-                        id="name"
-                        name="name"
-                        type="text"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="name"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Property Name
+                        </label>
+                        <Field
+                          id="name"
+                          name="name"
+                          type="text"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="name"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="mahareraNo"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Maharera No.
+                        </label>
+                        <Field
+                          id="mahareraNo"
+                          name="mahareraNo"
+                          type="text"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="mahareraNo"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-5">
                       <div>
@@ -514,12 +539,18 @@ export default function AddPropertyLayout() {
                         >
                           <option value="">Select location</option>
                           <optgroup label="Bhayandar">
-                            <option value="Bhayandar East">Bhayandar East</option>
-                            <option value="Bhayandar West">Bhayandar West</option>
+                            <option value="Bhayandar East">
+                              Bhayandar East
+                            </option>
+                            <option value="Bhayandar West">
+                              Bhayandar West
+                            </option>
                           </optgroup>
 
                           <optgroup label="Mira Road">
-                            <option value="Mira Road East">Mira Road East</option>
+                            <option value="Mira Road East">
+                              Mira Road East
+                            </option>
                           </optgroup>
 
                           <optgroup label="Dahisar">
@@ -536,7 +567,7 @@ export default function AddPropertyLayout() {
                             <option value="Malad East">Malad East</option>
                             <option value="Malad West">Malad West</option>
                           </optgroup>
-                          
+
                           <optgroup label="Goregaon">
                             <option value="Goregaon East">Goregaon East</option>
                             <option value="Goregaon West">Goregaon West</option>
@@ -601,7 +632,7 @@ export default function AddPropertyLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                     <div>
+                    <div>
                       <label
                         htmlFor="details.description"
                         className="block text-sm font-medium text-gray-700 mb-1"
@@ -726,86 +757,127 @@ export default function AddPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    <div>
-                      <label
-                        htmlFor="details.carpetArea"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Carpet Area
-                      </label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          htmlFor={`details.carpetArea`}
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Carpet Area
+                        </label>
                         <Field
-                          id="details.carpetArea"
-                          name="details.carpetArea"
+                          id={`details.carpetArea`}
+                          name={`details.carpetArea`}
                           type="number"
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Enter carpet area"
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         />
+                        <ErrorMessage
+                          name={`details.carpetArea`}
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor={`details.areaUnit`}
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Area Unit
+                        </label>
                         <Field
                           as="select"
-                          name="details.areaUnit"
-                          className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm focus:ring-blue-500 focus:border-blue-500"
+                          id={`details.areaUnit`}
+                          name={`details.areaUnit`}
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
+                          <option value="">Select Unit</option>
                           <option value="sqft">sq ft</option>
                           <option value="sqm">sq m</option>
                           <option value="sqyd">sq yd</option>
                           <option value="acre">acre</option>
                         </Field>
+                        <ErrorMessage
+                          name={`details.areaUnit`}
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
                       </div>
-                      <ErrorMessage
-                        name="details.carpetArea"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                      <ErrorMessage
-                        name="details.areaUnit"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
                     </div>
-                    {values.type === "RENT" ?
+                    <div className="grid grid-cols-2 gap-4">
+                      {values.details.underConstruction === "Yes" ? (
+                        <div>
+                          <label
+                            htmlFor="details.possesion"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Possession Date
+                          </label>
+                          <Field
+                            id="details.possesion"
+                            name="details.possesion"
+                            type="date"
+                            component={DatePickerField}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          />
+                          <ErrorMessage
+                            name="details.possesion"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <label
+                            htmlFor="details.builtIn"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Built-in Date
+                          </label>
+                          <Field
+                            id="details.builtIn"
+                            name="details.builtIn"
+                            component={DatePickerField}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          />
+                          <ErrorMessage
+                            name="details.builtIn"
+                            component="div"
+                            className="text-red-500 text-sm mt-1"
+                          />
+                        </div>
+                      )}
                       <div>
-                      <label
-                        htmlFor="details.builtIn"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Built In
-                      </label>
-                      <Field
-                          id="details.builtIn"
-                          name="details.builtIn"
-                          type="date"
-                          component={DatePickerField}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        <label className="block text-sm font-medium text-gray-700">
+                          Under Construction
+                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.underConstruction"
+                              value="Yes"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Yes</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.underConstruction"
+                              value="No"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">No</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="details.underConstruction"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
                         />
-                      <ErrorMessage
-                        name="details.builtIn"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>  
-                    : <div>
-                    <label
-                      htmlFor="details.possesion"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Possession date
-                    </label>
-                    <Field
-                          id="details.possesion"
-                          name="details.possesion"
-                          type="date"
-                          component={DatePickerField}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                    <ErrorMessage
-                      name="details.possesion"
-                      component="div"
-                      className="text-red-500 text-sm mt-1"
-                    />
-                  </div>  
-                  }
-                    
+                      </div>
+                    </div>
+
                     {values.type === "RENT" && (
                       <div>
                         <label
@@ -956,7 +1028,7 @@ export default function AddPropertyLayout() {
                                 onChange={(event) => {
                                   const files = event.currentTarget.files;
                                   if (files) {
-                                    console.log(files);
+                                    // console.log(files);
                                     setFieldValue("images", [
                                       ...values.images,
                                       ...Array.from(files),
@@ -1006,28 +1078,94 @@ export default function AddPropertyLayout() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Amenities
                       </label>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-4 md:gap-3 sm:gap-2">
                         {[
-                          "Swimming Pool",
-                          "Gym",
-                          "Parking",
-                          "Security",
-                          "Elevator",
-                          "Garden",
-                          "Playground",
-                          "Clubhouse",
-                          "24/7 Water Supply",
-                          "Power Backup",
-                          "Gated Community",
+                          "24x7 Security",
+                          "AC",
+                          "Amphitheatre",
+                          "Badminton Court",
+                          "Banquet hall",
+                          "Bar Area",
+                          "Barbecue Corner",
+                          "Box Cricket Area",
+                          "Branded CP Fittings",
+                          "Branded Switches",
+                          "Business Lounge",
+                          "Cabana",
+                          "Cafeteria",
+                          "Carrom",
                           "CCTV",
-                          "Fire Safety",
+                          "Changing Rooms",
+                          "Chess",
+                          "Children's Play Area",
+                          "Club House",
+                          "Creche",
+                          "Cycle track",
+                          "Dance Studio",
+                          "Double Height Lobby",
+                          "EV Charging",
+                          "Exhaust Fan",
+                          "Fire alarm system",
+                          "Fire Fighting System",
+                          "Football Turf",
+                          "Garden",
+                          "Gas Pipeline",
+                          "Gated Community",
+                          "Gazebo",
+                          "Geyser",
+                          "Golf",
+                          "Granite kitchen platform",
+                          "Guest Waiting Lounge",
+                          "Gym",
+                          "Hub & chimney in kitchen",
                           "Indoor Games",
-                          "Jogging Track",
-                          "Sports Facility",
-                          "Pet Friendly",
-                          "Waste Disposal",
-                          "Rain Water Harvesting",
-                          "Solar Panels",
+                          "Intercom Facility",
+                          "Jacuzzi",
+                          "Jogging track",
+                          "Kids' Pool",
+                          "Landscaped Garden",
+                          "Library",
+                          "Lift",
+                          "Meditation",
+                          "Modular kitchen",
+                          "Multipurpose Hall",
+                          "Multipurpose Play Court",
+                          "Open To Sky Gym",
+                          "Pantry",
+                          "Parking",
+                          "Party Area",
+                          "Party Lawn",
+                          "Power Backup",
+                          "Rainwater Harvesting",
+                          "Rock-climbing Wall",
+                          "Roof-top Garden",
+                          "Roof-top Lounge",
+                          "Seating Area",
+                          "Senior Citizen Area",
+                          "Sewage Treatment Plants",
+                          "Skating Rink",
+                          "Sky Cafe",
+                          "Sky Garden",
+                          "Society Office",
+                          "Solar panels",
+                          "Spa",
+                          "Stainless steel kitchen sink",
+                          "Star Gazing Area",
+                          "Steam Room",
+                          "Sunrise Deck",
+                          "Sunset Deck",
+                          "Swimming Pool",
+                          "Swing Garden",
+                          "Table Tennis",
+                          "Toddler Zone",
+                          "Valet Service",
+                          "Vastu Compliant",
+                          "Video Door Phone",
+                          "Walking Track",
+                          "Water Purifier",
+                          "Wi-fi Enabled",
+                          "Yoga",
+                          "Zen garden",
                         ].map((amenity) => (
                           <div key={amenity} className="flex items-center">
                             <Field
@@ -1039,7 +1177,7 @@ export default function AddPropertyLayout() {
                             />
                             <label
                               htmlFor={amenity}
-                              className="ml-2 block text-sm text-gray-900"
+                              className="ml-2 block text-base text-gray-900"
                             >
                               {amenity}
                             </label>

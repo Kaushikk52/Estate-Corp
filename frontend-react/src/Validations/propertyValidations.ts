@@ -2,6 +2,7 @@ import * as Yup from "yup";
 
 export const propertyValidationSchema = Yup.object().shape({
   name: Yup.string().required("Property Name is required"),
+  mahareraNo:Yup.string().required("Maharera No. is required"),
   type: Yup.string().required("Property Type is required"),
   propertyVariant: Yup.string().required("Property Variant is required"),
   subVariant: Yup.string().required("Sub Variant is required"),

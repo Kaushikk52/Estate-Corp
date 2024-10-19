@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import {
   Formik,
   Form,
@@ -67,6 +67,7 @@ export default function AddProjectLayout() {
 
   const initialValues = {
     name: "",
+    mahareraNo:"",
     description: "",
     images: [] as File[],
     totalFloors: 0,
@@ -216,13 +217,14 @@ export default function AddProjectLayout() {
     }
   }
 
-  const steps = ["Project Details", "Floor Plans", "Images", "Amenities"];
+  const steps = ["Details", "Floor Plans", "Images", "Amenities"];
 
   const getStepFields = (stepNumber: number) => {
     switch (stepNumber) {
       case 1:
         return [
           "name",
+          "mahareraNo",
           "description",
           "totalFloors",
           "location",
@@ -242,7 +244,7 @@ export default function AddProjectLayout() {
   };
 
   const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
-    console.log(errors,touched,stepNumber);
+    // console.log(errors,touched,stepNumber);
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
       const fieldParts = field.split(".");
@@ -257,12 +259,12 @@ export default function AddProjectLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-2 sm:px-3 lg:px-8">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-1 px-2 sm:px-3 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg"
+        className="max-w-4xl w-full space-y-8 bg-white p-[1.70rem] rounded-xl shadow-lg"
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -273,7 +275,7 @@ export default function AddProjectLayout() {
           </p>
         </div>
 
-        <div className="flex justify-between items-center mb-8 flex-wrap">
+        <div className="flex justify-start items-center mb-8 flex-wrap">
           {steps.map((s, index) => (
             <React.Fragment key={s}>
               <div className="flex flex-col items-center">
@@ -339,24 +341,45 @@ export default function AddProjectLayout() {
                     transition={{ duration: 0.5 }}
                     className="space-y-6"
                   >
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Project Name
-                      </label>
-                      <Field
-                        id="name"
-                        name="name"
-                        type="text"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <ErrorMessage
-                        name="name"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Project Name
+                        </label>
+                        <Field
+                          id="name"
+                          name="name"
+                          type="text"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="name"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="mahareraNo"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Maharera No.
+                        </label>
+                        <Field
+                          id="mahareraNo"
+                          name="mahareraNo"
+                          type="text"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <ErrorMessage
+                          name="mahareraNo"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                     </div>
                     <div>
                       <label
@@ -794,6 +817,7 @@ export default function AddProjectLayout() {
                                         <option value="sqft">sq ft</option>
                                         <option value="sqm">sq m</option>
                                         <option value="sqyd">sq yd</option>
+                                        <option value="acre">acre</option>
                                       </Field>
                                       <ErrorMessage
                                         name={`floorPlans.${index}.areaUnit`}
@@ -1064,28 +1088,94 @@ export default function AddProjectLayout() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Amenities
                       </label>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-4 md:gap-3 sm:gap-2">
                         {[
-                          "Swimming Pool",
-                          "Gym",
-                          "Parking",
-                          "Security",
-                          "Elevator",
-                          "Garden",
-                          "Playground",
-                          "Clubhouse",
-                          "24/7 Water Supply",
-                          "Power Backup",
-                          "Gated Community",
+                          "24x7 Security",
+                          "AC",
+                          "Amphitheatre",
+                          "Badminton Court",
+                          "Banquet hall",
+                          "Bar Area",
+                          "Barbecue Corner",
+                          "Box Cricket Area",
+                          "Branded CP Fittings",
+                          "Branded Switches",
+                          "Business Lounge",
+                          "Cabana",
+                          "Cafeteria",
+                          "Carrom",
                           "CCTV",
-                          "Fire Safety",
+                          "Changing Rooms",
+                          "Chess",
+                          "Children's Play Area",
+                          "Club House",
+                          "Creche",
+                          "Cycle track",
+                          "Dance Studio",
+                          "Double Height Lobby",
+                          "EV Charging",
+                          "Exhaust Fan",
+                          "Fire alarm system",
+                          "Fire Fighting System",
+                          "Football Turf",
+                          "Garden",
+                          "Gas Pipeline",
+                          "Gated Community",
+                          "Gazebo",
+                          "Geyser",
+                          "Golf",
+                          "Granite kitchen platform",
+                          "Guest Waiting Lounge",
+                          "Gym",
+                          "Hub & chimney in kitchen",
                           "Indoor Games",
-                          "Jogging Track",
-                          "Sports Facility",
-                          "Pet Friendly",
-                          "Waste Disposal",
-                          "Rain Water Harvesting",
-                          "Solar Panels",
+                          "Intercom Facility",
+                          "Jacuzzi",
+                          "Jogging track",
+                          "Kids' Pool",
+                          "Landscaped Garden",
+                          "Library",
+                          "Lift",
+                          "Meditation",
+                          "Modular kitchen",
+                          "Multipurpose Hall",
+                          "Multipurpose Play Court",
+                          "Open To Sky Gym",
+                          "Pantry",
+                          "Parking",
+                          "Party Area",
+                          "Party Lawn",
+                          "Power Backup",
+                          "Rainwater Harvesting",
+                          "Rock-climbing Wall",
+                          "Roof-top Garden",
+                          "Roof-top Lounge",
+                          "Seating Area",
+                          "Senior Citizen Area",
+                          "Sewage Treatment Plants",
+                          "Skating Rink",
+                          "Sky Cafe",
+                          "Sky Garden",
+                          "Society Office",
+                          "Solar panels",
+                          "Spa",
+                          "Stainless steel kitchen sink",
+                          "Star Gazing Area",
+                          "Steam Room",
+                          "Sunrise Deck",
+                          "Sunset Deck",
+                          "Swimming Pool",
+                          "Swing Garden",
+                          "Table Tennis",
+                          "Toddler Zone",
+                          "Valet Service",
+                          "Vastu Compliant",
+                          "Video Door Phone",
+                          "Walking Track",
+                          "Water Purifier",
+                          "Wi-fi Enabled",
+                          "Yoga",
+                          "Zen garden",
                         ].map((amenity) => (
                           <div key={amenity} className="flex items-center">
                             <Field
@@ -1097,7 +1187,7 @@ export default function AddProjectLayout() {
                             />
                             <label
                               htmlFor={amenity}
-                              className="ml-2 block text-sm text-gray-900"
+                              className="ml-2 block text-base text-gray-900"
                             >
                               {amenity}
                             </label>
@@ -1154,7 +1244,6 @@ export default function AddProjectLayout() {
           )}
         </Formik>
       </motion.div>
-      <Toaster />
     </div>
   );
 }

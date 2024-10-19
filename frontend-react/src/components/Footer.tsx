@@ -44,9 +44,9 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover-underline-animation">About Us</a></li>
+              <li><a href="/about-us" className="hover-underline-animation">About Us</a></li>
               <li><a href="#" className="hover-underline-animation">Blogs</a></li>
-              <li><a href="#" className="hover-underline-animation">Contact</a></li>
+              <li><a href="/contact-us" className="hover-underline-animation">Contact</a></li>
             </ul>
           </div>
         </div>

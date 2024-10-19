@@ -42,6 +42,8 @@ public class UserController {
                                 .email(user.getEmail())
                                 .phone(user.getPhone())
                                 .role(user.getRole())
+                                .properties(user.getProperties())
+                                .projects(user.getProjects())
                                 .build())
                 .collect(Collectors.toList());
 

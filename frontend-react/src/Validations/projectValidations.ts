@@ -6,6 +6,7 @@ import { floorPlanValidationSchema } from "./floorPlanValidations";
 
 export const projectValidationSchema = Yup.object().shape({
   name: Yup.string().required('Project Name is required'),
+  mahareraNo:Yup.string().required('Maharera No. is required'),
   description: Yup.string().required('Project Description is required'),
   images: Yup.mixed(),
   totalFloors: Yup.number()

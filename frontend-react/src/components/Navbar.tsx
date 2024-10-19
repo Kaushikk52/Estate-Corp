@@ -65,22 +65,25 @@ export default function Navbar() {
     projects: false,
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     setToggle(false);
   });
 
-  const checkIfLogin = (route:string) => {
+  const checkIfLogin = (route: string) => {
     // console.log("checking...",toggle);
-    const token = localStorage.getItem('token')
-    setNavigateTo(route)
-    if(token !== null && toggle === false){//user logged in and no popup
-      navigate(route)
-    }else if(token !== null && toggle === true){//user logged in and still popup
+    const token = localStorage.getItem("token");
+    setNavigateTo(route);
+    if (token !== null && toggle === false) {
+      //user logged in and no popup
+      navigate(route);
+    } else if (token !== null && toggle === true) {
+      //user logged in and still popup
       setToggle(false);
-    }else if(token === null){//user not logged in 
+    } else if (token === null) {
+      //user not logged in
       setToggle(true);
     }
-  }
+  };
 
   const dropdownVariants = {
     hidden: { opacity: 0, y: -10 },
@@ -120,7 +123,7 @@ export default function Navbar() {
             to="/"
             className="text-xl font-semibold text-gray-800 uppercase flex items-center"
           >
-            <img src="/Estatecorp-logo.png" alt="Logo" height={70} width={70} />
+            <img src="/Estatecorp-logo.webp" alt="Logo" height={70} width={70} />
             <span className="phone-non"> Estatecorp</span>
           </Link>
         </div>
@@ -147,7 +150,7 @@ export default function Navbar() {
                   exit="hidden"
                   variants={dropdownVariants}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-0 mt-2 w-screen max-w-lg bg-white rounded-md shadow-lg py-1 z-10"
+                  className="absolute left-0 mt-2 w-screen max-w-lg bg-white rounded-md shadow-lg py-1 z-20"
                 >
                   <div className="flex">
                     <div className="w-1/3 bg-gray-50 p-2 h-full">
@@ -192,24 +195,29 @@ export default function Navbar() {
                       </h3>
                       <div className="grid gap-4">
                         <DropdownLink
-                          href={`/${selectedCategory}/rent`}
-                          title="Rent"
-                          description={`Find ${selectedCategory} available for rent`}
-                        />
-                        <DropdownLink
-                          href={`/${selectedCategory}/buy`}
-                          title="Buy"
-                          description={`Discover ${selectedCategory} for sale`}
+                          href={`/listings/${selectedCategory}/all`}
+                          title="All"
+                          description={`Discover all ${selectedCategory}`}
                         />
                         {selectedCategory === "properties" ? (
                           <>
                             <DropdownLink
-                              href="/properties/commercial"
+                              href={`/listings/${selectedCategory}/rent`}
+                              title="Rent"
+                              description={`Find ${selectedCategory} available for rent`}
+                            />
+                            <DropdownLink
+                              href={`/listings/${selectedCategory}/buy`}
+                              title="Buy"
+                              description={`Discover ${selectedCategory} for sale`}
+                            />
+                            <DropdownLink
+                              href={`/listings/${selectedCategory}/commercial`}
                               title="Commercial"
                               description="Explore commercial real estate options"
                             />
                             <DropdownLink
-                              href="/properties/residential"
+                              href={`/listings/${selectedCategory}/residential`}
                               title="Residential"
                               description="Find your perfect home"
                             />
@@ -217,12 +225,12 @@ export default function Navbar() {
                         ) : (
                           <>
                             <DropdownLink
-                              href="/projects/upcoming"
-                              title="Upcoming"
-                              description="Get early access to future developments"
+                              href={`listings/${selectedCategory}/ready`}
+                              title="Ready To Move"
+                              description="Explore Ready To Move Projects"
                             />
                             <DropdownLink
-                              href="/projects/ongoing"
+                              href={`listings/${selectedCategory}/ongoing`}
                               title="Ongoing"
                               description="Invest in projects under construction"
                             />
@@ -235,6 +243,8 @@ export default function Navbar() {
               )}
             </AnimatePresence>
           </div>
+          <NavLink href="/listings/properties/rent">Rent</NavLink>
+          <NavLink href="/listings/properties/buy">Buy</NavLink>
         </div>
         <div className="flex items-center space-x-4 cursor-pointer">
           <AuthPopup popup={toggle} navigateTo={navigateTo} />
@@ -244,7 +254,7 @@ export default function Navbar() {
               onClick={() => checkIfLogin("/dashboard/add-property")}
             >
               <PlusSquare size={16} className="mr-2" />
-              <span className="phone-non"> Add </span>Property
+              <span className="phone-non mr-1">Add</span>Property
               <span className="ml-1 text-xs bg-white px-1 rounded">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-300">
                   FREE
@@ -275,7 +285,7 @@ export default function Navbar() {
                 className="text-xl font-semibold text-gray-800 uppercase flex items-center"
               >
                 <img
-                  src="/Estatecorp-logo.png"
+                  src="/Estatecorp-logo.webp"
                   alt="Logo"
                   height={70}
                   width={70}
@@ -297,7 +307,7 @@ export default function Navbar() {
               >
                 Home
               </Link>
-              <div className="mt-4">
+              <div className="mt-0">
                 <button
                   onClick={() => toggleMobileDropdown("explore")}
                   className="flex items-center justify-between w-full py-2 text-lg font-semibold text-gray-800 hover:text-gray-600"
@@ -311,7 +321,7 @@ export default function Navbar() {
                   />
                 </button>
                 {mobileDropdowns.explore && (
-                  <div className="mt-2 space-y-4">
+                  <div className="mt-2 ml-5 space-y-4">
                     {["properties", "projects"].map((category) => (
                       <div key={category}>
                         <button
@@ -341,27 +351,33 @@ export default function Navbar() {
                         ] && (
                           <div className="mt-2 grid grid-cols-2 gap-2">
                             <DropdownLink
-                              href={`/${category}/rent`}
-                              title="Rent"
-                              description={`Find ${category} available for rent`}
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            />
-                            <DropdownLink
-                              href={`/${category}/buy`}
-                              title="Buy"
-                              description={`Discover ${category} for sale`}
+                              href={`/listings/${category}/all`}
+                              title="All"
+                              description={`Discover all ${category}`}
                               onClick={() => setIsMobileMenuOpen(false)}
                             />
                             {category === "properties" ? (
                               <>
                                 <DropdownLink
-                                  href="/properties/commercial"
+                                  href={`/listings/${category}/rent`}
+                                  title="Rent"
+                                  description={`Find ${category} available for rent`}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                />
+                                <DropdownLink
+                                  href={`/listings/${category}/buy`}
+                                  title="Buy"
+                                  description={`Discover ${category} for sale`}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                />
+                                <DropdownLink
+                                  href={`/listings/${category}/commercial`}
                                   title="Commercial"
                                   description="Explore commercial real estate options"
                                   onClick={() => setIsMobileMenuOpen(false)}
                                 />
                                 <DropdownLink
-                                  href="/properties/residential"
+                                  href={`/listings/${category}/residential`}
                                   title="Residential"
                                   description="Find your perfect home"
                                   onClick={() => setIsMobileMenuOpen(false)}
@@ -370,13 +386,13 @@ export default function Navbar() {
                             ) : (
                               <>
                                 <DropdownLink
-                                  href="/projects/upcoming"
-                                  title="Upcoming"
-                                  description="Get early access to future developments"
+                                  href={`/listings/${category}/ready`}
+                                  title="Ready To Move"
+                                  description="Explore Ready To Move Projects"
                                   onClick={() => setIsMobileMenuOpen(false)}
                                 />
                                 <DropdownLink
-                                  href="/projects/ongoing"
+                                  href={`/listings/${category}/ongoing`}
                                   title="Ongoing"
                                   description="Invest in projects under construction"
                                   onClick={() => setIsMobileMenuOpen(false)}
@@ -390,6 +406,20 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
+              <Link
+                to="/listings/properties/rent"
+                className="block py-2 text-lg font-semibold text-gray-800 hover:text-gray-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Rent
+              </Link>
+              <Link
+                to="/listings/properties/buy"
+                className="block py-2 text-lg font-semibold text-gray-800 hover:text-gray-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Buy
+              </Link>
             </div>
           </motion.div>
         )}

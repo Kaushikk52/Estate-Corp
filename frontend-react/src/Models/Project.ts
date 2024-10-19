@@ -4,6 +4,7 @@ import User from "./User";
 interface Project {
     id: string;
     name: string;
+    mahareraNo:string;
     owner:User;
     description: string;
     images: string[];

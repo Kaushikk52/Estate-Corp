@@ -66,7 +66,7 @@ export default function FeaturedCardsCarousel(props:any) {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Owner Properties</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Hot Properties</h2>
       <div className="relative">
         <Swiper
           modules={[Navigation, A11y]}
@@ -84,7 +84,7 @@ export default function FeaturedCardsCarousel(props:any) {
           }}
         >
           {properties.map((property) => (
-            <SwiperSlide key={property.id}>
+            <SwiperSlide key={property.id} className="p-2">
               <AnimatePresence>
                 <motion.div
                   className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full"
@@ -97,6 +97,7 @@ export default function FeaturedCardsCarousel(props:any) {
                     <img 
                       src={property.images.length > 0 ? `${imgPrefix}${propertiesPath}/${property.images[0]}` : defaultImg} 
                       alt={property.name} 
+                      loading="lazy"
                       className="w-full h-48 object-cover"
                     />
                     <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">

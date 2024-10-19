@@ -90,6 +90,7 @@ export default function SidebarNavigation() {
         </button>
       </div>
       <nav className="flex-grow overflow-y-auto">
+        {currentUser.role == "ROLE_ADMIN"?
         <ul className="space-y-2 p-4">
           {navItems.map((item, index) => (
             <li key={index}>
@@ -106,6 +107,24 @@ export default function SidebarNavigation() {
             </li>
           ))}
         </ul>
+        : <ul className="space-y-2 p-4">
+        {navItems.slice(0,2).map((item, index) => (
+          <li key={index}>
+            <Link
+              to={item.href}
+              className={`flex items-center text-gray-800 hover:bg-gray-100 rounded-md p-2 ${
+                (!isOpen || isMobile) && "justify-center"
+              }`}
+            >
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              {isOpen && !isMobile && <span className="ml-2">{item.label}</span>}
+              {(!isOpen || isMobile) && <span className="sr-only">{item.label}</span>}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+        }
       </nav>
 
       <div className="p-4 space-y-2">

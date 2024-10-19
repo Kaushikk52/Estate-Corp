@@ -38,6 +38,8 @@ public class PropertyController {
 
     @GetMapping("/filter")
     public ResponseEntity<?>  filterProperties(
+            @RequestParam(required = false) String variant,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) List<Integer> bedrooms,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
@@ -50,7 +52,10 @@ public class PropertyController {
         try{
             Map<String,Object> filters = new HashMap<>();
             // Add only non-null filters
+            if(variant != null) filters.put("variant",variant);
+            if(category != null) filters.put("type",category);
             if (bedrooms != null) filters.put("bedrooms", bedrooms);
+            if (locations != null && !locations.isEmpty()) filters.put("locations", locations);
             if (minPrice != null){
                 filters.put("minPrice", minPrice);
                 filters.put("amtUnit",amtUnit);
@@ -58,7 +63,7 @@ public class PropertyController {
                 filters.remove("amtUnit");
             }
             if (maxPrice != null) filters.put("maxPrice", maxPrice);
-            if (locations != null && !locations.isEmpty()) filters.put("locations", locations);
+
             if (minCarpetArea != null) {
                 filters.put("minCarpetArea", minCarpetArea);
                 filters.put("areaUnit",areaUnit);
@@ -70,7 +75,7 @@ public class PropertyController {
             List<Property> filteredProperties = propertyServ.getFilteredProperties(filters);
             Map<String, Object> response = new HashMap<>();
 
-            // Check for empty results
+//             Check for empty results
             if (filteredProperties.isEmpty() && (locations != null && !locations.isEmpty()) && (bedrooms != null && !bedrooms.isEmpty())) {
                 String location = locations.get(0);
                 int bedroom = bedrooms.get(0);

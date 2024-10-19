@@ -12,27 +12,36 @@ import {
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, A11y } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, A11y } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 import Property from "../../Models/Property";
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
+import "swiper/css";
+import "swiper/css/navigation";
 
 export default function LocationsCardsCarousel() {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
-  const filters = ["All", "Borivali East", "Dahisar East", "Goregaon West"];
+  const filters = [
+    "All",
+    "Bhayandar East",
+    "Bhayandar West",
+    "Mira Road East",
+    "Dashisar East",
+    "Dashisar West",
+    "Borivali East",
+    "Borivali West",
+  ];
   const [activeFilter, setActiveFilter] = useState("All");
 
   useEffect(() => {
@@ -73,8 +82,10 @@ export default function LocationsCardsCarousel() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
-       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Explore</h2>
-      <div className="flex justify-start mb-8 pb-2 overflow-x-auto scrollbar-hide">
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
+        Explore Localities
+      </h2>
+      <div className="flex justify-start mb-8 pb-2 overflow-x-auto scrollbar-hide custom-scrollbar">
         {filters.map((filter) => (
           <button
             key={filter}
@@ -125,7 +136,7 @@ export default function LocationsCardsCarousel() {
           </div>
         </div>
 
-        <div className="w-full lg:w-3/4 relative">
+        <div className="w-full sm:w-11/12 md:w-5/6 lg:w-5/6 xl:w-5/6 relative">
           <Swiper
             modules={[Navigation, A11y]}
             spaceBetween={20}
@@ -142,7 +153,7 @@ export default function LocationsCardsCarousel() {
             }}
           >
             {properties.map((property) => (
-              <SwiperSlide key={property.id}>
+              <SwiperSlide key={property.id} className="p-2">
                 <AnimatePresence>
                   <motion.div
                     className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full"
@@ -155,10 +166,11 @@ export default function LocationsCardsCarousel() {
                       <img
                         src={
                           property.images.length > 0
-                            ?  `${imgPrefix}${propertiesPath}/${property.images[0]}`
+                            ? `${imgPrefix}${propertiesPath}/${property.images[0]}`
                             : defaultImg
                         }
                         alt={property.name}
+                        loading="lazy"
                         className="w-full h-48 object-cover"
                       />
                       <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs flex items-center">
@@ -197,8 +209,7 @@ export default function LocationsCardsCarousel() {
                         <MapPin className="h-4 w-4 mr-1 text-gray-400 flex-shrink-0" />
                         <span className="truncate">
                           {property.address.landmark}{" "}
-                          {property.address.locality}{" "}
-                          {property.address.street}{" "}
+                          {property.address.locality} {property.address.street}{" "}
                           {property.details.location}-{" "}
                           {property.address.zipCode}
                         </span>

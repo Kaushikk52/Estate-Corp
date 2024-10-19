@@ -12,6 +12,8 @@ import {
   Scan,
   Bed,
   Bath,
+  ExternalLink,
+  Building,
 } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -43,12 +45,12 @@ export default function ProjectDetails() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [selectedPlan, setSelectedPlan] = useState<FloorPlan>();
   const [project, setProject] = useState<Project | any>();
-  const [currentUser,setCurrentUser] = useState<any>();
+  const [currentUser, setCurrentUser] = useState<any>();
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
   const [bedroomList, setBedroomList] = useState("");
 
@@ -61,15 +63,17 @@ export default function ProjectDetails() {
       const body = {
         userId: currentUser?.userId,
         projectId: project.id,
-        projectName:project.name,
-        ownerId:project?.owner.id,
-        ownerName:project.owner.fullName,
+        projectName: project.name,
+        ownerId: project?.owner.id,
+        ownerName: project.owner.fullName,
         enquiry: values,
-        subject: "PROJECT_ENQUIRY"
+        subject: "PROJECT_ENQUIRY",
       };
 
       const response = await axios.post(
-        `${baseURL}/v1/api/enquiry/email`,body);
+        `${baseURL}/v1/api/enquiry/email`,
+        body
+      );
 
       if (response.status === 200 || response.status === 201) {
         toast.success(`Email sent Successfully`, {
@@ -78,7 +82,7 @@ export default function ProjectDetails() {
         });
         resetForm();
       } else {
-        throw new Error('Failed to send email');
+        throw new Error("Failed to send email");
       }
     } catch (err) {
       console.error(err);
@@ -122,15 +126,19 @@ export default function ProjectDetails() {
         .join(",");
       setBedroomList(bedroomList);
     } else {
+      toast.error(`Failed to fetch project details. Please try again.`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
     }
   };
 
   const getCurrentUser = async () => {
-    try{
-      const token = localStorage.getItem('token');
-      if(!token){
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
         setCurrentUser(undefined);
-      } 
+      }
       const response = await axios.get(
         `${baseURL}/v1/api/users/getCurrentUser`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -138,16 +146,33 @@ export default function ProjectDetails() {
       if (response.status === 201 || response.status === 200) {
         setCurrentUser(response.data);
       }
-    }catch(err:any){
+    } catch (err: any) {
       console.log("An error occured : ", err);
-      if(err.status === 401){
-        localStorage.removeItem('token');
+      if (err.status === 401) {
+        localStorage.removeItem("token");
       }
       toast.error(`An error occurred : ${err}`, {
         position: "bottom-right",
         duration: 3000,
       });
     }
+  };
+
+  const handleCopyUrl = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        toast.success(`URL copied to clipboard!`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      })
+      .catch(() => {
+        toast.error(`Failed to copy URL`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      });
   };
 
   return (
@@ -158,13 +183,13 @@ export default function ProjectDetails() {
         transition={{ duration: 0.5 }}
         className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8"
       >
-        <Link
-          to="/"
+        <button
+          onClick={() => {navigate(-1)}}
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-5"
         >
           <ChevronLeft className="w-5 h-5 mr-2" />
           Back to Listings
-        </Link>
+        </button>
       </motion.div>
 
       <div className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8">
@@ -189,12 +214,14 @@ export default function ProjectDetails() {
               <img
                 src={`${imgPrefix}${projectsPath}/${selectedImage}`}
                 alt={project?.name}
+                loading="lazy"
                 className="w-full h-[400px] object-cover rounded-lg shadow-md"
               />
               <div className="flex mt-4 space-x-4 overflow-x-auto p-2">
-                {project?.images.map((image:any, index:any) => (
+                {project?.images.map((image: any, index: any) => (
                   <img
                     key={index}
+                    loading="lazy"
                     src={`${imgPrefix}${projectsPath}/${image}`}
                     alt={`${project?.name} - Image ${index + 1}`}
                     className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
@@ -220,14 +247,19 @@ export default function ProjectDetails() {
                 </div>
                 <div className="flex items-center">
                   <Calendar className="w-5 h-5 mr-2 text-blue-600" />
-                  {project?.underConstruction == "Yes" ? 
-                  (
-                    <span>Possession: {new Date(project?.possesion).getDate()}/{new Date(project?.possesion).getMonth() + 1}/{new Date(project?.possesion).getFullYear()}</span>
-                  ):
-                  (
-                    <span>Built-In: {new Date(project?.builtIn).getDate()}/{new Date(project?.builtIn).getMonth() + 1}/{new Date(project?.builtIn).getFullYear()}</span>
-                  )
-                  }
+                  {project?.underConstruction == "Yes" ? (
+                    <span>
+                      Possession: {new Date(project?.possesion).getDate()}/
+                      {new Date(project?.possesion).getMonth() + 1}/
+                      {new Date(project?.possesion).getFullYear()}
+                    </span>
+                  ) : (
+                    <span>
+                      Built-In: {new Date(project?.builtIn).getDate()}/
+                      {new Date(project?.builtIn).getMonth() + 1}/
+                      {new Date(project?.builtIn).getFullYear()}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center">
                   <ChartNoAxesGantt className="w-5 h-5 mr-2 text-blue-600" />
@@ -236,6 +268,10 @@ export default function ProjectDetails() {
                 <div className="flex items-center">
                   <BedDoubleIcon className="w-5 h-5 mr-2 text-blue-600" />
                   <span>{bedroomList} bedrooms</span>
+                </div>
+                <div className="flex items-center">
+                  <Building className="w-5 h-5 mr-2 text-blue-600" />
+                  <span>Maharera No : {project?.mahareraNo}</span>
                 </div>
               </div>
               <h3 className="text-xl font-semibold mt-5 mb-2">Description</h3>
@@ -248,7 +284,7 @@ export default function ProjectDetails() {
               >
                 <h2 className="text-3xl font-semibold mb-6">Amenities</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {project?.ammenities?.map((amenity:any, index:any) => (
+                  {project?.ammenities?.map((amenity: any, index: any) => (
                     <motion.div
                       key={index}
                       className="flex items-center p-3 bg-gray-100 rounded-lg"
@@ -273,7 +309,7 @@ export default function ProjectDetails() {
         >
           <h2 className="text-3xl font-semibold mb-6">Floor Plans</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {project?.floorPlans.map((plan:any) => (
+            {project?.floorPlans.map((plan: any) => (
               <motion.div
                 key={plan.id}
                 whileHover={{ scale: 1.05 }}
@@ -298,12 +334,13 @@ export default function ProjectDetails() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-              <img
-                src={`${imgPrefix}${propertiesPath}/${selectedPlan?.image}`}
-                alt={selectedPlan?.name}
-                className="w-full h-[400px] object-cover rounded-lg shadow-md"
-              />
-              <div className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3">
+                <img
+                  src={`${imgPrefix}${propertiesPath}/${selectedPlan?.image}`}
+                  alt={selectedPlan?.name}
+                  loading="lazy"
+                  className="w-full h-[400px] object-cover rounded-lg shadow-md"
+                />
+                <div className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3">
                   <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
@@ -401,9 +438,7 @@ export default function ProjectDetails() {
                 </div>
               </div>
               <div>
-              <h2 className="text-2xl font-semibold mb-4">
-                  Floor Plan
-                </h2>
+                <h2 className="text-2xl font-semibold mb-4">Floor Plan</h2>
                 <h3 className="text-xl font-semibold mb-4">
                   {selectedPlan?.name}
                 </h3>
@@ -430,7 +465,9 @@ export default function ProjectDetails() {
                   </div>
                   <div className="flex items-center">
                     <IndianRupee className="w-5 h-5 mr-2 text-blue-600" />
-                    <span>{selectedPlan?.price} {selectedPlan?.amtUnit}</span>
+                    <span>
+                      {selectedPlan?.price} {selectedPlan?.amtUnit}
+                    </span>
                   </div>
                 </div>
                 <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
@@ -515,13 +552,23 @@ export default function ProjectDetails() {
                     </tbody>
                   </table>
                 </motion.div>
-                <div className="flex flex-col md:flex-row justify-center items-center mt-4 gap-8">
+                <div className="flex flex-row md:flex-row justify-center items-center mt-4 gap-4">
+                  <a href="tel:7700994313">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Contact Owner
+                    </motion.button>
+                  </a>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="max-w-64 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                    onClick={handleCopyUrl}
+                    className="max-w-64 bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-yellow-700 transition-colors"
                   >
-                    Contact Owner
+                    <ExternalLink />
                   </motion.button>
                 </div>
               </div>
