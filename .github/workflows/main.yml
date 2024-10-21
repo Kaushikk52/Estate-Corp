@@ -36,8 +36,8 @@ jobs:
 
       - name: Copy build files to Nginx directory
         run: |
-              sudo cp -R frontend-react/dist/* /var/www/estate-corp/frontend-react/dist/
-              sudo chown -R www-data:www-data /var/www/estate-corp/frontend-react/dist/
+              sudo cp -R /home/kaushik/actions-runner/_work/Estate-Corp/Estate-Corp/frontend-react/dist/* /var/www/estate-corp/frontend-react/dist/
+              sudo chown -R kaushik:kaushik /var/www/estate-corp/frontend-react/dist/
           
       - name: Reload Nginx
         run: |
