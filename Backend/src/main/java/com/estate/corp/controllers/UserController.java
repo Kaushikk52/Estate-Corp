@@ -45,16 +45,16 @@ public class UserController {
     }
 
 
-    @PutMapping(value="/update")
-    public ResponseEntity<?> updateUser(@RequestBody Map<String, String> updates){
-        try{
+    @PutMapping(value = "/update")
+    public ResponseEntity<?> updateUser(@RequestBody Map<String, String> updates) {
+        try {
             User updatedUser = userServ.updateUser(updates);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User updated successfully");
             response.put("user", updatedUser);
             log.info("User updated successfully: {}", updatedUser);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        }catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             Map<String, Object> response = new HashMap<>();
             response.put("message", e.getMessage());
             log.warn("An error occurred: {}", response);
@@ -78,9 +78,9 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/removeProject/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable String id, Principal principal){
+    public ResponseEntity<?> deleteProject(@PathVariable String id, Principal principal) {
         try {
-            userServ.deleteProject(id,principal);
+            userServ.deleteProject(id, principal);
             log.info("Project deleted successfully: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body("Project deleted successfully");
         } catch (Exception e) {
@@ -90,9 +90,9 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/removeProperty/{id}")
-    public ResponseEntity<?> deleteProperty(@PathVariable String id,Principal principal){
+    public ResponseEntity<?> deleteProperty(@PathVariable String id, Principal principal) {
         try {
-            userServ.deleteProperty(id,principal);
+            userServ.deleteProperty(id, principal);
             log.info("Property deleted successfully: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body("Property deleted successfully");
         } catch (Exception e) {
@@ -100,5 +100,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    
+
 }

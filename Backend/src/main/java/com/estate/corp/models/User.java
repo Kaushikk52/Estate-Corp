@@ -1,8 +1,13 @@
 package com.estate.corp.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +27,7 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false, updatable = false, length = 36)
     private String id;
 
-    @Column(name="token",nullable = false,updatable = true)
+    @Column(name = "token", nullable = false, updatable = true)
     private String token;
 
     @NotNull(message = "Full name cannot be null.")
@@ -45,10 +50,10 @@ public class User implements UserDetails {
     @Column(name = "phone", nullable = false, unique = true, length = 15)
     private String phone;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(nullable = true)
     private List<Property> properties;
 

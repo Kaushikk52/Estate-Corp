@@ -1,8 +1,8 @@
 package com.estate.corp.specifications;
 
 import com.estate.corp.models.Property;
-import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
