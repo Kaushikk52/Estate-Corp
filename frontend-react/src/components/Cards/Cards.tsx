@@ -152,7 +152,7 @@ export default function PropertyCardsCarousel() {
       <PropertyFilter onFilterChange={handleFilterChange} />
       <div className="w-full max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
-          Latest Projects & Properties?
+          Latest Projects & Properties...
         </h2>
         <div className="relative">
           <Swiper
