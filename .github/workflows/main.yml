@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted 
 
     steps:
       - name: Checkout code
@@ -22,7 +22,11 @@ jobs:
         run: |
           cd frontend-react
           npm install
-          npm run build --mode production
+
+      - name: Build Frontend
+        run: |
+          cd frontend-react
+          npm run build -- --mode production
 
       - name: Deploy Backend
         run: |
@@ -30,16 +34,11 @@ jobs:
           mvn clean install -DskipTests
           sudo systemctl restart springboot-app
 
-      - name: Deploy Frontend
-        run: |
-          cd frontend-react
-
       - name: Copy build files to Nginx directory
         run: |
-              sudo cp -R /home/kaushik/actions-runner/_work/Estate-Corp/Estate-Corp/frontend-react/dist/. /var/www/estate-corp/frontend-react/dist/
-              sudo chown -R kaushik:kaushik /var/www/estate-corp/frontend-react/dist/
+          sudo cp -R frontend-react/dist/. /var/www/estate-corp/frontend-react/dist/ 
+          sudo chown -R www-data:www-data /var/www/estate-corp/frontend-react/dist/ 
           
       - name: Reload Nginx
         run: |
-              sudo systemctl reload nginx
-
+          sudo systemctl reload nginx
