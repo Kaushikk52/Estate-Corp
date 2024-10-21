@@ -33,4 +33,13 @@ jobs:
       - name: Deploy Frontend
         run: |
           cd frontend-react
-          sudo systemctl restart nginx
+
+      - name: Copy build files to Nginx directory
+        run: |
+              sudo cp -R frontend-react/dist/* /var/www/estate-corp/frontend-react/dist/
+              sudo chown -R www-data:www-data /var/www/estate-corp/frontend-react/dist/
+          
+      - name: Reload Nginx
+        run: |
+              sudo systemctl reload nginx
+
