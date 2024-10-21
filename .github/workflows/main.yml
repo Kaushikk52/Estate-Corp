@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Specify your Node.js version
+
+      - name: Install dependencies
+        run: |
+          cd frontend-react
+          npm install
+          npm run build --mode production
+
+      - name: Deploy Backend
+        run: |
+          cd Backend
+          mvn clean install -DskipTests
+          sudo systemctl restart springboot-app
+
+      - name: Deploy Frontend
+        run: |
+          cd frontend-react
+          sudo systemctl restart nginx
