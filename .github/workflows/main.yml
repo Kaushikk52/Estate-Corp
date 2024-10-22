@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to VPS
 
 on:
   push:
@@ -7,12 +7,25 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run deploy.sh script
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.ssh-kaushik2 }}
+
+      - name: Add SSH Key
         run: |
-          sudo /var/www/estate-corp/deploy.sh
+          echo "$SSH_PRIVATE_KEY" | base64 --decode > $HOME/.ssh/id_ed25519
+          chmod 600 $HOME/.ssh/id_ed25519
+          ssh-keyscan -H your-server-ip >> $HOME/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          cd /var/www/estate-corp
+          git pull origin master
+          sudo ./deploy.sh
