@@ -13,24 +13,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # ---- Node.js Setup for Frontend ----
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  # Specify your Node.js version
+          node-version: '14'  # Ensure the correct version of Node.js
 
-      - name: Install dependencies
+      # ---- Frontend: Install Dependencies and Build ----
+      - name: Install and Build Frontend
         run: |
           cd frontend-react
           npm install
           npm run build -- --mode production
 
-      - name: Deploy Backend
+      # ---- Copy Frontend Files (with sudo) ----
+      - name: Deploy Frontend
+        run: |
+          sudo rm -rf /var/www/estate-corp/frontend-react/
+          sudo cp -r frontend-react/ /var/www/estate-corp/frontend-react/
+          sudo chown -R root:root /var/www/estate-corp/frontend-react/
+        working-directory: frontend-react
+
+      # ---- Backend: Build Spring Boot ----
+      - name: Build Backend (Spring Boot)
         run: |
           cd Backend
           mvn clean install -DskipTests
-          sudo systemctl restart springboot-app
 
-      - name: Deploy Frontend
+      # ---- Copy Backend JAR (with sudo) ----
+      - name: Deploy Backend
         run: |
-          cd frontend-react
-          sudo systemctl restart nginx
+          sudo rm -rf /opt/my-app/*
+          sudo cp Backend/target/*.jar /opt/my-app/
+          sudo chown -R root:root /opt/my-app
+
+      # ---- Restart Spring Boot ----
+      - name: Restart Spring Boot App
+        run: sudo systemctl restart springboot-app
+
+      # ---- Restart Nginx ----
+      - name: Restart Nginx
+        run: sudo systemctl restart nginx
