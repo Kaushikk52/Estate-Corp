@@ -26,6 +26,9 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint point;
     private final JwtAuthenticationFilter filter;
 
+    @Value("${frontendUrl.path}")
+    private String frontendUrl;
+
     public SecurityConfig(JwtAuthenticationEntryPoint point, JwtAuthenticationFilter filter) {
         this.point = point;
         this.filter = filter;
@@ -72,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://estatecorp.in"));
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
