@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  # Ensure the correct version of Node.js
+          node-version: '14'
 
       # ---- Frontend: Install Dependencies and Build ----
       - name: Install and Build Frontend
@@ -26,12 +26,12 @@ jobs:
           npm install
           npm run build -- --mode production
 
-      # ---- Copy Frontend Files (with sudo) ----
+      # ---- Copy Frontend Files ----
       - name: Deploy Frontend
         run: |
-          sudo cp -r frontend-react/ /var/www/estate-corp/frontend-react/
+          sudo cp -r ./frontend-react/dist/* /var/www/estate-corp/frontend-react/dist 
           sudo chown -R root:root /var/www/estate-corp/frontend-react/
-        working-directory: frontend-react
+        working-directory: ./frontend-react
 
       # ---- Backend: Build Spring Boot ----
       - name: Build Backend (Spring Boot)
@@ -39,10 +39,11 @@ jobs:
           cd Backend
           mvn clean install -DskipTests
 
-      # ---- Copy Backend JAR (with sudo) ----
+      # ---- Copy Backend JAR ----
       - name: Deploy Backend
         run: |
-          sudo cp Backend/target/*.jar /opt/my-app/
+          sudo rm -rf /opt/my-app/*
+          sudo cp ./Backend/target/*.jar /opt/my-app/
           sudo chown -R root:root /opt/my-app
 
       # ---- Restart Spring Boot ----
