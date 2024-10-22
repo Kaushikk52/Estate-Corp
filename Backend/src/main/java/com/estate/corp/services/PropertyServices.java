@@ -18,6 +18,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class PropertyServices {
@@ -43,6 +44,12 @@ public class PropertyServices {
     public Property saveProperty(Property property, Principal principal) throws IOException {
         Address savedAddress = addressRepo.save(property.getAddress());
         User currentUser = (User) userServ.loadUserByUsername(principal.getName());
+        if(Objects.equals(currentUser.getRole().toString(), "ROLE_ADMIN")){
+            PropertyDetails details = property.getDetails();
+            details.setIsApproved(true);
+            property.setDetails(details);
+
+        }
         property.setOwner(currentUser);
         property.setCreatedAt(new Date());
         property.setUpdatedAt(new Date());
@@ -55,29 +62,33 @@ public class PropertyServices {
         return propertyRepo.findAll();
     }
 
-    public Property getPropertyById(String id) {
-        return propertyRepo.findById(id).orElseThrow(() -> new RuntimeException("Property not found..."));
+    public Property getPropertyById(String id){
+        return propertyRepo.findById(id).orElseThrow(()-> new RuntimeException("Property not found..."));
     }
 
-    public Property getPropertyByName(String name) {
+    public Property getPropertyByName(String name){
         return propertyRepo.findByName(name);
     }
 
-    public List<Property> getPropertiesByCityAndBedrooms(String city, int bedrooms) {
-        return propertyRepo.findByDetailsCityAndDetailsBedrooms(city, bedrooms);
+    public List<Property> getPropertiesByLocationAndBedrooms(String city,int bedrooms){
+        return propertyRepo.findByDetailsLocationAndDetailsBedrooms(city,bedrooms);
     }
 
-    public List<Property> getPropertiesByApprovalStatus(boolean isApproved) {
+    public List<Property> getApprovedPropertiesByLocationAndBedrooms(boolean isApproved,String location,int bedrooms){
+        return propertyRepo.findByDetailsIsApprovedAndDetailsLocationAndDetailsBedrooms(isApproved,location,bedrooms);
+    }
+
+    public List<Property> getPropertiesByApprovalStatus(boolean isApproved){
         return propertyRepo.findByDetailsIsApproved(isApproved);
     }
 
-    public List<Property> getFilteredProperties(Map<String, Object> filters) {
+    public List<Property> getFilteredProperties(Map<String,Object> filters) {
         Specification<Property> spec = PropertySpecification.filterByCriteria(filters);
-        List<Property> filteredProperties = propertyRepo.findAll(spec);
+        List<Property> filteredProperties =  propertyRepo.findAll(spec);
         return filteredProperties;
     }
 
-    public Property changeApprovalStatus(String id) {
+    public Property changeApprovalStatus(String id){
         Property property = propertyRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Property with ID: " + id + " not found"));
         PropertyDetails details = property.getDetails();
@@ -85,7 +96,7 @@ public class PropertyServices {
         return propertyRepo.save(property);
     }
 
-    public void removeProperty(String name) {
+    public void removeProperty(String name){
         Property property = propertyRepo.findByName(name);
         propertyRepo.delete(property);
     }
