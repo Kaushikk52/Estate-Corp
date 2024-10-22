@@ -1,4 +1,4 @@
-name: Deploy to VPS
+name: Deploy
 
 on:
   push:
@@ -8,21 +8,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.ssh-estatecorp }}
-
-      - name: Add SSH Key
+      - name: Set up SSH
         run: |
-          echo "$ssh-estatecorp" | base64 --decode > $HOME/.ssh/id_ed25519
-          chmod 600 $HOME/.ssh/id_ed25519
-          ssh-keyscan -H your-server-ip >> $HOME/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ssh-kaushik }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
       - name: Deploy to VPS
         run: |
