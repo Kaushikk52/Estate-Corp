@@ -26,9 +26,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint point;
     private final JwtAuthenticationFilter filter;
 
-    @Value("${frontendUrl.path}")
-    private String frontendUrl;
-
     public SecurityConfig(JwtAuthenticationEntryPoint point, JwtAuthenticationFilter filter) {
         this.point = point;
         this.filter = filter;
