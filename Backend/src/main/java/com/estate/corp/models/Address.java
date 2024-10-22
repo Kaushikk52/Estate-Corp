@@ -9,6 +9,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 public class Address {
     @Id
@@ -16,14 +17,7 @@ public class Address {
     private String street;
     private String locality;
     private String landmark;
-//    private String city;
     private String zipCode;
-
-//    @OneToMany(mappedBy = "address")
-//    private List<Project> projects;
-//
-//    @OneToMany(mappedBy = "address")
-//    private List<Property> properties;
 
     @PrePersist
     private void prePersist(){
