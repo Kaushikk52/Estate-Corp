@@ -19,6 +19,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import static com.estate.corp.models.User.UserRole.ROLE_ADMIN;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -30,7 +32,7 @@ public class UserService implements UserDetailsService {
     private final JwtHelper helper;
 
     @Autowired
-    public UserService(UserRepo userRepo, ProjectRepo projectRepo, PropertyRepo propertyRepo, PasswordEncoder passwordEncoder, JwtHelper helper) {
+    public UserService(UserRepo userRepo,ProjectRepo projectRepo,PropertyRepo propertyRepo, PasswordEncoder passwordEncoder,JwtHelper helper) {
         this.userRepo = userRepo;
         this.projectRepo = projectRepo;
         this.propertyRepo = propertyRepo;
@@ -47,11 +49,11 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public String checkAndRenewToken(User user) {
+    public String checkAndRenewToken(User user){
         String token = user.getToken();
-        try {
+        try{
             boolean isExpired = this.helper.isTokenExpired(token);
-        } catch (ExpiredJwtException e) {
+        }catch(ExpiredJwtException e){
             String newToken = this.helper.generateToken(user);
             user.setToken(newToken);
             userRepo.save(user);
@@ -61,30 +63,47 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public User addUser(User user) {
+    public User addUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         String token = this.helper.generateToken(user);
         user.setToken(token);
-        User savedUser = userRepo.save(user);
+        User savedUser =  userRepo.save(user);
         return savedUser;
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(){
         List<User> users = userRepo.findAll();
         return users;
     }
 
-    public User getUserById(String id) {
+    public User getCurrentUserRole(Principal principal){
+        User currentUser = (User) this.loadUserByUsername(principal.getName());
+        return  currentUser;
+    }
+
+    public User getUserById(String id){
         User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return user;
     }
 
+    public List<Property> getUserProperties(Principal principal){
+        User currentUser = (User) this.loadUserByUsername(principal.getName());
+        List<Property> propertyList = currentUser.getProperties();
+        return propertyList;
+    }
 
-    public User updateUser(Map<String, String> updates) {
+    public List<Property> getAdminProperties(){
+        User admin = userRepo.findByRole(ROLE_ADMIN);
+        List<Property> propertyList = admin.getProperties();
+        return propertyList;
+    }
+
+
+    public User updateUser(Map<String, String> updates){
         String id = updates.get("id");
-        User user = userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not Found with ID : " + id));
-        updates.forEach((key, value) -> {
-            switch (key) {
+        User user = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not Found with ID : "+id));
+        updates.forEach((key,value) -> {
+            switch (key){
                 case "id":
                     break;
                 case "fullName":
@@ -98,46 +117,46 @@ public class UserService implements UserDetailsService {
                     user.setEmail(value);
                     break;
                 default:
-                    throw new IllegalArgumentException("Invalid field : " + key);
+                    throw new IllegalArgumentException("Invalid field : " +key);
             }
         });
         return userRepo.save(user);
     }
 
-    public User resetPassword(String email, String newPass) {
+    public User resetPassword(String email,String newPass){
         User existingUser = userRepo.findByEmail(email);
         existingUser.setPassword(passwordEncoder.encode(newPass));
         return userRepo.save(existingUser);
     }
 
-    public String deleteUser(String email) {
+    public String deleteUser(String email){
         User existingUser = userRepo.findByEmail(email);
         userRepo.delete(existingUser);
         return "User deleted successfully...";
     }
 
-    public void deleteProject(String id, Principal principal) {
+    public void deleteProject(String id, Principal principal){
         User currentUser = (User) this.loadUserByUsername(principal.getName());
         List<Project> projectList = currentUser.getProjects();
-        Project project = projectRepo.findById(id).orElseThrow(() -> new RuntimeException("Project not found"));
-        if (projectList.contains(project)) {
+        Project project = projectRepo.findById(id).orElseThrow(()-> new RuntimeException("Project not found"));
+        if(projectList.contains(project)) {
             projectList.remove(project);
             currentUser.setProjects(projectList);
             userRepo.save(currentUser);
-        } else {
+        }else{
             throw new RuntimeException("Project does not belong to the current user");
         }
     }
 
-    public void deleteProperty(String id, Principal principal) {
+    public void deleteProperty(String id, Principal principal){
         User currentUser = (User) this.loadUserByUsername(principal.getName());
         List<Property> propertyList = currentUser.getProperties();
-        Property property = propertyRepo.findById(id).orElseThrow(() -> new RuntimeException("Property not found"));
-        if (propertyList.contains(property)) {
+        Property property = propertyRepo.findById(id).orElseThrow(()-> new RuntimeException("Property not found"));
+        if(propertyList.contains(property)) {
             propertyList.remove(property);
             currentUser.setProperties(propertyList);
             userRepo.save(currentUser);
-        } else {
+        }else{
             throw new RuntimeException("Property does not belong to the current user");
         }
     }

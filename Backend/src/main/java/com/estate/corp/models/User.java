@@ -1,13 +1,9 @@
 package com.estate.corp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +17,15 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false, length = 36)
     private String id;
 
-    @Column(name = "token", nullable = false, updatable = true)
+    @Column(name="token",nullable = false,updatable = true)
     private String token;
 
     @NotNull(message = "Full name cannot be null.")
@@ -50,10 +48,10 @@ public class User implements UserDetails {
     @Column(name = "phone", nullable = false, unique = true, length = 15)
     private String phone;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,orphanRemoval = true)
     @Column(nullable = true)
     private List<Property> properties;
 
@@ -68,14 +66,13 @@ public class User implements UserDetails {
     @PrePersist
     private void prePersist() {
         if (this.id == null) {
-            this.id = UUID.randomUUID().toString();  // Generate UUID for ID
+            this.id = UUID.randomUUID().toString();
         }
         if (this.role == null) {
-            this.role = UserRole.ROLE_USER;  // Default role to USER
+            this.role = UserRole.ROLE_USER;
         }
     }
 
-    // Override methods from UserDetails interface
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

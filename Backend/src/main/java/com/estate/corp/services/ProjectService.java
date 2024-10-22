@@ -1,19 +1,21 @@
 package com.estate.corp.services;
 
-import com.estate.corp.models.Address;
-import com.estate.corp.models.Project;
-import com.estate.corp.models.User;
+import com.estate.corp.models.*;
 import com.estate.corp.repositories.AddressRepo;
+import com.estate.corp.repositories.FloorPlanRepo;
 import com.estate.corp.repositories.ProjectRepo;
 import com.estate.corp.repositories.UserRepo;
+import com.estate.corp.specifications.ProjectSpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -24,6 +26,9 @@ public class ProjectService {
 
     @Autowired
     private AddressRepo addressRepo;
+
+    @Autowired
+    private FloorPlanRepo floorPlanRepo;
 
     @Autowired
     private UserRepo userRepo;
@@ -44,14 +49,16 @@ public class ProjectService {
         try {
             Address savedAddress = addressRepo.save(project.getAddress());
             User currentUser = (User) userServ.loadUserByUsername(principal.getName());
+            List<FloorPlan> savedPlans = floorPlanRepo.saveAll(project.getFloorPlans());
             project.setOwner(currentUser);
             project.setCreatedAt(new Date());
             project.setUpdatedAt(new Date());
             project.setAddress(savedAddress);
-            imageServ.saveImageToUrl(sourceUrl, destinationUrl, project.getImageName());
+            project.setFloorPlans(savedPlans);
             Project savedProject= projectRepo.save(project);
             return savedProject;
         } catch (Exception e) {
+            System.out.println("Error occurred during transaction: "+ e);
             throw new RuntimeException("Transaction failed", e);
         }
     }
@@ -66,6 +73,12 @@ public class ProjectService {
 
     public Project getProjectByName(String name){
         return projectRepo.findByName(name);
+    }
+
+    public List<Project> getFilteredProjects(Map<String,Object> filters) {
+        Specification<Project> spec = ProjectSpecification.filterByCriteria(filters);
+        List<Project> filteredProjects =  projectRepo.findAll(spec);
+        return filteredProjects;
     }
 
 }
