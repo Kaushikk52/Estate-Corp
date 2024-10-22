@@ -20,7 +20,7 @@ jobs:
       # ---- Set permissions for Maven Wrapper ----
       - name: Set execute permission for Maven Wrapper
         run: chmod +x ./mvnw
-        working-directory: ./backend          
+        working-directory: Backend          
 
       # ---- Backend Build ----
       - name: Build Backend (Spring Boot)
@@ -42,19 +42,19 @@ jobs:
       - name: Install Dependencies (Frontend)
         run: |
           npm install
-        working-directory: ./frontend-react
+        working-directory: frontend-react
 
       - name: Build Frontend (React)
         run: |
           npm run build -- --mode production
-        working-directory: ./frontend-react
+        working-directory: frontend-react
 
       - name: Deploy Frontend
         run: |
           sudo rm -rf /var/www/estate-corp/frontend-react/dist/*
           sudo cp -r ./frontend-react/build/* /var/www/estate-corp/frontend-react/dist/
           sudo chown -R root:root /var/www/estate-corp/frontend-react/dist
-        working-directory: ./frontend-react
+        working-directory: frontend-react
 
       # ---- Reload Nginx ----
       - name: Reload Nginx
