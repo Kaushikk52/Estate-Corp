@@ -28,6 +28,8 @@ jobs:
           ls -l /
           ls -l /var/www/
 
-      - name: Pull latest changes
-        run: git pull origin master
-        working-directory: /var/www/estate-corp
+      - name: Deploy to VPS
+        run: |
+          cd /var/www/estate-corp
+          git pull origin master
+          sudo ./deploy.sh
