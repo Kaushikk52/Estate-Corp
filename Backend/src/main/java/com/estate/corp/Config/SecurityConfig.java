@@ -2,6 +2,7 @@ package com.estate.corp.Config;
 
 import com.estate.corp.security.JwtAuthenticationEntryPoint;
 import com.estate.corp.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,9 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint point;
     private final JwtAuthenticationFilter filter;
 
+    @Value("${frontendUrl.path}")
+    private String frontendUrl;
+
     public SecurityConfig(JwtAuthenticationEntryPoint point, JwtAuthenticationFilter filter) {
         this.point = point;
         this.filter = filter;
@@ -36,7 +40,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/v1/api/auth/*").permitAll()
+                        .requestMatchers("/v1/api/auth/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/api/users/all").hasRole("ADMIN")
                         .requestMatchers("/v1/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/v1/api/users/**").authenticated()
@@ -69,9 +73,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://estate-corp.netlify.app","https://estatecorp.in")); // Adjust allowed origins as needed
+        configuration.setAllowedOrigins(Arrays.asList(frontendUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // Add allowed headers if needed
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true); // Allow credentials if needed
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
