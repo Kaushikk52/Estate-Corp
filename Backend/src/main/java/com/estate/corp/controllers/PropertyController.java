@@ -23,58 +23,91 @@ public class PropertyController {
     private PropertyServices propertyServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<Property>> getAllProperties() {
+    public ResponseEntity<?> getAllProperties() {
         List<Property> properties = propertyServ.getAllProperties();
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "All properties retrieved");
+        response.put("properties",properties);
         if (properties.isEmpty()) {
             log.warn("Property Repository is Empty");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(properties);
         }
-        log.info("Retrieved all products :{}", properties);
-        return ResponseEntity.status(HttpStatus.OK).body(properties);
+        log.info("Retrieved all properties :{}",properties.size());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/filter")
     public ResponseEntity<?>  filterProperties(
-            @RequestParam(required = false) Integer bedrooms,
+            @RequestParam(required = false) String variant,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) List<Integer> bedrooms,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) List<String> cities,
+            @RequestParam(required = false) String amtUnit,
+            @RequestParam(required = false) List<String> locations,
             @RequestParam(required = false) Double minCarpetArea,
-            @RequestParam(required = false) Double maxCarpetArea) {
+            @RequestParam(required = false) Double maxCarpetArea,
+            @RequestParam(required =false) String areaUnit) {
 
         try{
             Map<String,Object> filters = new HashMap<>();
             // Add only non-null filters
+            if(variant != null) filters.put("variant",variant);
+            if(category != null) filters.put("type",category);
             if (bedrooms != null) filters.put("bedrooms", bedrooms);
-            if (minPrice != null) filters.put("minPrice", minPrice);
+            if (locations != null && !locations.isEmpty()) filters.put("locations", locations);
+            if (minPrice != null){
+                filters.put("minPrice", minPrice);
+                filters.put("amtUnit",amtUnit);
+            }else{
+                filters.remove("amtUnit");
+            }
             if (maxPrice != null) filters.put("maxPrice", maxPrice);
-            if (cities != null && !cities.isEmpty()) filters.put("cities", cities);
-            if (minCarpetArea != null) filters.put("minCarpetArea", minCarpetArea);
+
+            if (minCarpetArea != null) {
+                filters.put("minCarpetArea", minCarpetArea);
+                filters.put("areaUnit",areaUnit);
+            }else{
+                filters.remove("areaUnit");
+            }
             if (maxCarpetArea != null) filters.put("maxCarpetArea", maxCarpetArea);
 
             List<Property> filteredProperties = propertyServ.getFilteredProperties(filters);
-            if (filteredProperties.isEmpty()) {
-                log.warn("Properties does not exists");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(filteredProperties);
-            }else{
-                log.info("Retrieved all properties ");
-                return ResponseEntity.status(HttpStatus.OK).body(filteredProperties);
+            Map<String, Object> response = new HashMap<>();
+
+//             Check for empty results
+            if (filteredProperties.isEmpty() && (locations != null && !locations.isEmpty()) && (bedrooms != null && !bedrooms.isEmpty())) {
+                String location = locations.get(0);
+                int bedroom = bedrooms.get(0);
+                filteredProperties = propertyServ.getApprovedPropertiesByLocationAndBedrooms(true, location, bedroom);
+                log.warn("Retrieved properties by city and bedrooms");
+                response.put("message", "All properties retrieved by city and bedrooms");
+            } else {
+                response.put("message", "All properties retrieved");
             }
-        } catch (IllegalArgumentException e) {
-            log.warn("An Error occurred : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
+            response.put("properties", filteredProperties);
+
+            if (filteredProperties.isEmpty()) {
+                response.put("message", "No properties found");
+                log.warn("No properties found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            } else {
+                log.info("Retrieved all properties");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("An error occurred: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request.");
         }
-
-
     }
 
     @GetMapping(value = "/find")
-    public ResponseEntity<?> getPropertiesByCityAndBedrooms(@RequestParam String city, @RequestParam int bedrooms) {
+    public ResponseEntity<?> getPropertiesByLocationAndBedrooms(@RequestParam String location, @RequestParam int bedrooms) {
         try {
-            List<Property> properties = propertyServ.getPropertiesByCityAndBedrooms(city,bedrooms);
+            List<Property> properties = propertyServ.getPropertiesByLocationAndBedrooms(location,bedrooms);
             if (properties.isEmpty()) {
-                log.warn("Properties in {} does not exists", city);
+                log.warn("Properties in {} does not exists", location);
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(properties);
             }
             log.info("Retrieved all properties by city :{}", properties);
@@ -89,14 +122,36 @@ public class PropertyController {
     @GetMapping(value = "/isApproved")
     public ResponseEntity<?> getPropertiesByApprovalStatus(@RequestParam boolean isApproved) {
         try {
+            Map<String, Object> response = new HashMap<>();
             if (!isApproved) {
                 List<Property> unApprovedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
-                log.info("Retrieved all approved properties :{}", unApprovedProperties);
-                return ResponseEntity.status(HttpStatus.OK).body(unApprovedProperties);
+                if(unApprovedProperties.size() == 0){
+
+                    response.put("message","Not found any unaproved properties");
+                    response.put("properties",unApprovedProperties);
+                    log.info("Not found any unapproved properties");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                }else{
+                    response.put("message","Retrieved all unapproved Properties");
+                    response.put("properties",unApprovedProperties);
+                    log.info("Retrieved all unapproved properties :{}", unApprovedProperties.size());
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
+                }
+
             } else {
                 List<Property> approvedProperties = propertyServ.getPropertiesByApprovalStatus(isApproved);
-                log.info("Retrieved all approved properties :{}", approvedProperties);
-                return ResponseEntity.status(HttpStatus.OK).body(approvedProperties);
+                if(approvedProperties.size() ==0){
+                    response.put("message","Not found any approved properties");
+                    response.put("properties",approvedProperties);
+                    log.info("Not found any approved properties");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                }else{
+                    response.put("message","Retrieved all approved Properties");
+                    response.put("properties",approvedProperties);
+                    log.info("Retrieved all approved properties :{}", approvedProperties.size());
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
+                }
+
             }
         } catch (Exception e) {
             log.warn("An Error occurred : {}", e.getMessage());

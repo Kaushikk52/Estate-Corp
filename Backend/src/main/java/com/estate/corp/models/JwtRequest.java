@@ -1,9 +1,11 @@
 package com.estate.corp.models;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class JwtRequest {
     private String email;

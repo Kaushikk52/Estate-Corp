@@ -1,5 +1,7 @@
 package com.estate.corp.controllers;
 
+import com.estate.corp.models.JwtResponse;
+import com.estate.corp.models.Property;
 import com.estate.corp.models.User;
 import com.estate.corp.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -22,15 +25,82 @@ public class UserController {
     private UserService userServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userServ.getAllUsers();
-        if (users.isEmpty()) {
+    public ResponseEntity<Map<String,Object>> getAllUsers() {
+        List<User> usersData = userServ.getAllUsers();
+        Map<String,Object> response = new HashMap<>();
+        if (usersData.isEmpty()) {
             log.warn("User repository is Empty");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(users);
+            response.put("message","User repository is Empty");
+            response.put("users",usersData);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        log.info("Retrieved all users :{}", users);
-        return ResponseEntity.status(HttpStatus.OK).body(users);
+        List<User> users = usersData.stream()
+                .map(user -> User.builder()
+                        .id(user.getId())
+                        .token(user.getToken())
+                        .fullName(user.getFullName())
+                        .email(user.getEmail())
+                        .phone(user.getPhone())
+                        .role(user.getRole())
+                        .properties(user.getProperties())
+                        .projects(user.getProjects())
+                        .build())
+                .collect(Collectors.toList());
+
+        log.info("Retrieved all users :{}", users.size());
+
+        response.put("message","Retrieved all users");
+        response.put("users",users);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping(value = "/getCurrentUser")
+    public ResponseEntity<?> getCurrentUser(Principal principal){
+        try{
+            User currentUser = userServ.getCurrentUserRole(principal);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Current User details retrieved");
+            response.put("userId",currentUser.getId());
+            response.put("role",currentUser.getRole());
+            log.info("Retrieved current user : {}",currentUser.getId());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+    @GetMapping(value ="/properties")
+    public ResponseEntity<?> getUserProperties(Principal principal){
+        try{
+            List<Property> propertyList = userServ.getUserProperties(principal);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User properties retrieved");
+            response.put("properties",propertyList);
+            log.info("Retrieved user properties");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @GetMapping(value = "/adminProperties")
+    public ResponseEntity<?> getAdminProperties(){
+        try{
+            List<Property> propertyList = userServ.getAdminProperties();
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Admin properties retrieved");
+            response.put("properties",propertyList);
+            log.info("Retrieved user properties");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 
     @GetMapping(value = "/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id) {
@@ -45,16 +115,16 @@ public class UserController {
     }
 
 
-    @PutMapping(value = "/update")
-    public ResponseEntity<?> updateUser(@RequestBody Map<String, String> updates) {
-        try {
+    @PutMapping(value="/update")
+    public ResponseEntity<?> updateUser(@RequestBody Map<String, String> updates){
+        try{
             User updatedUser = userServ.updateUser(updates);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User updated successfully");
             response.put("user", updatedUser);
             log.info("User updated successfully: {}", updatedUser);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (IllegalArgumentException e) {
+        }catch(IllegalArgumentException e){
             Map<String, Object> response = new HashMap<>();
             response.put("message", e.getMessage());
             log.warn("An error occurred: {}", response);
@@ -78,9 +148,9 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/removeProject/{id}")
-    public ResponseEntity<?> deleteProject(@PathVariable String id, Principal principal) {
+    public ResponseEntity<?> deleteProject(@PathVariable String id, Principal principal){
         try {
-            userServ.deleteProject(id, principal);
+            userServ.deleteProject(id,principal);
             log.info("Project deleted successfully: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body("Project deleted successfully");
         } catch (Exception e) {
@@ -90,9 +160,9 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/removeProperty/{id}")
-    public ResponseEntity<?> deleteProperty(@PathVariable String id, Principal principal) {
+    public ResponseEntity<?> deleteProperty(@PathVariable String id,Principal principal){
         try {
-            userServ.deleteProperty(id, principal);
+            userServ.deleteProperty(id,principal);
             log.info("Property deleted successfully: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body("Property deleted successfully");
         } catch (Exception e) {
