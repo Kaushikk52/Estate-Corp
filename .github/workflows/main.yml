@@ -16,7 +16,7 @@ jobs:
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.ssh-kaushik2 }}
+          ssh-private-key: ${{ secrets.ssh-kaushik }}
 
       - name: Add SSH Key
         run: |
