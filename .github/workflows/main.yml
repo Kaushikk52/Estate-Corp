@@ -13,8 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # ---- Run the deploy.sh script ----
-      - name: Run deployment script
+      - name: Run deploy.sh script
         run: |
-          chmod +x deploy.sh  # Ensure the script has execute permissions
-          sudo ./deploy.sh    # Run the deployment script with sudo if required
+          sudo /var/www/estate-corp/deploy.sh
