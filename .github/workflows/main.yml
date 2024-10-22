@@ -29,7 +29,6 @@ jobs:
       # ---- Copy Frontend Files (with sudo) ----
       - name: Deploy Frontend
         run: |
-          sudo rm -rf /var/www/estate-corp/frontend-react/
           sudo cp -r frontend-react/ /var/www/estate-corp/frontend-react/
           sudo chown -R root:root /var/www/estate-corp/frontend-react/
         working-directory: frontend-react
@@ -43,7 +42,6 @@ jobs:
       # ---- Copy Backend JAR (with sudo) ----
       - name: Deploy Backend
         run: |
-          sudo rm -rf /opt/my-app/*
           sudo cp Backend/target/*.jar /opt/my-app/
           sudo chown -R root:root /opt/my-app
 
