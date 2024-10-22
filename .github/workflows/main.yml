@@ -16,10 +16,10 @@ jobs:
         run: |
           sudo systemctl stop my-spring-boot-app
           sudo rm -rf /opt/my-app/*
-          sudo cp -r ./backend/build/* /opt/my-app/
+          sudo cp -r backend/build/* /opt/my-app/
           sudo chown -R root:root /opt/my-app
           sudo systemctl start my-spring-boot-app
-        working-directory: ./backend
+        working-directory: backend
 
       - name: Deploy Frontend
         run: |
