@@ -30,7 +30,5 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          cd
-          cd /home/kaushik/actions-runner/Estate-Corp/Estate-Corp
           git pull origin master
           sudo ./deploy.sh
