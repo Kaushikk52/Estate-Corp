@@ -26,10 +26,11 @@ jobs:
         run: |
           pwd
           ls -l /
-          ls -l /var/www/
+          ls -l /var/www/estate-corp
 
       - name: Deploy to VPS
         run: |
-          cd /home/kaushik/actions-runner/_work/Estate-Corp/Estate-Corp/
+          cd 
+          cd /var/www/estate-corp
           git pull origin master
           sudo ./deploy.sh
