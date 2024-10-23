@@ -40,24 +40,26 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow OPTIONS requests
+                        // Allow OPTIONS requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         // Authentication endpoints
                         .requestMatchers(HttpMethod.POST, "/v1/api/auth/**").permitAll()
 
                         // Users endpoints
-                        .requestMatchers(HttpMethod.GET, "/v1/api/users/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/v1/api/users/all").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/v1/api/users/adminProperties").permitAll()
-                        .requestMatchers("/v1/api/users/**").authenticated() // Applies to all HTTP methods
-                        .requestMatchers(HttpMethod.DELETE, "/v1/api/users/removeProject/*").hasAnyRole("ADMIN", "AGENT")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/api/users/removeProperty/*").hasAnyRole("ADMIN", "AGENT", "RESALER")
+                        .requestMatchers("/v1/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/v1/api/users/removeProject/*").hasAnyAuthority("ADMIN", "AGENT")
+                        .requestMatchers(HttpMethod.DELETE, "/v1/api/users/removeProperty/*").hasAnyAuthority("ADMIN", "AGENT", "RESALER")
 
                         // Projects endpoints
-                        .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN", "AGENT")
+                        .requestMatchers("/v1/api/projects/add").hasAnyAuthority("ADMIN", "AGENT")
                         .requestMatchers(HttpMethod.GET, "/v1/api/projects/all","/v1/api/projects/filter", "/v1/api/projects/id/*", "/v1/api/projects/name/*").permitAll()
 
                         // Properties endpoints
                         .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter", "/v1/api/properties/all", "/v1/api/properties/isApproved", "/v1/api/properties/id/*", "/v1/api/properties/name/*").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/v1/api/properties/approvalStatus/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/v1/api/properties/approvalStatus/*").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/v1/api/properties/post").authenticated()
 
                         //Notifications endpoints
