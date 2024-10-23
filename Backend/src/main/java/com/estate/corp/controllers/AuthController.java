@@ -21,6 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = "https://estatecorp.in")
 @RequestMapping(value = "/v1/api/auth")
 public class AuthController {
     @Autowired
