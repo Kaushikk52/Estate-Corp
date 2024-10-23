@@ -42,11 +42,11 @@ function Home() {
           <img
             src="/carousel.webp"
             alt="Modern furniture"
-            className="w-full h-full object-cover object-center opacity-60"
+            className="w-full h-full object-cover object-center opacity-100"
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.h1 
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-950 text-center leading-tight drop-shadow-lg text-opacity-70"
+              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center leading-tight drop-shadow-lg text-opacity-70"
               variants={containerVariants}
               initial="hidden"
               animate="visible"

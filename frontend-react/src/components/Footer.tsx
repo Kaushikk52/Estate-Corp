@@ -15,7 +15,7 @@ export default function Footer() {
                 </ul>
             </div> 
             <a 
-              href="/contact" 
+              href="/contact-us" 
               className="bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded transition duration-300 ease-in-out"
             >
               Go to Contact Page
