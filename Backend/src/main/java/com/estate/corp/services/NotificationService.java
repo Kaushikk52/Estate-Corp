@@ -31,17 +31,55 @@ public class NotificationService {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setFrom("kaushikkarnik635@gmail.com");
                 message.setTo(userEmail);
-                if(notification.getSubject() == Notification.Subject.PROJECT_ENQUIRY){
-                    message.setSubject("Enquiry for Project");
-                    message.setText("Your enquiry for Project : "+notification.getProjectName()+" has been successfully received");
-                }else if(notification.getSubject() == Notification.Subject.PROPERTY_ENQUIRY){
-                    message.setSubject("Enquiry for Property");
-                    message.setText("Your enquiry for Property : "+notification.getPropertyName()+" has been successfully received");
-                }else if(notification.getSubject() == Notification.Subject.CASUAL_ENQUIRY){
-                    message.setSubject("Contact Enquiry");
-                    message.setText("Your enquiry has been successfully received");
-                }
 
+                switch (notification.getSubject()) {
+                    case PROJECT_ENQUIRY:
+                        message.setSubject("Enquiry for Project");
+                        message.setText("Your enquiry for Project : " + notification.getProjectName() + " has been successfully received");
+                        break;
+                    case PROPERTY_ENQUIRY:
+                        message.setSubject("Enquiry for Property");
+                        message.setText("Your enquiry for Property : " + notification.getPropertyName() + " has been successfully received");
+                        break;
+                    case CASUAL_ENQUIRY:
+                        message.setSubject("Contact Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case HOME_LOAN:
+                        message.setSubject("Home Loan Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case PACKING_MOVING:
+                        message.setSubject("Packing & Moving Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case INTERIOR_DESIGN:
+                        message.setSubject("Interior Design Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case LEGAL_ASSIST:
+                        message.setSubject("Legal Assistance Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case ACQUISITION:
+                        message.setSubject("Land Acquisition Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case REDEVELOPMENT:
+                        message.setSubject("Redevelopment Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case JV:
+                        message.setSubject("Joint Venture Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    case FUNDING:
+                        message.setSubject("Builder Funding Enquiry");
+                        message.setText("Your enquiry has been successfully received");
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown subject type: " + notification.getSubject());
+                }
                 emailSender.send(message);
             }
             notification.setSentDate(new Date());

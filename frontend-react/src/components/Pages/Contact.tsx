@@ -1,36 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  MessageCircle,
-  MapPin,
-  Phone,
-  Mail,
-  CheckCircle,
-} from "lucide-react";
+import { MessageCircle, MapPin, Phone, Mail, CheckCircle } from "lucide-react";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
-
-const initialValues = {
-  name: "",
-  phone: "",
-  email: "",
-  content: "",
-  terms: false,
-};
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  phone: Yup.string().required("Phone is required"),
-  content: Yup.string().required("Message is required"),
-  terms: Yup.boolean().oneOf([true], "You must accept the terms"),
-});
+import { useLocation } from "react-router-dom";
 
 export default function ContactPage() {
+  const useQuery = () => {
+    return new URLSearchParams(useLocation().search);
+  };
+
+  const query = useQuery();
+  const subject = query.get("subject") || "";
+
+  const initialValues = {
+    name: "",
+    phone: "",
+    email: "",
+    subject:subject,
+    content: "",
+    terms: false,
+  };
+  
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    phone: Yup.string().required("Phone is required"),
+    subject:Yup.string(),
+    content: Yup.string().required("Message is required"),
+    terms: Yup.boolean().oneOf([true], "You must accept the terms"),
+  });
+
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const [currentUser, setCurrentUser] = useState<any>();
+
+  const ENQUIRY_OPTIONS = [
+    { value: "HOME_LOAN", label: "Home Loan" },
+    { value: "PACKING_MOVING", label: "Packing & Moving" },
+    { value: "INTERIOR_DESIGN", label: "Interior Design" },
+    { value: "LEGAL_ASSIST", label: "Legal Assistance" },
+    { value: "ACQUISTION", label: "Land Acquisition" },
+    { value: "REDEVELOPMENT", label: "Redevelopment" },
+    { value: "JV", label: "Joint Venture" },
+    { value: "FUNDING", label: "Builder Funding" },
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,6 +76,10 @@ export default function ContactPage() {
       },
     },
   };
+
+  useEffect(()=>{
+    getCurrentUser();
+  },[])
 
   const getCurrentUser = async () => {
     try {
@@ -95,8 +114,14 @@ export default function ContactPage() {
     try {
       const body = {
         userId: currentUser?.userId,
-        enquiry: values,
-        subject: "CASUAL_ENQUIRY",
+        subject: values.subject || "CASUAL_ENQUIRY",
+        enquiry: {
+          content:values.content,
+          email:values.email,
+          name:values.name,
+          phone:values.phone,
+          term:values.term,
+        },
       };
 
       const response = await axios.post(
@@ -155,21 +180,21 @@ export default function ContactPage() {
               title: "Mail us",
               description: "Speak to our friendly team.",
               linkText: "estatecorpbw@gmail.com",
-              link:"mailto:estatecorpbw@gmail.com"
+              link: "mailto:estatecorpbw@gmail.com",
             },
             {
               icon: MapPin,
               title: "Visit us",
               description: "Visit our office HQ.",
               linkText: "View on Google Maps",
-              link:"https://maps.app.goo.gl/rAuSTvW36SmdVS9r9"
+              link: "https://maps.app.goo.gl/rAuSTvW36SmdVS9r9",
             },
             {
               icon: Phone,
               title: "Call us",
               description: "Mon-Fri from 8am to 5pm.",
               linkText: "7700994313",
-              link:"tel:+917700994313"
+              link: "tel:+917700994313",
             },
           ].map((item, index) => (
             <motion.div
@@ -185,7 +210,10 @@ export default function ContactPage() {
                 </h3>
                 <p className="text-gray-600 mb-6">{item.description}</p>
               </div>
-              <a href={item.link} className="text-blue-600 hover:underline font-medium">
+              <a
+                href={item.link}
+                className="text-blue-600 hover:underline font-medium"
+              >
                 {item.linkText}
               </a>
             </motion.div>
@@ -220,7 +248,9 @@ export default function ContactPage() {
                 >
                   {({ isSubmitting }) => (
                     <Form className="space-y-4">
-                      <h2 className="font-bold text-xl mb-4">Contact over email</h2>
+                      <h2 className="font-bold text-xl mb-4">
+                        Contact over email
+                      </h2>
                       <div>
                         <Field
                           name="name"
@@ -262,6 +292,27 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <Field
+                          as="select"
+                          id="subject"
+                          name="subject"
+                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
+                        >
+                          <option value="">Select Subject</option>
+                          {ENQUIRY_OPTIONS.map((option) => (
+                            <option key={option.label} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="subject"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
+
+                      <div>
+                        <Field
                           name="content"
                           as="textarea"
                           rows="4"
@@ -281,7 +332,10 @@ export default function ContactPage() {
                           id="terms"
                           className="rounded text-orange-500"
                         />
-                        <label htmlFor="terms" className="text-sm text-gray-600">
+                        <label
+                          htmlFor="terms"
+                          className="text-sm text-gray-600"
+                        >
                           By submitting this form I agree to Terms of Use
                         </label>
                       </div>
@@ -305,15 +359,21 @@ export default function ContactPage() {
               </div>
               <motion.div className="space-y-10" variants={containerVariants}>
                 <motion.div variants={itemVariants}>
-                  <h3 className="text-2xl font-semibold mb-6 text-gray-900">With our services you can</h3>
+                  <h3 className="text-2xl font-semibold mb-6 text-gray-900">
+                    With our services you can
+                  </h3>
                   <ul className="space-y-4">
                     {[
-                      'Improve usability of your product',
-                      'Engage users at a higher level and outperform your competition',
-                      'Reduce the onboarding time and improve sales',
-                      'Balance user needs with your business goal'
+                      "Improve usability of your product",
+                      "Engage users at a higher level and outperform your competition",
+                      "Reduce the onboarding time and improve sales",
+                      "Balance user needs with your business goal",
                     ].map((item, index) => (
-                      <motion.li key={index} className="flex items-start" variants={itemVariants}>
+                      <motion.li
+                        key={index}
+                        className="flex items-start"
+                        variants={itemVariants}
+                      >
                         <CheckCircle className="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-1" />
                         <span className="text-gray-700">{item}</span>
                       </motion.li>
@@ -321,7 +381,9 @@ export default function ContactPage() {
                   </ul>
                 </motion.div>
                 <motion.div variants={itemVariants}>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900 text">Address</h3>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900 text">
+                    Address
+                  </h3>
                   <p className="text-gray-600 whitespace-pre-line">
                     {`A-2, Solitaire Height,\n
                     Next to Dwarka Hotel, Shimpoli,\n
