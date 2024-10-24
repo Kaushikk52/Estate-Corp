@@ -91,7 +91,6 @@ export default function AuthPopup(props: any) {
   async function handleLogin(values: any) {
     try {
       const response = await axios.post(`${baseURL}/v1/api/auth/login`,values);
-      console.log("login response : " , response)
       if (response.status === 200) {
         const token = localStorage.getItem("token");
         if (!token || token !== response.data.jwtToken) {
