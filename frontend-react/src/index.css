@@ -64,6 +64,12 @@
   text-overflow: ellipsis;
 }
 
+
+.c-container:hover .c-head{
+  transition-duration: 300ms ;
+  color: #fff;
+}
+
 /* For extra small screens (mobile) */
 @media (max-width: 640px) {
   .carousel-card {
