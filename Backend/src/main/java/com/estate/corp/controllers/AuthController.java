@@ -69,6 +69,7 @@ public class AuthController {
     @PostMapping(value = "/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request){
         try{
+            System.out.println("Login request received in controller : "+request);
             this.doAuthenticate(request.getEmail(), request.getPassword());
             User userDetails = (User)userDetailsService.loadUserByUsername(request.getEmail());
             String token = userService.checkAndRenewToken(userDetails);
