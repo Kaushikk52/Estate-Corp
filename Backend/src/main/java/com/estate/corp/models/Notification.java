@@ -18,7 +18,7 @@ public class Notification {
     @Id
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String userId;
 
     private String propertyId;

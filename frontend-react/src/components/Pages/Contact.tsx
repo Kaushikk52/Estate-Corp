@@ -77,10 +77,6 @@ export default function ContactPage() {
     },
   };
 
-  useEffect(()=>{
-    getCurrentUser();
-  },[])
-
   const getCurrentUser = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -106,6 +102,10 @@ export default function ContactPage() {
       });
     }
   };
+
+  useEffect(()=>{
+    getCurrentUser();
+  },[]);
 
   const handleSubmit = async (
     values: any,
