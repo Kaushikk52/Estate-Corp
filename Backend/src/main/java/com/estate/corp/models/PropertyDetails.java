@@ -24,7 +24,9 @@ public class PropertyDetails {
 
     private String location;
 
+    @Column(name = "amenities", length = 500)
     private List<String> ammenities;
+
     private String facing;
 
     private Double carpetArea;

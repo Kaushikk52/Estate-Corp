@@ -21,7 +21,7 @@ public class FloorPlan {
     @Enumerated(EnumType.STRING)
     private PropertyType type;
 
-    private int bedrooms;
+    private double bedrooms;
     private int bathrooms;
     private int balconies;
     private double rent;

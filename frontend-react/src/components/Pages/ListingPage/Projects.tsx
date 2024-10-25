@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { Bed, Building, Calendar, Home, MapPin } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import Project from "../../../Models/Project"
 
 
@@ -11,16 +11,11 @@ export default function Projects(props:any) {
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || "LOCAL"
   const projectsPath = `${uploadPreset}/${environment}/Projects`
-  const navigate = useNavigate()
   const [projects, setProjects] = useState<Project[]>([])
 
   useEffect(() => {
     setProjects(props.projects)
   }, [props.projects])
-
-  const handleProjectClick = (propertyId: string) => {
-    navigate(`/project/${propertyId}`)
-  }
 
   return (
     <motion.div
@@ -31,14 +26,14 @@ export default function Projects(props:any) {
     >
       <AnimatePresence>
         {projects.map((project, index) => (
+          <Link to={`/project/${project.id}`} target="_blank">
           <motion.div
             key={project.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-            onClick={() => handleProjectClick(project.id)}
+            className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"          
           >
             <div className="flex flex-col md:flex-row">
               <div className="w-full sm:w-2/5 relative">
@@ -105,6 +100,7 @@ export default function Projects(props:any) {
               </div>
             </div>
           </motion.div>
+          </Link>
         ))}
       </AnimatePresence>
     </motion.div>

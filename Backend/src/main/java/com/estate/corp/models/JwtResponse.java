@@ -10,4 +10,5 @@ import lombok.*;
 public class JwtResponse {
     private String jwtToken;
     private String name;
+    private String role;
 }

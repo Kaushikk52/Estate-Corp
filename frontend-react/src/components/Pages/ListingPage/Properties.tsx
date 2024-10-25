@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Bath, Bed, Home, MapPin, Scaling } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Property from "../../../Models/Property";
 
 export default function Properties(props: any) {
@@ -10,17 +10,11 @@ export default function Properties(props: any) {
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
-  const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     setProperties(props.properties);
   }, [props.properties]);
-
-  const handlePropertyClick = (propertyId: string) => {
-    navigate(`/property/${propertyId}`);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -30,6 +24,7 @@ export default function Properties(props: any) {
     >
       <AnimatePresence>
         {properties.map((property, index) => (
+          <Link to={`/property/${property.id}`} target="_blank">
           <motion.div
             key={property.id}
             initial={{ opacity: 0, y: 20 }}
@@ -37,7 +32,6 @@ export default function Properties(props: any) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-            onClick={() => handlePropertyClick(property.id)}
           >
             <div className="flex flex-col md:flex-row">
               <div className="w-full sm:w-2/5 relative">
@@ -136,6 +130,7 @@ export default function Properties(props: any) {
               </div>
             </div>
           </motion.div>
+          </Link>
         ))}
       </AnimatePresence>
     </motion.div>

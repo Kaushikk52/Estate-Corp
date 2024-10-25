@@ -27,7 +27,7 @@ public class Property {
 
     private String mahareraNo;
 
-    @Column(name = "images")
+    @Column(name = "images",length = 500)
     private String[] images;
 
     @Enumerated(EnumType.STRING)
