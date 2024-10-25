@@ -73,7 +73,9 @@ public class AuthController {
             String token = userService.checkAndRenewToken(userDetails);
             JwtResponse response = JwtResponse.builder()
                     .jwtToken(token)
-                    .name(userDetails.getUsername()).build();
+                    .name(userDetails.getUsername())
+                    .role(String.valueOf(userDetails.getRole()))
+                    .build();
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch(Exception e){
             throw new RuntimeException(e.getMessage());
