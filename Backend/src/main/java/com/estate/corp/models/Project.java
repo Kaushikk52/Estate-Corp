@@ -41,7 +41,7 @@ public class Project {
     @Column(nullable = true)
     private List<FloorPlan> floorPlans;
 
-    @Column(name = "images")
+    @Column(name = "images", length = 500)
     private String[] images;
 
     private String location;
@@ -60,6 +60,7 @@ public class Project {
 
     private String underConstruction;
 
+    @Column(name = "amenities", length = 500)
     private List<String> ammenities;
 
     @PastOrPresent(message = "Creation date must be in the past or present")

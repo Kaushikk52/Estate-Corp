@@ -18,7 +18,7 @@ public class Notification {
     @Id
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String userId;
 
     private String propertyId;
@@ -46,6 +46,9 @@ public class Notification {
     }
 
     public enum Subject{
-        PROJECT_ENQUIRY,PROPERTY_ENQUIRY,CASUAL_ENQUIRY,OTHER
+        PROJECT_ENQUIRY,PROPERTY_ENQUIRY,CASUAL_ENQUIRY,
+        HOME_LOAN,PACKING_MOVING,INTERIOR_DESIGN,LEGAL_ASSIST,
+        ACQUISITION,REDEVELOPMENT,JV,FUNDING,
+        OTHER
     }
 }

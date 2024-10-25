@@ -1,6 +1,5 @@
 package com.estate.corp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +27,7 @@ public class Property {
 
     private String mahareraNo;
 
-    @Column(name = "images")
+    @Column(name = "images",length = 500)
     private String[] images;
 
     @Enumerated(EnumType.STRING)
