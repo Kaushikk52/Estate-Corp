@@ -14,7 +14,7 @@ import {
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import PropertyFilter from "../PropertyFilter";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, A11y } from "swiper/modules";
@@ -90,10 +90,6 @@ export default function PropertyCardsCarousel() {
     }
   };
 
-  const handleProjectClick = (projectId: string) => {
-    navigate(`/project/${projectId}`);
-  };
-
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
     setError(null);
@@ -124,10 +120,6 @@ export default function PropertyCardsCarousel() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePropertyClick = (propertyId: string) => {
-    navigate(`/property/${propertyId}`);
   };
 
   const handleFilterChange = (filters: FilterState) => {
@@ -261,14 +253,15 @@ export default function PropertyCardsCarousel() {
                           {property.details.bathrooms}
                         </span>
                       </div>
+                      <Link to={`/property/${property.id}`} target="_blank">
                       <motion.button
                         className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-md transition-colors duration-300"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handlePropertyClick(property.id)}
-                      >
+                        >
                         View Property
                       </motion.button>
+                      </Link>
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -363,14 +356,15 @@ export default function PropertyCardsCarousel() {
                           <span>Description : {project.description}</span>
                         </div>
                       </div>
+                      <Link to={`/project/${project?.id}`} target="_blank">
                       <motion.button
                         className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold rounded-md transition-colors duration-300 shadow-md"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleProjectClick(project.id)}
-                      >
+                        >
                         View Project
-                      </motion.button>
+                      </motion.button>                      
+                      </Link>
                     </div>
                   </motion.div>
                 </AnimatePresence>

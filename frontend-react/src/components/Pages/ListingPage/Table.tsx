@@ -31,9 +31,14 @@ export default function Table(props: any) {
       setProperties([]);
       setProjects([]);
       fetchProperties();
+    } else if (props.pageType === "projects") {
+      setProperties([]);
+      setProjects([]);
+      fetchProjects();
     } else {
       setProperties([]);
       setProjects([]);
+      fetchProperties();
       fetchProjects();
     }
   }, [props.pageCategory, props.pageType]);
@@ -138,6 +143,11 @@ export default function Table(props: any) {
     }
   };
 
+  const handleAllFilter = (filters: FilterState) => {
+    fetchProperties(filters);
+    fetchProjects(filters);
+  };
+
   const handleProjectFilter = (filters: FilterState) => {
     fetchProjects(filters);
   };
@@ -148,7 +158,9 @@ export default function Table(props: any) {
         <h1 className="text-3xl md:text-4xl font-bold mb-8 text-blue-800 capitalize">
           Find Your Dream {props.pageType}
         </h1>
-        {props.pageType === "properties" ? (
+        {props.pageType === "all" ? (
+          <PropertyFilter onFilterChange={handleAllFilter} />
+        ) : props.pageType === "properties" ? (
           <PropertyFilter onFilterChange={handlePropertyFilter} />
         ) : (
           <ProjectFilter onFilterChange={handleProjectFilter} />
@@ -159,7 +171,12 @@ export default function Table(props: any) {
             <p className="mt-2 text-blue-600">Loading {props.pageType}...</p>
           </div>
         )}
-        {props.pageType === "properties" ? (
+        {props.pageType === "all" ? (
+          <>
+            <Properties properties={properties} />
+            <Projects projects={projects} />
+          </>
+        ) : props.pageType === "properties" ? (
           <Properties properties={properties} />
         ) : (
           <Projects projects={projects} />

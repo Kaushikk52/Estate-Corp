@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon, FilterIcon, Scaling, RefreshCw } from 'lucide-react'
+import { Link } from 'react-router-dom';
 
 interface FilterProps {
   onFilterChange: (filters: FilterState) => void;
@@ -35,7 +36,6 @@ export default function PropertyFilter({ onFilterChange }: FilterProps) {
   const [maxCarpetArea, setMaxCarpetArea] = useState('')
   const [areaUnit, setAreaUnit] = useState('sqft')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-
   const bedroomOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   const priceOptions = ['1', '5', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100']
   const carpetAreaOptions = ['500', '1000', '1500', '2000', '2500', '3000', '3500', '4000', '4500', '5000', '5500', '6000', '7000', '8000', '9000', '10000']
@@ -370,13 +370,15 @@ export default function PropertyFilter({ onFilterChange }: FilterProps) {
               </div>
             </div>
             <div className="hidden md:flex space-x-2">
+              <Link to={`listings/all/all`} target='_blank'>
               <button 
                 onClick={applyFilters}
                 className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
-              >
+                >
                 <SearchIcon className="h-5 w-5 mr-2" />
                 Search
               </button>
+              </Link>
               <button 
                 onClick={clearFilters}
                 className="bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors duration-200 flex items-center justify-center"

@@ -22,7 +22,7 @@ export default function Properties(props: any) {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="space-y-8 mt-5"
     >
-      <AnimatePresence>
+      <AnimatePresence >
         {properties.map((property, index) => (
           <Link to={`/property/${property.id}`} target="_blank">
           <motion.div
@@ -31,9 +31,9 @@ export default function Properties(props: any) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+            className="bg-white bg-opacity-90 mt-5 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
           >
-            <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col md:flex-row ">
               <div className="w-full sm:w-2/5 relative">
                 <img
                   src={
