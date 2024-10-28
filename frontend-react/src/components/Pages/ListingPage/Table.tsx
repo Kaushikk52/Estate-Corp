@@ -8,6 +8,8 @@ import Property from "../../../Models/Property";
 import Projects from "./Projects";
 import Properties from "./Properties";
 import Project from "../../../Models/Project";
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilteredProjects,setFilteredProperties } from "@/features/Filters/filterSlice";
 
 interface FilterState {
   locations: string[];
@@ -22,6 +24,8 @@ interface FilterState {
 
 export default function Table(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const dispatch = useDispatch();
+  const {filteredProjects,filteredProperties,allProperties,allProjects} = useSelector((state:any) => state.filters);
   const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
@@ -30,16 +34,28 @@ export default function Table(props: any) {
     if (props.pageType === "properties") {
       setProperties([]);
       setProjects([]);
-      fetchProperties();
+      setProperties(filteredProperties);
+      // fetchProperties();
     } else if (props.pageType === "projects") {
       setProperties([]);
       setProjects([]);
-      fetchProjects();
+      setProjects(filteredProjects);
+      // fetchProjects();
     } else {
       setProperties([]);
       setProjects([]);
-      fetchProperties();
-      fetchProjects();
+      // fetchProperties();
+      // fetchProjects();
+      if(filteredProjects.length > 0 || filteredProperties.length > 0){
+        setProjects(filteredProjects);
+        setProperties(filteredProperties);
+      }else{
+        setProjects(allProjects);
+        setProperties(allProperties);
+        
+        // fetchProjects();
+        // fetchProperties();
+      }
     }
   }, [props.pageCategory, props.pageType]);
 
@@ -84,6 +100,7 @@ export default function Table(props: any) {
       }
       const response = await axios.get(url);
       setProperties(response.data.properties);
+      dispatch(setFilteredProperties(response.data.properties));
     } catch (err) {
       console.error("An error occurred: ", err);
       toast.error(`Failed to fetch properties`, {
@@ -132,6 +149,7 @@ export default function Table(props: any) {
       }
       const response = await axios.get(url);
       setProjects(response.data.projects);
+      dispatch(setFilteredProjects(response.data.projects));
     } catch (err) {
       console.error("An error occurred: ", err);
       toast.error(`Failed to fetch properties`, {

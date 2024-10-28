@@ -20,11 +20,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, A11y } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import Property from "../../Models/Property";
+import { setFilteredProjects,setFilteredProperties,setAllProperties,setAllProjects } from "@/features/Filters/filterSlice";
 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import Project from "../../Models/Project";
+import { useDispatch, useSelector } from "react-redux";
 
 interface FilterState {
   locations: string[];
@@ -38,6 +40,8 @@ interface FilterState {
 }
 
 export default function PropertyCardsCarousel() {
+  const dispatch = useDispatch();
+  const {filteredProjects,filteredProperties,allProjects,allProperties,filters} = useSelector((state:any) => state.filters);
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
@@ -53,9 +57,18 @@ export default function PropertyCardsCarousel() {
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
   useEffect(() => {
-    fetchProperties();
-    fetchProjects();
-  }, []);
+    if(allProjects.length === 0 || allProperties.length === 0){
+      fetchProjects();
+      fetchProperties();
+    }
+    if(filteredProjects.length === 0 || filteredProperties.length === 0 ){
+      setProjects(allProjects);
+      setProperties(allProperties);
+    }else{
+      setProjects(filteredProjects);
+      setProperties(filteredProperties);
+    }
+  }, [filteredProjects,filteredProperties]);
 
   const fetchProjects = async (filters?: FilterState) => {
     setLoading(true);
@@ -79,6 +92,7 @@ export default function PropertyCardsCarousel() {
       }
       const response = await axios.get(url);
       setProjects(response.data.projects);
+      dispatch(setAllProjects(response.data.projects));
     } catch (err) {
       console.error("An error occurred: ", err);
       toast.error(`Failed to fetch properties`, {
@@ -113,6 +127,7 @@ export default function PropertyCardsCarousel() {
       }
       const response = await axios.get(url);
       setProperties(response.data.properties);
+      dispatch(setAllProperties(response.data.properties));
     } catch (err) {
       console.error("An error occurred: ", err);
       setError("Failed to fetch properties. Please try again.");
