@@ -23,41 +23,33 @@ interface FilterState {
 }
 
 export default function Table(props: any) {
-  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const dispatch = useDispatch();
-  const {filteredProjects,filteredProperties,allProperties,allProjects} = useSelector((state:any) => state.filters);
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const {filteredProjects,filteredProperties,allProperties,allProjects,filters} = useSelector((state:any) => state.filters);
   const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (props.pageType === "properties") {
-      setProperties([]);
-      setProjects([]);
-      setProperties(filteredProperties);
-      // fetchProperties();
+      setProperties(allProperties);
     } else if (props.pageType === "projects") {
-      setProperties([]);
-      setProjects([]);
-      setProjects(filteredProjects);
-      // fetchProjects();
+      setProjects(allProjects);
     } else {
-      setProperties([]);
-      setProjects([]);
-      // fetchProperties();
-      // fetchProjects();
       if(filteredProjects.length > 0 || filteredProperties.length > 0){
         setProjects(filteredProjects);
         setProperties(filteredProperties);
       }else{
         setProjects(allProjects);
         setProperties(allProperties);
-        
-        // fetchProjects();
-        // fetchProperties();
       }
     }
-  }, [props.pageCategory, props.pageType]);
+  }, [props.pageCategory, props.pageType,filters]);
+
+  useEffect(()=>{
+    setProjects(allProjects);
+    setProperties(allProperties);
+  },[filters])
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);

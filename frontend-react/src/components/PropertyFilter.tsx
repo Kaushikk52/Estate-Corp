@@ -129,7 +129,7 @@ export default function Component({ onFilterChange }: FilterProps) {
 
   const handleAddLocation = (location: string) => {
     if (!locations.includes(location)) {
-      setLocations([...locations, ...filters.locations, location]);
+      setLocations([...locations, location]);
     }
   };
 

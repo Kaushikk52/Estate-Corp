@@ -68,7 +68,11 @@ export default function PropertyCardsCarousel() {
       setProjects(filteredProjects);
       setProperties(filteredProperties);
     }
-  }, [filteredProjects,filteredProperties]);
+  }, []);
+
+  useEffect(()=>{
+    handleFilterChange(filters);
+  },[filters])
 
   const fetchProjects = async (filters?: FilterState) => {
     setLoading(true);
