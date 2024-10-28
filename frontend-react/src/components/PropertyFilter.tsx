@@ -21,6 +21,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFilters, setFilters } from "@/features/Filters/filterSlice";
+import { Input } from "./ui/input";
 
 interface FilterProps {
   onFilterChange: (filters: FilterState) => void;
@@ -44,6 +45,7 @@ interface LocationGroup {
 
 export default function Component({ onFilterChange }: FilterProps) {
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState("");
   const filters = useSelector((state: any) => state.filters.filters);
   const [locations, setLocations] = useState<string[]>([]);
   const [bedrooms, setBedrooms] = useState<number[]>([]);
@@ -116,6 +118,8 @@ export default function Component({ onFilterChange }: FilterProps) {
     },
   ];
 
+  const [filteredGroups, setFilteredGroups] = useState<LocationGroup[]>([]);
+
   useEffect(() => {
     setLocations(filters.locations);
     setBedrooms(filters.bedrooms);
@@ -126,6 +130,18 @@ export default function Component({ onFilterChange }: FilterProps) {
     setMinCarpetArea(filters.minCarpetArea);
     setAreaUnit(filters.areaUnit);
   }, [filters]);
+
+  useEffect(() => {
+    const filtered = locationGroups
+      .map((group) => ({
+        ...group,
+        options: group.options.filter((option) =>
+          option.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+      }))
+      .filter((group) => group.options.length > 0);
+    setFilteredGroups(filtered);
+  }, [searchTerm]);
 
   const handleAddLocation = (location: string) => {
     if (!locations.includes(location)) {
@@ -215,8 +231,8 @@ export default function Component({ onFilterChange }: FilterProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant="ghost"
-                  className="border-blue-500 text-gray-600 hover:bg-blue-100 w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0"
+                  variant="outline"
+                  className="border-blue-500 text-gray-500 hover:bg-blue-100 w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0"
                 >
                   <MapPin className="h-5 w-5 mr-2" />
                   {locations.length > 0
@@ -224,10 +240,17 @@ export default function Component({ onFilterChange }: FilterProps) {
                     : "Location"}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 max-h-[300px] overflow-y-auto">
-                <DropdownMenuLabel>Select location</DropdownMenuLabel>
+              <DropdownMenuContent className="w-64 max-h-[400px] overflow-y-auto">
+                <div className="p-2">
+                  <Input
+                    placeholder="Search locations..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mb-2"
+                  />
+                </div>
                 <DropdownMenuSeparator />
-                {locationGroups.map((group) => (
+                {filteredGroups.map((group) => (
                   <React.Fragment key={group.label}>
                     <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                     {group.options.map((option) => (
@@ -255,6 +278,11 @@ export default function Component({ onFilterChange }: FilterProps) {
                     ))}
                   </React.Fragment>
                 ))}
+                {filteredGroups.length === 0 && (
+                  <DropdownMenuItem disabled>
+                    No locations found
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
