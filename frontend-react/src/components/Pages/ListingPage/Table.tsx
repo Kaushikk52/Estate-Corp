@@ -47,9 +47,11 @@ export default function Table(props: any) {
   }, [props.pageCategory, props.pageType,filters]);
 
   useEffect(()=>{
-    setProjects(allProjects);
-    setProperties(allProperties);
-  },[filters])
+    if(allProjects.length === 0 || allProperties.length === 0){
+      fetchProjects();
+      fetchProperties();
+    }
+  },[])
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
