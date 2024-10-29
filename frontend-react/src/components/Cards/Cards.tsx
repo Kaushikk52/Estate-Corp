@@ -53,7 +53,6 @@ export default function PropertyCardsCarousel() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
   useEffect(() => {
@@ -99,7 +98,7 @@ export default function PropertyCardsCarousel() {
       dispatch(setAllProjects(response.data.projects));
     } catch (err) {
       console.error("An error occurred: ", err);
-      toast.error(`Failed to fetch properties`, {
+      toast.error(`Failed to fetch projects`, {
         position: "bottom-right",
         duration: 3000,
       });
@@ -110,7 +109,6 @@ export default function PropertyCardsCarousel() {
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
-    setError(null);
     try {
       let url = `${baseURL}/v1/api/properties/filter?`;
       if (filters) {
@@ -134,8 +132,10 @@ export default function PropertyCardsCarousel() {
       dispatch(setAllProperties(response.data.properties));
     } catch (err) {
       console.error("An error occurred: ", err);
-      setError("Failed to fetch properties. Please try again.");
-      toast.error("Failed to fetch properties");
+      toast.error(`Failed to fetch properties`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
     } finally {
       setLoading(false);
     }

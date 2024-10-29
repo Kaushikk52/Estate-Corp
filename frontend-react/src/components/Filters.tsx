@@ -123,14 +123,14 @@ export default function Filters({ onFilterChange }: FilterProps) {
   const [filteredGroups, setFilteredGroups] = useState<LocationGroup[]>([]);
 
   useEffect(() => {
-      setLocations(filters.locations);
-      setBedrooms(filters.bedrooms);
-      setMinPrice(filters.minPrice);
-      setMaxPrice(filters.maxPrice);
-      setAmtUnit(filters.amtUnit);
-      setMaxCarpetArea(filters.maxCarpetArea);
-      setMinCarpetArea(filters.minCarpetArea);
-      setAreaUnit(filters.areaUnit);
+    setLocations(filters.locations);
+    setBedrooms(filters.bedrooms);
+    setMinPrice(filters.minPrice);
+    setMaxPrice(filters.maxPrice);
+    setAmtUnit(filters.amtUnit);
+    setMaxCarpetArea(filters.maxCarpetArea);
+    setMinCarpetArea(filters.minCarpetArea);
+    setAreaUnit(filters.areaUnit);
   }, [filters]);
 
   useEffect(() => {
@@ -213,9 +213,17 @@ export default function Filters({ onFilterChange }: FilterProps) {
               {isFilterOpen ? "Hide Filters" : "Show Filters"}
             </Button>
 
-            <Button onClick={applyFilters} className="w-1/7 bg-blue-500">
-              <Search className="h-5 w-5" />
-            </Button>
+            {location.pathname === "/" ? (
+              <Link to={"/listings/all/all"}>
+                <Button onClick={applyFilters} className="w-1/7 bg-blue-500">
+                  <Search className="h-5 w-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Button onClick={applyFilters} className="w-1/7 bg-blue-500">
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
 
             <Button
               variant="ghost"
