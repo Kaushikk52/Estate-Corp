@@ -13,18 +13,20 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import PropertyFilter from "../PropertyFilter";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, A11y } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import Property from "../../Models/Property";
+import { setFilteredProjects,setFilteredProperties,setAllProperties,setAllProjects } from "@/features/Filters/filterSlice";
 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import Project from "../../Models/Project";
+import { useDispatch, useSelector } from "react-redux";
+import Filters from "../Filters";
 
 interface FilterState {
   locations: string[];
@@ -38,6 +40,8 @@ interface FilterState {
 }
 
 export default function PropertyCardsCarousel() {
+  const dispatch = useDispatch();
+  const {filteredProjects,filteredProperties,allProjects,allProperties,filters} = useSelector((state:any) => state.filters);
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
@@ -53,9 +57,22 @@ export default function PropertyCardsCarousel() {
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
   useEffect(() => {
-    fetchProperties();
-    fetchProjects();
+    if(allProjects.length === 0 || allProperties.length === 0){
+      fetchProjects();
+      fetchProperties();
+    }
+    if(filteredProjects.length === 0 || filteredProperties.length === 0 ){
+      setProjects(allProjects);
+      setProperties(allProperties);
+    }else{
+      setProjects(filteredProjects);
+      setProperties(filteredProperties);
+    }
   }, []);
+
+  useEffect(()=>{
+    handleFilterChange(filters);
+  },[filters])
 
   const fetchProjects = async (filters?: FilterState) => {
     setLoading(true);
@@ -79,6 +96,7 @@ export default function PropertyCardsCarousel() {
       }
       const response = await axios.get(url);
       setProjects(response.data.projects);
+      dispatch(setAllProjects(response.data.projects));
     } catch (err) {
       console.error("An error occurred: ", err);
       toast.error(`Failed to fetch properties`, {
@@ -88,10 +106,6 @@ export default function PropertyCardsCarousel() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleProjectClick = (projectId: string) => {
-    navigate(`/project/${projectId}`);
   };
 
   const fetchProperties = async (filters?: FilterState) => {
@@ -117,6 +131,7 @@ export default function PropertyCardsCarousel() {
       }
       const response = await axios.get(url);
       setProperties(response.data.properties);
+      dispatch(setAllProperties(response.data.properties));
     } catch (err) {
       console.error("An error occurred: ", err);
       setError("Failed to fetch properties. Please try again.");
@@ -124,10 +139,6 @@ export default function PropertyCardsCarousel() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePropertyClick = (propertyId: string) => {
-    navigate(`/property/${propertyId}`);
   };
 
   const handleFilterChange = (filters: FilterState) => {
@@ -149,7 +160,7 @@ export default function PropertyCardsCarousel() {
 
   return (
     <>
-      <PropertyFilter onFilterChange={handleFilterChange} />
+      <Filters onFilterChange={handleFilterChange} />
       <div className="w-full max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
           Latest Projects & Properties
@@ -261,14 +272,15 @@ export default function PropertyCardsCarousel() {
                           {property.details.bathrooms}
                         </span>
                       </div>
+                      <Link to={`/property/${property.id}`} target="_blank">
                       <motion.button
                         className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-md transition-colors duration-300"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handlePropertyClick(property.id)}
-                      >
+                        >
                         View Property
                       </motion.button>
+                      </Link>
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -363,14 +375,15 @@ export default function PropertyCardsCarousel() {
                           <span>Description : {project.description}</span>
                         </div>
                       </div>
+                      <Link to={`/project/${project?.id}`} target="_blank">
                       <motion.button
                         className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-semibold rounded-md transition-colors duration-300 shadow-md"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleProjectClick(project.id)}
-                      >
+                        >
                         View Project
-                      </motion.button>
+                      </motion.button>                      
+                      </Link>
                     </div>
                   </motion.div>
                 </AnimatePresence>

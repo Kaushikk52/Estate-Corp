@@ -33,7 +33,7 @@ export default function Projects(props:any) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"          
+            className="bg-white bg-opacity-90 rounded-lg mt-5 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"          
           >
             <div className="flex flex-col md:flex-row">
               <div className="w-full sm:w-2/5 relative">

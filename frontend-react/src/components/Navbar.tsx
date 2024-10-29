@@ -9,6 +9,7 @@ import {
   X,
   Building,
   Briefcase,
+  GalleryHorizontal,
 } from "lucide-react";
 import AuthPopup from "./Auth/AuthPopup";
 
@@ -53,8 +54,8 @@ export default function Navbar() {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<
-    "properties" | "projects"
-  >("properties");
+    "properties" | "projects" | "all"
+  >("all");
   const [toggle, setToggle] = useState(false);
   const [navigateTo, setNavigateTo] = useState("");
   const navigate = useNavigate();
@@ -123,7 +124,12 @@ export default function Navbar() {
             to="/"
             className="text-xl font-semibold text-gray-800 uppercase flex items-center"
           >
-            <img src="/Estatecorp-logo.webp" alt="Logo" height={70} width={70} />
+            <img
+              src="/Estatecorp-logo.webp"
+              alt="Logo"
+              height={70}
+              width={70}
+            />
             <span className="phone-non"> Estatecorp</span>
           </Link>
         </div>
@@ -154,6 +160,22 @@ export default function Navbar() {
                 >
                   <div className="flex">
                     <div className="w-1/3 bg-gray-50 p-2 h-full">
+                      <button
+                        className={`w-full text-left p-3 rounded-lg transition-colors duration-200 ${
+                          selectedCategory === "all"
+                            ? "bg-blue-100"
+                            : "hover:bg-gray-100"
+                        }`}
+                        onClick={() => setSelectedCategory("all")}
+                      >
+                        <div className="font-semibold flex items-center">
+                          <GalleryHorizontal className="mr-2" size={18} />
+                          All
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Explore Projects & Properties
+                        </p>
+                      </button>
                       <button
                         className={`w-full text-left p-3 rounded-lg transition-colors duration-200 ${
                           selectedCategory === "properties"
@@ -189,54 +211,66 @@ export default function Navbar() {
                     </div>
                     <div className="w-2/3 p-4">
                       <h3 className="font-semibold mb-4">
-                        {selectedCategory === "properties"
+                        {selectedCategory === "all"
+                          ? "All"
+                          : selectedCategory === "properties"
                           ? "Properties"
                           : "Projects"}
                       </h3>
-                      <div className="grid gap-4">
-                        <DropdownLink
-                          href={`/listings/${selectedCategory}/all`}
-                          title="All"
-                          description={`Discover all ${selectedCategory}`}
-                        />
-                        {selectedCategory === "properties" ? (
-                          <>
-                            <DropdownLink
-                              href={`/listings/${selectedCategory}/rent`}
-                              title="Rent"
-                              description={`Find ${selectedCategory} available for rent`}
-                            />
-                            <DropdownLink
-                              href={`/listings/${selectedCategory}/buy`}
-                              title="Buy"
-                              description={`Discover ${selectedCategory} for sale`}
-                            />
-                            <DropdownLink
-                              href={`/listings/${selectedCategory}/commercial`}
-                              title="Commercial"
-                              description="Explore commercial real estate options"
-                            />
-                            <DropdownLink
-                              href={`/listings/${selectedCategory}/residential`}
-                              title="Residential"
-                              description="Find your perfect home"
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <DropdownLink
-                              href={`listings/${selectedCategory}/ready`}
-                              title="Ready To Move"
-                              description="Explore Ready To Move Projects"
-                            />
-                            <DropdownLink
-                              href={`listings/${selectedCategory}/ongoing`}
-                              title="Ongoing"
-                              description="Invest in projects under construction"
-                            />
-                          </>
-                        )}
-                      </div>
+                      {selectedCategory === "all" ? (
+                        <div className="grid gap-4">
+                          <DropdownLink
+                            href={`/listings/${selectedCategory}/all`}
+                            title="All"
+                            description={`Discover all Projects & Properties`}
+                          />
+                        </div>
+                      ) : (
+                        <div className="grid gap-4">
+                          <DropdownLink
+                            href={`/listings/${selectedCategory}/all`}
+                            title="All"
+                            description={`Discover all ${selectedCategory}`}
+                          />
+                          {selectedCategory === "properties" ? (
+                            <>
+                              <DropdownLink
+                                href={`/listings/${selectedCategory}/rent`}
+                                title="Rent"
+                                description={`Find ${selectedCategory} available for rent`}
+                              />
+                              <DropdownLink
+                                href={`/listings/${selectedCategory}/buy`}
+                                title="Buy"
+                                description={`Discover ${selectedCategory} for sale`}
+                              />
+                              <DropdownLink
+                                href={`/listings/${selectedCategory}/commercial`}
+                                title="Commercial"
+                                description="Explore commercial real estate options"
+                              />
+                              <DropdownLink
+                                href={`/listings/${selectedCategory}/residential`}
+                                title="Residential"
+                                description="Find your perfect home"
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <DropdownLink
+                                href={`listings/${selectedCategory}/ready`}
+                                title="Ready To Move"
+                                description="Explore Ready To Move Projects"
+                              />
+                              <DropdownLink
+                                href={`listings/${selectedCategory}/ongoing`}
+                                title="Ongoing"
+                                description="Invest in projects under construction"
+                              />
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
