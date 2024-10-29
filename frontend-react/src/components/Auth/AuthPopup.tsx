@@ -81,7 +81,7 @@ export default function AuthPopup(props: any) {
       if (response.status === 201) {
         setUser(response.data.user);
         setActiveTab("login");
-        console.log("User registered Successfully", user);
+        // console.log("User registered Successfully", user);
       }
     } catch (err) {
       console.log(err);

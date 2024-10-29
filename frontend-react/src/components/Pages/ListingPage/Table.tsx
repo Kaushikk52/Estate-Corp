@@ -8,8 +8,12 @@ import Property from "../../../Models/Property";
 import Projects from "./Projects";
 import Properties from "./Properties";
 import Project from "../../../Models/Project";
-import { useDispatch, useSelector } from 'react-redux';
-import { setFilteredProjects,setFilteredProperties } from "@/features/Filters/filterSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setFilteredProjects,
+  setFilteredProperties,
+} from "@/features/Filters/filterSlice";
+import Filters from "@/components/Filters";
 
 interface FilterState {
   locations: string[];
@@ -25,33 +29,42 @@ interface FilterState {
 export default function Table(props: any) {
   const dispatch = useDispatch();
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-  const {filteredProjects,filteredProperties,allProperties,allProjects,filters} = useSelector((state:any) => state.filters);
+  const {
+    filteredProjects,
+    filteredProperties,
+    allProperties,
+    allProjects,
+    filters,
+  } = useSelector((state: any) => state.filters);
   const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (props.pageType === "properties") {
-      setProperties(allProperties);
-    } else if (props.pageType === "projects") {
-      setProjects(allProjects);
-    } else {
-      if(filteredProjects.length > 0 || filteredProperties.length > 0){
-        setProjects(filteredProjects);
-        setProperties(filteredProperties);
-      }else{
-        setProjects(allProjects);
-        setProperties(allProperties);
-      }
+    switch (props.pageType) {
+      case "properties":
+        fetchProperties();
+        break;
+      case "projects":
+        fetchProjects();
+        break;
+      case "all":
+        if (filters) fetchProjects(filters);
+        fetchProperties(filters);
+        break;
+      default:
+        fetchProjects(filters);
+        fetchProperties(filters);
+        break;
     }
-  }, [props.pageCategory, props.pageType,filters]);
+  }, [props.pageCategory, props.pageType, filters]);
 
-  useEffect(()=>{
-    if(allProjects.length === 0 || allProperties.length === 0){
+  useEffect(() => {
+    if (allProjects.length === 0 || allProperties.length === 0) {
       fetchProjects();
       fetchProperties();
     }
-  },[])
+  }, []);
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
@@ -97,7 +110,7 @@ export default function Table(props: any) {
       dispatch(setFilteredProperties(response.data.properties));
     } catch (err) {
       console.error("An error occurred: ", err);
-      toast.error(`Failed to fetch properties`, {
+      toast.error("Failed to fetch properties", {
         position: "bottom-right",
         duration: 3000,
       });
@@ -146,7 +159,7 @@ export default function Table(props: any) {
       dispatch(setFilteredProjects(response.data.projects));
     } catch (err) {
       console.error("An error occurred: ", err);
-      toast.error(`Failed to fetch properties`, {
+      toast.error("Failed to fetch properties", {
         position: "bottom-right",
         duration: 3000,
       });
@@ -171,7 +184,7 @@ export default function Table(props: any) {
           Find Your Dream {props.pageType}
         </h1>
         {props.pageType === "all" ? (
-          <PropertyFilter onFilterChange={handleAllFilter} />
+          <Filters onFilterChange={handleAllFilter} />
         ) : props.pageType === "properties" ? (
           <PropertyFilter onFilterChange={handlePropertyFilter} />
         ) : (
@@ -185,26 +198,30 @@ export default function Table(props: any) {
         )}
         {props.pageType === "all" ? (
           <>
-            <Properties properties={properties} />
-            <Projects projects={projects} />
+            <Properties properties={filteredProperties || allProperties} />
+            <Projects projects={filteredProjects || allProperties} />
           </>
         ) : props.pageType === "properties" ? (
-          <Properties properties={properties} />
+          <Properties properties={properties || filteredProperties} />
         ) : (
-          <Projects projects={projects} />
+          <Projects projects={projects || filteredProjects} />
         )}
-        {!loading && projects.length === 0 && properties.length === 0 && (
-          <div
-            className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <strong className="font-bold">No {props.pageType} found!</strong>
-            <span className="block sm:inline">
-              {" "}
-              Please try adjusting your filters.
-            </span>
-          </div>
-        )}
+        {!loading &&
+          projects.length < 1 &&
+          allProjects.length < 1 &&
+          properties.length < 1 &&
+          allProperties.length < 1 && (
+            <div
+              className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              <strong className="font-bold">No {props.pageType} found!</strong>
+              <span className="block sm:inline">
+                {" "}
+                Please try adjusting your filters.
+              </span>
+            </div>
+          )}
       </main>
       <BlogSidebar />
     </div>

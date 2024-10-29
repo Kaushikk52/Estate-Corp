@@ -15,6 +15,7 @@ export default function Properties(props: any) {
   useEffect(() => {
     setProperties(props.properties);
   }, [props.properties]);
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}

@@ -1,5 +1,6 @@
-import { MapPinIcon, IndianRupeeIcon, BedDoubleIcon, SearchIcon, XIcon, ChevronDownIcon, FilterIcon, Scaling, RefreshCw } from 'lucide-react'
-import React, { useState } from "react";
+import { Scaling, RefreshCw, Link } from 'lucide-react'
+import { Input } from './ui/input';
+import React, { useEffect, useState } from "react";
 import {
   MapPin,
   IndianRupee,
@@ -39,6 +40,7 @@ interface LocationGroup {
 }
 
 export default function ProjectFilter({ onFilterChange }: FilterProps) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [locations, setLocations] = useState<string[]>([])
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
   const [bedrooms, setBedrooms] = useState<number[]>([])
@@ -165,8 +167,22 @@ export default function ProjectFilter({ onFilterChange }: FilterProps) {
     })
   }
 
+  const [filteredGroups, setFilteredGroups] = useState<LocationGroup[]>([]);
+
+  useEffect(() => {
+    const filtered = locationGroups
+      .map((group) => ({
+        ...group,
+        options: group.options.filter((option) =>
+          option.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+      }))
+      .filter((group) => group.options.length > 0);
+    setFilteredGroups(filtered);
+  }, [searchTerm]);
+
   return (
-    <div className="max-w-6xl mx-auto mt-5 ">
+    <div className="max-w-6xl mx-auto mt-5">
     <Card className="mt-10">
       <CardContent className="p-4">
         <div className="md:hidden flex items-center justify-between gap-2 sm:mb-0">
@@ -178,9 +194,11 @@ export default function ProjectFilter({ onFilterChange }: FilterProps) {
             <Filter className="h-5 w-5 mr-2" />
             {isFilterOpen ? "Hide Filters" : "Show Filters"}
           </Button>
+
           <Button onClick={applyFilters} className="w-1/7 bg-blue-500">
             <Search className="h-5 w-5" />
           </Button>
+
           <Button
             variant="ghost"
             className="border-blue-500 text-gray-500 hover:bg-gray-200 w-1/7"
@@ -198,7 +216,7 @@ export default function ProjectFilter({ onFilterChange }: FilterProps) {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="border-blue-500 text-gray-600 hover:bg-blue-100 w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0"
+                className="border-blue-500 text-gray-500 hover:bg-blue-100 w-full md:w-auto flex-1 min-w-0 mb-4 md:mb-0"
               >
                 <MapPin className="h-5 w-5 mr-2" />
                 {locations.length > 0
@@ -206,10 +224,17 @@ export default function ProjectFilter({ onFilterChange }: FilterProps) {
                   : "Location"}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 max-h-[300px] overflow-y-auto">
-              <DropdownMenuLabel>Select location</DropdownMenuLabel>
+            <DropdownMenuContent className="w-64 max-h-[400px] overflow-y-auto">
+              <div className="p-2">
+                <Input
+                  placeholder="Search locations..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-2"
+                />
+              </div>
               <DropdownMenuSeparator />
-              {locationGroups.map((group) => (
+              {filteredGroups.map((group) => (
                 <React.Fragment key={group.label}>
                   <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                   {group.options.map((option) => (
@@ -237,6 +262,11 @@ export default function ProjectFilter({ onFilterChange }: FilterProps) {
                   ))}
                 </React.Fragment>
               ))}
+              {filteredGroups.length === 0 && (
+                <DropdownMenuItem disabled>
+                  No locations found
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>
@@ -405,19 +435,32 @@ export default function ProjectFilter({ onFilterChange }: FilterProps) {
             </DropdownMenuContent>
           </DropdownMenu>
           <div className="hidden md:flex space-x-2">
-            <Button
-              onClick={applyFilters}
-              className="bg-blue-500 text-white hover:bg-blue-600"
-            >
-              <Search className="h-5 w-5 mr-2" />
-              Search
-            </Button>
+            {location.pathname == "/" ? (
+              <Link to={`/listings/all/all`}>
+                <Button
+                  onClick={applyFilters}
+                  className="bg-blue-500 text-white hover:bg-blue-600"
+                >
+                  <Search className="h-5 w-5" />
+                  Search
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                onClick={applyFilters}
+                className="bg-blue-500 text-white hover:bg-blue-600"
+              >
+                <Search className="h-5 w-5" />
+                Search
+              </Button>
+            )}
+
             <Button
               variant="outline"
               className="text-gray-500 hover:bg-gray-200"
               onClick={clearFilters}
             >
-              <RefreshCw className="h-5 w-5 mr-2" />
+              <RefreshCw className="h-5 w-5" />
               Clear
             </Button>
           </div>

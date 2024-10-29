@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import PropertyFilter from "../PropertyFilter";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -27,6 +26,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import Project from "../../Models/Project";
 import { useDispatch, useSelector } from "react-redux";
+import Filters from "../Filters";
 
 interface FilterState {
   locations: string[];
@@ -160,7 +160,7 @@ export default function PropertyCardsCarousel() {
 
   return (
     <>
-      <PropertyFilter onFilterChange={handleFilterChange} />
+      <Filters onFilterChange={handleFilterChange} />
       <div className="w-full max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
           Latest Projects & Properties

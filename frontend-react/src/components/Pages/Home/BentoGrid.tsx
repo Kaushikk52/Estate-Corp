@@ -98,20 +98,19 @@ export default function BentoGrid() {
         </Link>
 
         <div className="row-span-2 col-span-2 p-6 bg-white text-gray-800 hover:bg-gradient-to-r hover:from-orange-400  hover:to-pink-500 hover:text-white transition-all duration-300 rounded-lg shadow-md c-container">
-          <h2 className="text-xl font-bold mb-2 text-blue-600 c-head">
+          <h2 className="text-xl font-bold mb-1 text-blue-600 c-head">
             Special Announcement
           </h2>
-          <p>
-            <b>We Provide Services like :</b> Home Loan, Packing and Moving,
-            Interior Design, Legal Assistance, Land Acquisition, Redevelopment,
-            Joint Venture, Builder Funding etc.
-            <b>
-              {" "}
+          <h3 className="font-semibold text-sm">
               You can leave your Query by visiting Contact Page. We'll Get Back
               to you soon.
-            </b>
+            </h3>
+          <p>
+            <span className="font-semibold">We Provide Services like :</span> Home Loan, Packing and Moving,
+            Interior Design, Legal Assistance, Land Acquisition, Redevelopment,
+            Joint Venture, Builder Funding etc.
           </p>
-          <div className="flex items-center">
+          <div className="flex items-center mt-2 font-normal">
             <Link to="contact-us">Contact Us</Link>
             <ArrowRight className="ml-2 h-4 w-4" />
           </div>
