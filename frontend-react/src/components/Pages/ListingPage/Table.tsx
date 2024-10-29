@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import BlogSidebar from "./BlogSidebar";
-import PropertyFilter from "../../PropertyFilter";
-import ProjectFilter from "../../ProjectFilter";
-import Property from "../../../Models/Property";
+import PropertyFilter from "@/components/PropertyFilter";
+import ProjectFilter from "@/components/ProjectFilter";
+import Property from "@/Models/Property";
 import Projects from "./Projects";
 import Properties from "./Properties";
-import Project from "../../../Models/Project";
+import Project from "@/Models/Project";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setFilteredProjects,
@@ -218,7 +218,7 @@ export default function Table(props: any) {
         {props.pageType === "all" ? (
           <>
             <Properties properties={filteredProperties || allProperties} />
-            <Projects projects={filteredProjects || allProperties} />
+            <Projects projects={filteredProjects || allProjects} />
           </>
         ) : props.pageType === "properties" ? (
           <Properties properties={properties || filteredProperties} />
