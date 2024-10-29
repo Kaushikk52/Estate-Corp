@@ -60,7 +60,7 @@ export default function Table(props: any) {
   }, [props.pageCategory, props.pageType, filters]);
 
   useEffect(() => {
-    if (allProjects.length === 0 || allProperties.length === 0) {
+    if (projects.length === 0 || properties.length === 0) {
       fetchProjects();
       fetchProperties();
     }
@@ -159,7 +159,7 @@ export default function Table(props: any) {
       dispatch(setFilteredProjects(response.data.projects));
     } catch (err) {
       console.error("An error occurred: ", err);
-      toast.error("Failed to fetch properties", {
+      toast.error("Failed to fetch projects", {
         position: "bottom-right",
         duration: 3000,
       });
@@ -196,6 +196,25 @@ export default function Table(props: any) {
             <p className="mt-2 text-blue-600">Loading {props.pageType}...</p>
           </div>
         )}
+        {!loading &&
+          (projects.length === 0 ||
+          properties.length === 0 )&&
+          (
+            <div
+              className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              {props.pageType === "all" ?
+                <strong className="font-bold">No Properties/Projects found!</strong>
+                : <strong className="font-bold">No {props.pageType} found!</strong>
+              }
+              
+              <span className="block sm:inline">
+                {" "}
+                Please try adjusting your filters.
+              </span>
+            </div>
+          )}
         {props.pageType === "all" ? (
           <>
             <Properties properties={filteredProperties || allProperties} />
@@ -206,22 +225,7 @@ export default function Table(props: any) {
         ) : (
           <Projects projects={projects || filteredProjects} />
         )}
-        {!loading &&
-          projects.length < 1 &&
-          allProjects.length < 1 &&
-          properties.length < 1 &&
-          allProperties.length < 1 && (
-            <div
-              className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-              role="alert"
-            >
-              <strong className="font-bold">No {props.pageType} found!</strong>
-              <span className="block sm:inline">
-                {" "}
-                Please try adjusting your filters.
-              </span>
-            </div>
-          )}
+        
       </main>
       <BlogSidebar />
     </div>
