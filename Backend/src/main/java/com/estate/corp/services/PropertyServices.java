@@ -96,8 +96,8 @@ public class PropertyServices {
         return propertyRepo.save(property);
     }
 
-    public void removeProperty(String name){
-        Property property = propertyRepo.findByName(name);
+    public void removeProperty(String id){
+        Property property = propertyRepo.findById(id).orElseThrow(()-> new RuntimeException("Property not Found"));
         propertyRepo.delete(property);
     }
 

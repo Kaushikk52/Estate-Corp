@@ -210,4 +210,15 @@ public class PropertyController {
         }
     }
 
+    @PostMapping(value = "/delete/{id}")
+    public ResponseEntity<?> deleteProperty(@PathVariable String id){
+        try{
+            propertyServ.removeProperty(id);
+            log.info("Property with ID : {} Deleted successfully",id);
+            return  ResponseEntity.status(HttpStatus.OK).body("Property deleted successfully");
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+    }
 }

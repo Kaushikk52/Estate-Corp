@@ -14,6 +14,8 @@ import {
   Users,
   Package,
   Activity,
+  Trash2,
+  Pencil,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -124,6 +126,28 @@ export default function Dashboard() {
   useEffect(() => {
     getCurrentUser();
   }, []);
+
+  const removeProperty = async(id:string) =>{
+    try{
+      const token = localStorage.getItem('token')
+      const response = await axios.post(`${baseURL}/v1/api/properties/delete/${id}`,{},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if(response.status === 200){
+        getProperties(currentUser.role);
+        toast.success(`Property deleted !`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    }catch(err){
+      console.log("An error occurred : ", err);
+      toast.error(`An error occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+  }
   
   useEffect(() => {
     if (searchTerm === "") {
@@ -251,6 +275,8 @@ export default function Dashboard() {
       console.log("An error occurred : ", err);
     }
   };
+
+ 
 
   return (
     <div className="space-y-6 p-6">
@@ -383,11 +409,11 @@ export default function Dashboard() {
                           {property.address.locality}
                         </td>
                         {currentUser.role === "ROLE_ADMIN" ? (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between">
                             {property.details.hasOwnProperty("isApproved") !==
                               null && property.details.isApproved === false ? (
                               <button
-                                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                                className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
                                 onClick={() =>
                                   changeApprovalStatus(property.id, false)
                                 }
@@ -396,7 +422,7 @@ export default function Dashboard() {
                               </button>
                             ) : (
                               <button
-                                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
                                 onClick={() =>
                                   changeApprovalStatus(property.id, true)
                                 }
@@ -404,9 +430,27 @@ export default function Dashboard() {
                                 Approved
                               </button>
                             )}
+                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500">
+                              <Pencil size={20}/>
+                            </button>
+                              <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={()=> removeProperty(property.id)}>
+                              <Trash2 size={20}/>
+                            </button>
                           </td>
                         ) : (
-                          <td></td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between">
+                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-500">
+                              View
+                            </button>
+                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500">
+                              <Pencil size={20}/>
+                            </button>
+                              <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={()=> removeProperty(property.id)}>
+                              <Trash2 size={20}/>
+                            </button>
+                          </td>
                         )}
                       </tr>
                     ))
