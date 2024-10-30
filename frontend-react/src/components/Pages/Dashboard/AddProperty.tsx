@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { propertyValidationSchema } from "../../../Validations/propertyValidations";
 import DatePicker from "react-datepicker";
+import { Button } from "@/components/ui/button";
 
 const DatePickerField = ({ field, form }: any) => {
   return (
@@ -143,6 +144,7 @@ export default function AddPropertyLayout() {
     }
 
     try {
+      setSubmitting(true);
       const urls: any = await uploadImages(values.images);
       if (urls.length > 0) {
         // console.log("uploaded urls", urls);
@@ -165,6 +167,7 @@ export default function AddPropertyLayout() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (response.status === 201) {
+          setSubmitting(false);
           toast.success("Form submitted successfully!", {
             position: "bottom-right",
             duration: 3000,
@@ -174,6 +177,7 @@ export default function AddPropertyLayout() {
           setStep(1);
         }
       } catch (err: any) {
+        setSubmitting(false);
         console.log(err);
         if (err.status === 401) {
           toast.error("Access denied ! Authentication is required", {
@@ -1220,14 +1224,23 @@ export default function AddPropertyLayout() {
                     <ChevronRight className="w-5 h-5 ml-1" />
                   </button>
                 ) : (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
-                  >
-                    Submit Listing
-                    <Check className="w-5 h-5 ml-1" />
-                  </button>
+                  <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Listing
+                      <Check className="w-5 h-5 ml-1" />
+                    </>
+                  )}
+                </Button>
                 )}
               </div>
             </Form>
