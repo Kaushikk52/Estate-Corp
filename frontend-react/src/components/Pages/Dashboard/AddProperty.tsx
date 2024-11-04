@@ -57,6 +57,7 @@ export default function AddPropertyLayout() {
       price: 0,
       amtUnit: "",
       isNegotiable: "",
+      isApproved: false,
       furnishedStatus: "",
       ammenities: [] as string[],
       description: "",
@@ -86,46 +87,50 @@ export default function AddPropertyLayout() {
     }
   });
 
-  async function uploadImages(images: any) {
-    if (!images || images.length === 0) {
-      toast.error("Please select an image first", {
-        position: "bottom-right",
-        duration: 3000,
-      });
-      return [];
-    }
-
-    const imgUrls: string[] = [];
-
+  async function uploadSingleImage(image: File): Promise<string | null> {
     try {
-      // Use Promise.all to ensure all uploads complete before proceeding
-      await Promise.all(
-        images.map(async (img: any) => {
-          const formData = new FormData();
-          formData.append("file", img);
-          formData.append("upload_preset", uploadPreset);
-          formData.append("folder", propertiesPath);
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("upload_preset", uploadPreset);
+      formData.append("folder", propertiesPath);
 
-          const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
-            formData
-          );
-
-          if (res && res.data && res.data.display_name) {
-            // console.log("Image uploaded...", res.data.display_name);
-            imgUrls.push(res.data.display_name);
-          }
-        })
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
+        formData
       );
 
-      return imgUrls; // Return only after all uploads are done
+      return res.data?.display_name ?? null;
     } catch (err) {
-      toast.error(`Upload failed: ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
+      console.error("Image upload failed:", err);
+      return null;
+    }
+  }
+
+  async function uploadImages(images: File[]): Promise<string[]> {
+    if (!images?.length) {
+      showToast("Please select an image first", "error");
       return [];
     }
+
+    const uploadPromises = images.map(uploadSingleImage);
+    const imgUrls = await Promise.all(uploadPromises);
+    return imgUrls.filter((url): url is string => url !== null);
+  }
+
+  function showToast(message: string, type: "success" | "error") {
+    toast[type](message, { position: "bottom-right", duration: 3000 });
+  }
+
+  function prepareFormData(values: typeof initialValues): typeof initialValues {
+    const updatedValues = { ...values };
+    if (updatedValues.type === "RENT") {
+      updatedValues.details.price = 0;
+    } else if (updatedValues.type === "BUY") {
+      updatedValues.details.rent = 0;
+    }
+
+    updatedValues.details.isApproved = false;
+    return updatedValues;
   }
 
   async function handleSubmit(
@@ -137,55 +142,33 @@ export default function AddPropertyLayout() {
       return;
     }
 
-    if (values.type === "RENT") {
-      values.details.price = 0;
-    } else if (values.type === "BUY") {
-      values.details.rent = 0;
-    }
-
     try {
       setSubmitting(true);
-      const urls: any = await uploadImages(values.images);
-      if (urls.length > 0) {
-        // console.log("uploaded urls", urls);
-        values.images = [...urls];
-        // console.log("values.images : ", values.images);
+      const imageUrls:any = await uploadImages(values.images);
+      const preparedValues = prepareFormData(values);
+      if (imageUrls.length > 0) {
+        preparedValues.images = imageUrls;
       }
-    } catch (err) {
-      console.log(err);
-      toast.error(`An Error Occurred : ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
-    } finally {
-      Object.assign(values.details, { isApproved: false });
       const token = localStorage.getItem("token");
-      try {
-        const response = await axios.post(
-          `${baseURL}/v1/api/properties/post`,
-          values,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (response.status === 201) {
-          setSubmitting(false);
-          toast.success("Form submitted successfully!", {
-            position: "bottom-right",
-            duration: 3000,
-          });
-          resetForm();
-          setSubmitting(false);
-          setStep(1);
-        }
-      } catch (err: any) {
-        setSubmitting(false);
-        console.log(err);
-        if (err.status === 401) {
-          toast.error("Access denied ! Authentication is required", {
-            position: "bottom-right",
-            duration: 3000,
-          });
-        }
+      const response = await axios.post(
+        `${baseURL}/v1/api/properties/post`,
+        preparedValues,
+       { headers: {Authorization: `Bearer ${token}` }}
+      );
+
+      if (response.status === 201) {
+        showToast("Form submitted successfully!", "success");
+        resetForm();
+        setStep(1);
       }
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        showToast("Access denied! Authentication is required", "error");
+      } else {
+        showToast(`An error occurred: ${err.message}`, "error");
+      }
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -1225,22 +1208,22 @@ export default function AddPropertyLayout() {
                   </button>
                 ) : (
                   <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      Submit Listing
-                      <Check className="w-5 h-5 ml-1" />
-                    </>
-                  )}
-                </Button>
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        Submit Listing
+                        <Check className="w-5 h-5 ml-1" />
+                      </>
+                    )}
+                  </Button>
                 )}
               </div>
             </Form>
