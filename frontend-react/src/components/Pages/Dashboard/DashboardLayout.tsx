@@ -41,6 +41,7 @@ const CardBackground = ({ color }: { color: string }) => (
 
 export default function Dashboard() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -127,28 +128,61 @@ export default function Dashboard() {
     getCurrentUser();
   }, []);
 
-  const removeProperty = async(id:string) =>{
-    try{
-      const token = localStorage.getItem('token')
-      const response = await axios.post(`${baseURL}/v1/api/properties/delete/${id}`,{},
+  async function deleteImage(publicId: string) {
+    const cloudName = "your_cloud_name";
+    const apiKey = "your_api_key";
+    const apiSecret = "your_api_secret";
+
+    try {
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
+      const auth = btoa(`${apiKey}:${apiSecret}`);
+
+      const formData = new URLSearchParams();
+      formData.append("public_id", publicId);
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+
+      if (response.data.result === "ok") {
+        console.log("Image deleted successfully!");
+        alert("Image deleted successfully!");
+      } else {
+        console.error("Failed to delete image:", response.data);
+        alert("Failed to delete image.");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      alert("Error deleting image.");
+    }
+  }
+  const removeProperty = async (id: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${baseURL}/v1/api/properties/delete/${id}`,
+        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if(response.status === 200){
+      if (response.status === 200) {
         getProperties(currentUser.role);
         toast.success(`Property deleted !`, {
           position: "bottom-right",
           duration: 3000,
         });
       }
-    }catch(err){
+    } catch (err) {
       console.log("An error occurred : ", err);
       toast.error(`An error occurred : ${err}`, {
         position: "bottom-right",
         duration: 3000,
       });
     }
-  }
-  
+  };
+
   useEffect(() => {
     if (searchTerm === "") {
       getProperties(currentUser.role);
@@ -275,8 +309,6 @@ export default function Dashboard() {
       console.log("An error occurred : ", err);
     }
   };
-
- 
 
   return (
     <div className="space-y-6 p-6">
@@ -430,12 +462,21 @@ export default function Dashboard() {
                                 Approved
                               </button>
                             )}
-                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500">
-                              <Pencil size={20}/>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/edit-property/${property.id}`
+                                )
+                              }
+                            >
+                              <Pencil size={20} />
                             </button>
-                              <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={()=> removeProperty(property.id)}>
-                              <Trash2 size={20}/>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={() => removeProperty(property.id)}
+                            >
+                              <Trash2 size={20} />
                             </button>
                           </td>
                         ) : (
@@ -443,12 +484,21 @@ export default function Dashboard() {
                             <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-500">
                               View
                             </button>
-                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500">
-                              <Pencil size={20}/>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/edit-property/${property.id}`
+                                )
+                              }
+                            >
+                              <Pencil size={20} />
                             </button>
-                              <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={()=> removeProperty(property.id)}>
-                              <Trash2 size={20}/>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={() => removeProperty(property.id)}
+                            >
+                              <Trash2 size={20} />
                             </button>
                           </td>
                         )}
