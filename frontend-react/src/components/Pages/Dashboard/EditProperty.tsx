@@ -21,7 +21,7 @@ const DatePickerField = ({ field, form }: any) => {
   );
 };
 
-export default function AddPropertyLayout() {
+export default function EditPropertyLayout() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
@@ -239,7 +239,7 @@ export default function AddPropertyLayout() {
       >
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Add Property
+            Edit Property
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Please fill in the details of your property
