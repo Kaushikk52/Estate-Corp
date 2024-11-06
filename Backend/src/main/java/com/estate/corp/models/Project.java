@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 public class Project {
     @Id
-    @Column(length = 36, nullable = false, unique = true) // UUID or unique ID with length constraint
+    @Column(length = 36, nullable = false, unique = true)
     private String id;
 
     @NotNull(message = "Project name cannot be null")
