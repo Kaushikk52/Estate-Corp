@@ -14,6 +14,7 @@ import java.util.UUID;
 @Entity
 public class FloorPlan {
     @Id
+    @Column(length = 36, nullable = false, unique = true)
     private String id;
     private String name;
     private String image;
