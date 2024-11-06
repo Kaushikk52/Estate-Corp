@@ -124,101 +124,93 @@ export default function AddProjectLayout() {
     }
   }, []);
 
-  async function uploadImages(images: any,type:string) {
-    if (!images || images.length === 0) {
-      toast.error("Please select an image first", {
-        position: "bottom-right",
-        duration: 3000,
-      });
-      return [];
-    }
 
-    const imgUrls: string[] = [];
+async function uploadSingleImage(image: File): Promise<string | null> {
+  try {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", projectsPath);
 
-    try {
-      await Promise.all(
-        images.map(async (img: any) => {
-          const formData = new FormData();
-          formData.append("file", img);
-          formData.append("upload_preset", uploadPreset);
-          if(type === "properties"){
-            formData.append("folder",propertiesPath);
-          }else{
-            formData.append("folder",projectsPath);
-          }
-          const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
-            formData
-          );
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
+      formData
+    );
 
-          if (response && response.data && response.data.display_name) {
-            // console.log("Image uploaded...", response.data.display_name);
-            imgUrls.push(response.data.display_name);
-          }
-        })
-      );
+    return res.data?.display_name || null;
+  } catch (err) {
+    console.error("Image upload failed:", err);
+    return null;
+  }
+}
 
-      return imgUrls;
-    } catch (err) {
-      toast.error(`Upload failed: ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
-      return [];
-    }
+async function uploadImages(images: File[]): Promise<string[]> {
+  if (!images?.length) {
+    toast.error("Please select an image first", {
+      position: "bottom-right",
+      duration: 3000,
+    });
+    return [];
   }
 
-  async function handleSubmit(
-    values: typeof initialValues,
-    { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
-  ) {
-    if (step !== 4 || values.ammenities.length < 1) {
-      setSubmitting(false);
-      return;
-    }
-    try {
-      setSubmitting(true);
-      const updatedFloorPlans = await Promise.all(
-        values.floorPlans.map(async (floorPlan) => {
-          const url = await uploadImages([floorPlan.image],"properties");
-          return { ...floorPlan, image: url[0] };
-        })
-      );
+  const uploadPromises = images.map(uploadSingleImage);
+  const imgUrls = await Promise.all(uploadPromises);
+  return imgUrls.filter((url): url is string => url !== null);
+}
 
-      const projectImages = await uploadImages(values.images,"projects");
+async function handleSubmit(
+  values: typeof initialValues,
+  { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
+) {
+  if (step !== 4 || values.ammenities.length < 1) {
+    setSubmitting(false);
+    return;
+  }
 
-      const projectData = {
-        ...values,
-        floorPlans: updatedFloorPlans,
-        images: projectImages,
-        underConstruction: values.underConstruction,
-      };
+  try {
+    setSubmitting(true);
 
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `${baseURL}/v1/api/projects/add`,
-        projectData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+    
+    const updatedFloorPlans = await Promise.all(
+      values.floorPlans.map(async (floorPlan) => {
+        if(floorPlan.image == null){
+          return { ...floorPlan, image: null };
+        }
+        const url = await uploadSingleImage(floorPlan.image);
+        return { ...floorPlan, image: url };
+      })
+    );
+    const projectImages = await uploadImages(values.images);
+    const projectData = {
+      ...values,
+      floorPlans: updatedFloorPlans,
+      images: projectImages,
+      underConstruction: values.underConstruction,
+    };
 
-      if (response.status === 201) {
-        setSubmitting(false);
-        toast.success("Project created successfully!", {
-          position: "bottom-right",
-          duration: 3000,
-        });
-        resetForm();
-        setStep(1);
-      }
-    } catch (err: any) {
-      setSubmitting(false);
-      console.log(err);
-      toast.error(`An error occurred: ${err.message}`, {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(`${baseURL}/v1/api/projects/add`, projectData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (response.status === 201) {
+      toast.success("Project created successfully!", {
         position: "bottom-right",
         duration: 3000,
       });
+      resetForm();
+      setStep(1);
     }
+  } catch (err: any) {
+    console.error("Project creation error:", err);
+    toast.error(`An error occurred: ${err.message}`, {
+      position: "bottom-right",
+      duration: 3000,
+    });
+  } finally {
+    setSubmitting(false);
   }
+}
 
   const steps = ["Details", "Floor Plans", "Images", "Amenities"];
 
