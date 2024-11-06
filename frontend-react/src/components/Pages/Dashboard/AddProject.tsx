@@ -176,7 +176,7 @@ async function handleSubmit(
         if(floorPlan.image == null){
           return { ...floorPlan, image: null };
         }
-        const url = await uploadSingleImage(floorPlan.image);
+        const url = await uploadImages([floorPlan.image]);
         return { ...floorPlan, image: url };
       })
     );
