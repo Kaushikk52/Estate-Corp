@@ -372,9 +372,6 @@ export default function Dashboard() {
           <div></div>
         )}
 
-        {currentUser.role === "ROLE_ADMIN" ||
-        currentUser.role === "ROLE_AGENT" ||
-        currentUser.role === "ROLE_RESALER" ? (
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
@@ -518,9 +515,6 @@ export default function Dashboard() {
               </table>
             </div>
           </div>
-        ) : (
-          <div></div>
-        )}
       </div>
 
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-2">
