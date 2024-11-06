@@ -41,7 +41,9 @@ const CardBackground = ({ color }: { color: string }) => (
 
 export default function Dashboard() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-  
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,11 +130,9 @@ export default function Dashboard() {
     getCurrentUser();
   }, []);
 
-  async function deleteImage(publicId: string) {
-    const cloudName = "your_cloud_name";
-    const apiKey = "your_api_key";
-    const apiSecret = "your_api_secret";
-
+  async function deleteImage(publicId: string){
+    const apiKey = "592864215367616";
+    const apiSecret = "tnUjgE5Q-tn0Pme8G7q3tqWeBMw";
     try {
       const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
       const auth = btoa(`${apiKey}:${apiSecret}`);
@@ -159,8 +159,17 @@ export default function Dashboard() {
       alert("Error deleting image.");
     }
   }
-  const removeProperty = async (id: string) => {
+  const removeProperty = async (id: string,images:File[]) => {
     try {
+      const deletePromises = images.map((image)=> deleteImage(`${uploadPreset}/${environment}/${image.name}`));
+      const deletedImgs = await Promise.all(deletePromises);
+      if(!deletedImgs){
+        toast.error(`Images not Deleted`,{
+          position:"bottom-right",
+          duration:3000
+        });
+        return;
+      }
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${baseURL}/v1/api/properties/delete/${id}`,
@@ -363,9 +372,6 @@ export default function Dashboard() {
           <div></div>
         )}
 
-        {currentUser.role === "ROLE_ADMIN" ||
-        currentUser.role === "ROLE_AGENT" ||
-        currentUser.role === "ROLE_RESALER" ? (
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
@@ -474,7 +480,7 @@ export default function Dashboard() {
                             </button>
                             <button
                               className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={() => removeProperty(property.id)}
+                              onClick={() => removeProperty(property.id,property.images)}
                             >
                               <Trash2 size={20} />
                             </button>
@@ -496,7 +502,7 @@ export default function Dashboard() {
                             </button>
                             <button
                               className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={() => removeProperty(property.id)}
+                              onClick={() => removeProperty(property.id,property.images)}
                             >
                               <Trash2 size={20} />
                             </button>
@@ -509,9 +515,6 @@ export default function Dashboard() {
               </table>
             </div>
           </div>
-        ) : (
-          <div></div>
-        )}
       </div>
 
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-2">
