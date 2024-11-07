@@ -61,8 +61,8 @@ export default function PropertyCardsCarousel() {
       fetchProperties();
     }
     if(filteredProjects.length === 0 || filteredProperties.length === 0 ){
-      setProjects(allProjects);
-      setProperties(allProperties);
+      setProjects([]);
+      setProperties([]);
     }else{
       setProjects(filteredProjects);
       setProperties(filteredProperties);
