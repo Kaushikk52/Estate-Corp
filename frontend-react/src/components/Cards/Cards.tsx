@@ -94,6 +94,11 @@ export default function PropertyCardsCarousel() {
         url = `${baseURL}/v1/api/projects/all`;
       }
       const response = await axios.get(url);
+      if(response.data.projects.length < 1){
+        // console.log("Properties not found ...",response)
+        setProjects([]);
+        dispatch(setFilteredProjects([]));
+      }
       setProjects(response.data.projects);
       dispatch(setAllProjects(response.data.projects));
     } catch (err) {
@@ -128,6 +133,11 @@ export default function PropertyCardsCarousel() {
         url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
       }
       const response = await axios.get(url);
+      if(response.data.properties.length < 1){
+        // console.log("Properties not found ...",response)
+        setProperties([]);
+        dispatch(setFilteredProperties([]));
+      }
       setProperties(response.data.properties);
       dispatch(setAllProperties(response.data.properties));
     } catch (err) {
