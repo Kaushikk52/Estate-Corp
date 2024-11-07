@@ -49,8 +49,10 @@ export default function Table(props: any) {
         fetchProjects();
         break;
       case "all":
-        if (filters) fetchProjects(filters);
-        fetchProperties(filters);
+        if (filters){
+          fetchProjects(filters);
+          fetchProperties(filters);
+        }
         break;
       default:
         fetchProjects(filters);
@@ -59,12 +61,12 @@ export default function Table(props: any) {
     }
   }, [props.pageCategory, props.pageType, filters]);
 
-  useEffect(() => {
-    if (projects.length === 0 || properties.length === 0) {
-      fetchProjects();
-      fetchProperties();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (projects.length === 0 || properties.length === 0) {
+  //     fetchProjects();
+  //     fetchProperties();
+  //   }
+  // }, []);
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
