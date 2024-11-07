@@ -116,7 +116,9 @@ public class ProjectController {
 
             List<Project> filteredProjects = projectServ.getFilteredProjects(filters);
             Map<String, Object> response = new HashMap<>();
+
             response.put("projects", filteredProjects);
+
             if (filteredProjects.isEmpty()) {
                 response.put("message", "No projects found");
                 log.warn("No projects found");
