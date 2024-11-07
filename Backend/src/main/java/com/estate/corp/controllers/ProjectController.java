@@ -122,7 +122,7 @@ public class ProjectController {
             if (filteredProjects.isEmpty()) {
                 response.put("message", "No projects found");
                 log.warn("No projects found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 log.info("Retrieved all projects");
                 return ResponseEntity.ok(response);
