@@ -107,13 +107,17 @@ export default function Table(props: any) {
       }
       const response = await axios.get(url);
       if(response.data.properties.length < 1){
-        console.log("Properties not found ...",response)
+        // console.log("Properties not found ...",response)
         setProperties([]);
         dispatch(setFilteredProperties([]));
       }
       setProperties(response.data.properties);
       dispatch(setFilteredProperties(response.data.properties));
-    } catch (err) {
+    } catch (err:any) {
+      if(err.status === 404){
+        setProperties([]);
+        dispatch(setFilteredProperties([]));
+      }
       console.error("An error occurred: ", err);
       toast.error("Failed to fetch properties", {
         position: "bottom-right",
@@ -161,13 +165,17 @@ export default function Table(props: any) {
       }
       const response = await axios.get(url);
       if(response.data.projects.length < 1){
-        console.log("Projects not found ...",response)
+        // console.log("Projects not found ...",response)
         setProjects([]);
         dispatch(setFilteredProjects([]));
       }
       setProjects(response.data.projects);
       dispatch(setFilteredProjects(response.data.projects));
-    } catch (err) {
+    } catch (err:any) {
+      if(err.status === 404){
+        setProjects([]);
+        dispatch(setFilteredProjects([]));
+      }
       console.error("An error occurred: ", err);
       toast.error("Failed to fetch projects", {
         position: "bottom-right",
