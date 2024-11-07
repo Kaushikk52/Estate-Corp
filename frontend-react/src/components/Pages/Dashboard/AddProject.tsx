@@ -15,7 +15,6 @@ import { jwtDecode } from "jwt-decode";
 import { projectValidationSchema } from "../../../Validations/projectValidations";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 
 
@@ -165,17 +164,14 @@ async function handleSubmit(
     setSubmitting(false);
     return;
   }
-
   try {
-    setSubmitting(true);
-
-    
+    setSubmitting(true)
     const updatedFloorPlans = await Promise.all(
       values.floorPlans.map(async (floorPlan) => {
         if(floorPlan.image == null){
           return { ...floorPlan, image: null };
         }
-        const url = await uploadImages([floorPlan.image]);
+        const url = await uploadSingleImage(floorPlan.image);
         return { ...floorPlan, image: url };
       })
     );
@@ -188,9 +184,9 @@ async function handleSubmit(
     };
 
     const token = localStorage.getItem("token");
-    const response = await axios.post(`${baseURL}/v1/api/projects/add`, projectData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.post(`${baseURL}/v1/api/projects/add`, projectData, 
+      { headers: { Authorization: `Bearer ${token}` }}
+    );
 
     if (response.status === 201) {
       toast.success("Project created successfully!", {

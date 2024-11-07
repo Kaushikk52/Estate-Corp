@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/v1/api/users/removeProperty/*").hasAnyRole("ADMIN", "AGENT", "RESALER")
 
                         // Projects endpoints
-                        .requestMatchers("/v1/api/projects/add").hasAnyRole("ADMIN", "AGENT")
+                        .requestMatchers(HttpMethod.POST,"/v1/api/projects/add").authenticated()
                         .requestMatchers(HttpMethod.GET, "/v1/api/projects/all","/v1/api/projects/filter", "/v1/api/projects/id/*", "/v1/api/projects/name/*").permitAll()
 
                         // Properties endpoints

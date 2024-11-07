@@ -85,7 +85,7 @@ export default function AddPropertyLayout() {
     } catch (err) {
       console.log(err);
     }
-  });
+  },[]);
 
   async function uploadSingleImage(image: File): Promise<string | null> {
     try {
