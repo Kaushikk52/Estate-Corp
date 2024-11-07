@@ -36,7 +36,6 @@ export default function AddProjectLayout() {
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const [step, setStep] = useState(1);
 

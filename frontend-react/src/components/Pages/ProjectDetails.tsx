@@ -335,7 +335,7 @@ export default function ProjectDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <img
-                  src={`${imgPrefix}${propertiesPath}/${selectedPlan?.image}`}
+                  src={`${imgPrefix}${projectsPath}/${selectedPlan?.image}`}
                   alt={selectedPlan?.name}
                   loading="lazy"
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
