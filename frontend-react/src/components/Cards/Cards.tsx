@@ -56,28 +56,40 @@ export default function PropertyCardsCarousel() {
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
   useEffect(() => {
-    if(allProjects.length === 0 || allProperties.length === 0){
+    if(!checkFilters(filters) && (allProjects.length < 1  || allProperties.length < 1 )){
       fetchProjects();
       fetchProperties();
-    }
-    if(filteredProjects.length === 0 || filteredProperties.length === 0 ){
-      setProjects([]);
-      setProperties([]);
     }else{
-      setProjects(filteredProjects);
-      setProperties(filteredProperties);
+      if(checkFilters(filters) && (filteredProjects.length < 1 ||filteredProperties.length < 1)){
+        fetchProjects(filters);
+        fetchProperties(filters);
+      }else if(checkFilters(filters) && (filteredProjects.length > 0 ||filteredProperties.length > 0)){
+        setProjects(filteredProjects);
+        setProperties(filteredProperties);
+      }else{
+        setProjects(allProjects);
+        setProperties(allProperties);
+      }
     }
-  }, []);
+  }, [filters]);
 
-  useEffect(()=>{
-    handleFilterChange(filters);
-  },[filters])
+  const checkFilters = (filters : FilterState):boolean =>{
+    let hasFilters = false;
+      if(filters.locations.length > 0)hasFilters = true;
+      if(filters.bedrooms.length > 0) hasFilters = true;
+      if(filters.minPrice !== "") hasFilters = true;
+      if(filters.maxPrice !== "") hasFilters = true;
+      if(filters.minCarpetArea !== "") hasFilters = true;
+      if(filters.maxCarpetArea !== "") hasFilters = true;
+      return hasFilters;
+  }
 
   const fetchProjects = async (filters?: FilterState) => {
     setLoading(true);
     try {
-      let url = `${baseURL}/v1/api/projects/filter?`;
-      if (filters) {
+      let url;
+      if (filters && checkFilters(filters)) {
+        url = `${baseURL}/v1/api/projects/filter?`;
         if (filters.locations.length > 0)
           url += `locations=${filters.locations.join(",")}&`;
         if (filters.bedrooms.length > 0)
@@ -116,7 +128,7 @@ export default function PropertyCardsCarousel() {
     setLoading(true);
     try {
       let url = `${baseURL}/v1/api/properties/filter?`;
-      if (filters) {
+      if (filters && checkFilters(filters)) {
         if (filters.locations.length > 0)
           url += `locations=${filters.locations.join(",")}&`;
         if (filters.bedrooms.length > 0)
@@ -134,7 +146,6 @@ export default function PropertyCardsCarousel() {
       }
       const response = await axios.get(url);
       if(response.data.properties.length < 1){
-        // console.log("Properties not found ...",response)
         setProperties([]);
         dispatch(setFilteredProperties([]));
       }
@@ -152,8 +163,13 @@ export default function PropertyCardsCarousel() {
   };
 
   const handleFilterChange = (filters: FilterState) => {
-    fetchProperties(filters);
-    fetchProjects(filters);
+    if(filteredProjects.length < 1 || filteredProperties.length < 1){
+      fetchProjects(filters);
+      fetchProperties(filters);
+    }else{
+      setProjects(filteredProjects);
+      setProperties(filteredProperties);
+    }
   };
 
   const handlePrev = () => {
@@ -195,6 +211,7 @@ export default function PropertyCardsCarousel() {
               <SwiperSlide key={property.id} className="p-2">
                 <AnimatePresence>
                   <motion.div
+                    key={property.id}
                     className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -301,6 +318,7 @@ export default function PropertyCardsCarousel() {
               <SwiperSlide key={project.id} className="p-2">
                 <AnimatePresence>
                   <motion.div
+                    key={project.id}
                     className="bg-white rounded-xl shadow-xl overflow-hidden h-full transform transition-all duration-300 hover:scale-105"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
