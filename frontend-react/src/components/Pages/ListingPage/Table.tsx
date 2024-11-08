@@ -61,13 +61,6 @@ export default function Table(props: any) {
     }
   }, [props.pageCategory, props.pageType, filters]);
 
-  // useEffect(() => {
-  //   if (projects.length === 0 || properties.length === 0) {
-  //     fetchProjects();
-  //     fetchProperties();
-  //   }
-  // }, []);
-
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
     try {

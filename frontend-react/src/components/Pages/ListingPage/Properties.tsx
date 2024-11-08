@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Bath, Bed, Home, MapPin, Scaling } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Link } from "react-router-dom";
 import Property from "../../../Models/Property";
 
@@ -11,6 +11,7 @@ export default function Properties(props: any) {
   const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [properties, setProperties] = useState<Property[]>([]);
+  const id = useId();
 
   useEffect(() => {
     setProperties(props.properties);
@@ -23,7 +24,7 @@ export default function Properties(props: any) {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="space-y-8 mt-5"
     >
-      <AnimatePresence >
+      <AnimatePresence>
         {properties.map((property, index) => (
           <Link to={`/property/${property.id}`} target="_blank">
           <motion.div
