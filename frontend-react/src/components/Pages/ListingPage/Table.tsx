@@ -39,6 +39,7 @@ export default function Table(props: any) {
   const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showNotFound, setShowNotFound] = useState(false);
 
   useEffect(() => {
     switch (props.pageType) {
@@ -102,6 +103,7 @@ export default function Table(props: any) {
       }
       const response = await axios.get(url);
       if(response.data.properties.length < 1){
+        setShowNotFound(true);
         // console.log("Properties not found ...",response)
         setProperties([]);
         dispatch(setFilteredProperties([]));
@@ -160,6 +162,7 @@ export default function Table(props: any) {
       }
       const response = await axios.get(url);
       if(response.data.projects.length < 1){
+        setShowNotFound(true);
         // console.log("Projects not found ...",response)
         setProjects([]);
         dispatch(setFilteredProjects([]));
@@ -209,10 +212,8 @@ export default function Table(props: any) {
             <p className="mt-2 text-blue-600">Loading {props.pageType}...</p>
           </div>
         )}
-        {!loading &&
-          (projects.length === 0 ||
-          properties.length === 0 )&&
-          (
+        
+          {(!loading && showNotFound) &&
             <div
               className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
               role="alert"
@@ -227,7 +228,8 @@ export default function Table(props: any) {
                 Please try adjusting your filters.
               </span>
             </div>
-          )}
+          }
+
         {props.pageType === "all" ? (
           <>
             <Properties properties={filteredProperties || allProperties} />
