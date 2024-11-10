@@ -189,7 +189,7 @@ async function handleSubmit(
 
     const token = localStorage.getItem("token");
     const response = await axios.post(`${baseURL}/v1/api/projects/add`, projectData, 
-      { headers: { Authorization: `Bearer ${token}` }}
+      { headers: { Authorization: `Bearer ${token}`, timeout: 20000 }}
     );
 
     if (response.status === 201) {

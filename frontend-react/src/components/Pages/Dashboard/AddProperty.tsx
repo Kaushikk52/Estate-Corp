@@ -186,7 +186,7 @@ export default function AddPropertyLayout() {
       const response = await axios.post(
         `${baseURL}/v1/api/properties/post`,
         preparedValues,
-       { headers: {Authorization: `Bearer ${token}` }}
+       { headers: {Authorization: `Bearer ${token}`,timeout: 20000 }}
       );
 
       if (response.status === 201) {
