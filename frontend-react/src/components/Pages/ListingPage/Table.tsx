@@ -14,6 +14,7 @@ import {
   setFilteredProperties,
 } from "@/features/Filters/filterSlice";
 import Filters from "@/components/Filters";
+import { set } from "react-datepicker/dist/date_utils";
 
 interface FilterState {
   locations: string[];
@@ -112,6 +113,7 @@ export default function Table(props: any) {
       dispatch(setFilteredProperties(response.data.properties));
     } catch (err:any) {
       if(err.status === 404){
+        setShowNotFound(true);
         setProperties([]);
         dispatch(setFilteredProperties([]));
       }
@@ -171,6 +173,7 @@ export default function Table(props: any) {
       dispatch(setFilteredProjects(response.data.projects));
     } catch (err:any) {
       if(err.status === 404){
+        setShowNotFound(true);
         setProjects([]);
         dispatch(setFilteredProjects([]));
       }
