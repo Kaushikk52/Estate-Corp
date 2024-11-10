@@ -799,6 +799,36 @@ export default function AddPropertyLayout() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Under Construction
+                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.underConstruction"
+                              value="Yes"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Yes</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.underConstruction"
+                              value="No"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">No</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="details.underConstruction"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                       {values.details.underConstruction === "Yes" ? (
                         <div>
                           <label
@@ -841,36 +871,7 @@ export default function AddPropertyLayout() {
                           />
                         </div>
                       )}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Under Construction
-                        </label>
-                        <div className="mt-2 space-x-4">
-                          <label className="inline-flex items-center">
-                            <Field
-                              type="radio"
-                              name="details.underConstruction"
-                              value="Yes"
-                              className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="ml-2">Yes</span>
-                          </label>
-                          <label className="inline-flex items-center">
-                            <Field
-                              type="radio"
-                              name="details.underConstruction"
-                              value="No"
-                              className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="ml-2">No</span>
-                          </label>
-                        </div>
-                        <ErrorMessage
-                          name="details.underConstruction"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
+                    
                     </div>
 
                     {values.type === "RENT" && (
