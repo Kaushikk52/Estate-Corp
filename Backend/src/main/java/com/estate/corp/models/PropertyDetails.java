@@ -24,7 +24,7 @@ public class PropertyDetails {
 
     private String location;
 
-    @Column(name = "amenities", length = 500)
+    @Column(name = "ammenities", length = 2000)
     private List<String> ammenities;
 
     private String facing;
