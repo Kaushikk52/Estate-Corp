@@ -94,8 +94,8 @@ public class PropertyController {
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 log.info("Retrieved all properties");
-                return ResponseEntity.ok(response);
             }
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("An error occurred: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request.");
