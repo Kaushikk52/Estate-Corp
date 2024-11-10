@@ -125,8 +125,8 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 log.info("Retrieved all projects");
-                return ResponseEntity.ok(response);
             }
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             log.error("An error occurred: {}", e.getMessage());
