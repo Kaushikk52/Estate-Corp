@@ -63,6 +63,10 @@ export default function AddProjectLayout() {
       label: "Goregaon",
       options: ["Goregaon East", "Goregaon West"],
     },
+    {
+      label: "Kandivali",
+      options: ["Kandivali East", "Kandivali West"],
+    }
   ];
 
   const initialValues = {

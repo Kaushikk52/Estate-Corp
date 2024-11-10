@@ -71,6 +71,10 @@ export default function PropertyFilter({ onFilterChange }: FilterProps) {
     {
       label: "Goregaon",
       options: ["Goregaon East", "Goregaon West"]
+    },
+    {
+      label: "Kandivali",
+      options: ["Kandivali East", "Kandivali West"],
     }
   ]
 

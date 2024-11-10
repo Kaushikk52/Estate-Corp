@@ -65,6 +65,37 @@ export default function EditPropertyLayout() {
     images: [] as File[],
   };
 
+  const LOCATION_OPTIONS = [
+    {
+      label: "Bhayandar",
+      options: ["Bhayandar East", "Bhayandar West"],
+    },
+    {
+      label: "Mira Road",
+      options: ["Mira Road East"],
+    },
+    {
+      label: "Dahisar",
+      options: ["Dahisar East", "Dahisar West"],
+    },
+    {
+      label: "Borivali",
+      options: ["Borivali East", "Borivali West"],
+    },
+    {
+      label: "Malad",
+      options: ["Malad East", "Malad West"],
+    },
+    {
+      label: "Goregaon",
+      options: ["Goregaon East", "Goregaon West"],
+    },
+    {
+      label: "Kandivali",
+      options: ["Kandivali East", "Kandivali West"],
+    }
+  ];
+
   useEffect(() => {
     const token: any = localStorage.getItem("token");
     if (!token) {
@@ -524,41 +555,16 @@ export default function EditPropertyLayout() {
                           name="details.location"
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
-                          <option value="">Select location</option>
-                          <optgroup label="Bhayandar">
-                            <option value="Bhayandar East">
-                              Bhayandar East
-                            </option>
-                            <option value="Bhayandar West">
-                              Bhayandar West
-                            </option>
-                          </optgroup>
-
-                          <optgroup label="Mira Road">
-                            <option value="Mira Road East">
-                              Mira Road East
-                            </option>
-                          </optgroup>
-
-                          <optgroup label="Dahisar">
-                            <option value="Dahisar East">Dahisar East</option>
-                            <option value="Dahisar West">Dahisar West</option>
-                          </optgroup>
-
-                          <optgroup label="Borivali">
-                            <option value="Borivali East">Borivali East</option>
-                            <option value="Borivali West">Borivali West</option>
-                          </optgroup>
-
-                          <optgroup label="Malad">
-                            <option value="Malad East">Malad East</option>
-                            <option value="Malad West">Malad West</option>
-                          </optgroup>
-
-                          <optgroup label="Goregaon">
-                            <option value="Goregaon East">Goregaon East</option>
-                            <option value="Goregaon West">Goregaon West</option>
-                          </optgroup>
+                           <option value="">Select location</option>
+                          {LOCATION_OPTIONS.map((group) => (
+                            <optgroup key={group.label} label={group.label}>
+                              {group.options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
                         </Field>
                         <ErrorMessage
                           name="details.location"
