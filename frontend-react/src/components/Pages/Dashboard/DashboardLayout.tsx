@@ -142,7 +142,7 @@ export default function Dashboard() {
 
       const response = await axios.post(url, formData, {
         headers: {
-          Authorization: `Basic ${auth}`,
+          Authorization: `Bearer ${auth}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
@@ -159,9 +159,14 @@ export default function Dashboard() {
       alert("Error deleting image.");
     }
   }
+
   const removeProperty = async (id: string,images:File[]) => {
     try {
-      const deletePromises = images.map((image)=> deleteImage(`${uploadPreset}/${environment}/${image.name}`));
+      const deletePromises = images.map((image)=> 
+        {
+          console.log("Image : "+image)
+          deleteImage(`${uploadPreset}/${environment}/Properties/${image}`)
+        });
       const deletedImgs = await Promise.all(deletePromises);
       if(!deletedImgs){
         toast.error(`Images not Deleted`,{

@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User, Phone, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 export default function AuthPopup(props: any) {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -14,6 +26,10 @@ export default function AuthPopup(props: any) {
   const [activeTab, setActiveTab] = useState("login");
   const [user, setUser] = useState({});
   const [resetStep, setResetStep] = useState("email");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,11 +83,6 @@ export default function AuthPopup(props: any) {
       .required("Required"),
   });
 
-  const togglePopup = (tab: string) => {
-    setActiveTab(tab);
-    setIsOpen(!isOpen);
-  };
-
   async function handleRegister(values: any) {
     try {
       const response = await axios.post(
@@ -90,7 +101,7 @@ export default function AuthPopup(props: any) {
 
   async function handleLogin(values: any) {
     try {
-      const response = await axios.post(`${baseURL}/v1/api/auth/login`,values);
+      const response = await axios.post(`${baseURL}/v1/api/auth/login`, values);
       if (response.status === 200) {
         const token = localStorage.getItem("token");
         if (!token || token !== response.data.jwtToken) {
@@ -153,435 +164,384 @@ export default function AuthPopup(props: any) {
     }
   }
 
+  const togglePopup = (tab: string) => {
+    setActiveTab(tab);
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className="relative">
       {isOpen && (
         <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Welcome</h2>
-              <button
-                className="text-gray-500 hover:text-gray-700"
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-blue-500">Welcome</CardTitle>
+              <Button
+                variant="ghost"
+                className="absolute top-2 right-2"
                 onClick={() => setIsOpen(false)}
               >
                 ✕
-              </button>
-            </div>
-            {activeTab !== "forgotPassword" && (
-              <>
-                <p className="text-center text-gray-600 mb-6">
-                  {activeTab === "login"
-                    ? "Sign in to your account"
-                    : "Sign Up to create a new account"}
-                </p>
-                <div className="flex mb-4">
-                  <button
-                    className={`flex-1 py-2 ${
-                      activeTab === "register"
-                        ? "border-b-2 border-pink-500 text-pink-500"
-                        : "text-gray-500"
-                    }`}
-                    onClick={() => setActiveTab("register")}
-                  >
-                    Register
-                  </button>
-                  <button
-                    className={`flex-1 py-2 ${
-                      activeTab === "login"
-                        ? "border-b-2 border-purple-500 text-purple-500"
-                        : "text-gray-500"
-                    }`}
-                    onClick={() => setActiveTab("login")}
-                  >
-                    Login
-                  </button>
-                </div>
-              </>
-            )}
-
-            {activeTab === "login" && (
-              <Formik
-                initialValues={{ email: "", password: "" }}
-                validationSchema={loginSchema}
-                onSubmit={(values) => handleLogin(values)}
-              >
-                {({ errors, touched, isSubmitting }) => (
-                  <Form className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-700"
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {activeTab !== "forgotPassword" && (
+                <>
+                  <p className="text-center text-gray-600 mb-6">
+                    {activeTab === "login"
+                      ? "Sign in to your account"
+                      : "Sign Up to create a new account"}
+                  </p>
+                  <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="register">Register</TabsTrigger>
+                      <TabsTrigger value="login">Login</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="login">
+                      <Formik
+                        initialValues={{ email: "", password: "" }}
+                        validationSchema={loginSchema}
+                        onSubmit={(values) => handleLogin(values)}
                       >
-                        Email
-                      </label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <Field
-                          name="email"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="email"
-                        component="div"
-                        className="mt-1 text-sm text-red-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
+                        {({ errors, touched, isSubmitting }) => (
+                          <Form className="space-y-4">
+                            <div className="space-y-1">
+                              <Label htmlFor="email">Email</Label>
+                              <Field
+                                as={Input}
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="Enter your email"
+                              />
+                              <ErrorMessage
+                                name="email"
+                                component="div"
+                                className="text-sm text-red-500"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label htmlFor="password">Password</Label>
+                              <Field
+                                as={Input}
+                                id="password"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter your password"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="relative bottom-8 left-[90%] items-center text-gray-500"
+                              >
+                                {showPassword ? <Eye/>: <EyeOff/>}
+                              </button>
+                              <ErrorMessage
+                                name="password"
+                                component="div"
+                                className="text-sm text-red-500"
+                              />
+                            </div>
+                            <div className="text-right">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => setActiveTab("forgotPassword")}
+                              >
+                                Forgot password?
+                              </Button>
+                            </div>
+                            <Button
+                              type="submit"
+                              className="w-full bg-blue-500 hover:bg-blue-800 justify-center"
+                              disabled={isSubmitting}
+                            >
+                              Sign in
+                            </Button>
+                          </Form>
+                        )}
+                      </Formik>
+                    </TabsContent>
+                    <TabsContent value="register">
+                      <Formik
+                        initialValues={{
+                          fullName: "",
+                          email: "",
+                          password: "",
+                          phone: "",
+                          role: "",
+                        }}
+                        validationSchema={registerSchema}
+                        onSubmit={(values) => handleRegister(values)}
                       >
-                        Password
-                      </label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Lock className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <Field
-                          name="password"
-                          type="password"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="password"
-                        component="div"
-                        className="mt-1 text-sm text-red-500"
-                      />
-                    </div>
-                    <div className="text-right">
-                      <button
-                        type="button"
-                        className="text-sm text-purple-600 hover:text-purple-500"
-                        onClick={() => setActiveTab("forgotPassword")}
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                      disabled={isSubmitting}
-                    >
-                      Sign in
-                    </button>
-                  </Form>
-                )}
-              </Formik>
-            )}
-
-            {activeTab === "register" && (
-              <Formik
-                initialValues={{
-                  fullName: "",
-                  email: "",
-                  password: "",
-                  phone: "",
-                  role: "",
-                }}
-                validationSchema={registerSchema}
-                onSubmit={(values) => handleRegister(values)}
-              >
-                {({ errors, touched, isSubmitting }) => (
-                  <Form className="space-y-4">
-                    <div>
-                      <label
-                        htmlFor="fullName"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Name
-                      </label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <User className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <Field
-                          name="fullName"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="fullName"
-                        component="div"
-                        className="mt-1 text-sm text-red-500"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label
-                          htmlFor="email"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Email
-                        </label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Mail className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <Field
-                            name="email"
-                            className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <ErrorMessage
-                          name="email"
-                          component="div"
-                          className="mt-1 text-sm text-red-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="phone"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Phone
-                        </label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Phone className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <Field
-                            name="phone"
-                            className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <ErrorMessage
-                          name="phone"
-                          component="div"
-                          className="mt-1 text-sm text-red-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Password
-                      </label>
-                      <div className="mt-1 relative rounded-md shadow-sm">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Lock className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <Field
-                          name="password"
-                          type="password"
-                          className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                        />
-                      </div>
-                      <ErrorMessage
-                        name="password"
-                        component="div"
-                        className="mt-1 text-sm text-red-500"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="mt-6">
-                        <div className="relative">
-                          <div className="relative flex justify-center text-sm">
-                            <label className="block text-sm font-medium text-gray-700">
-                              Select Roles
-                            </label>
-                          </div>
-                          <div className="w-full border-t border-gray-300 mt-2"></div>
-                          <div className="flex justify-around mt-2">
-                            {roles.map((role) => (
-                              <div key={role} className="mb-4">
+                        {({ errors, touched, isSubmitting }) => (
+                          <Form className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="fullName">Name</Label>
+                              <Field
+                                as={Input}
+                                id="fullName"
+                                name="fullName"
+                                placeholder="Enter your full name"
+                              />
+                              <ErrorMessage
+                                name="fullName"
+                                component="div"
+                                className="text-sm text-red-500"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
                                 <Field
-                                  name="role"
-                                  type="radio"
-                                  value={role}
-                                  className="form-radio h-5 w-5 text-blue-600"
+                                  as={Input}
+                                  id="email"
+                                  name="email"
+                                  type="email"
+                                  placeholder="Enter your email"
                                 />
-                                <label className="ml-2 text-gray-700">
-                                  {role.replace("ROLE_", "")}
-                                </label>
+                                <ErrorMessage
+                                  name="email"
+                                  component="div"
+                                  className="text-sm text-red-500"
+                                />
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <ErrorMessage
-                        name="role"
-                        component="div"
-                        className="mt-1 text-sm text-red-500"
-                      />
-                    </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="phone">Phone</Label>
+                                <Field
+                                  as={Input}
+                                  id="phone"
+                                  name="phone"
+                                  placeholder="Enter your phone number"
+                                />
+                                <ErrorMessage
+                                  name="phone"
+                                  component="div"
+                                  className="text-sm text-red-500"
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              
+                              <Label htmlFor="password">Password</Label>
+                              <Field
+                                as={Input}
+                                id="password"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter your password"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="relative bottom-9 left-[90%] items-center text-gray-500"
+                              >
+                                {showPassword ? <Eye/>: <EyeOff/>}
+                              </button>
+                              <ErrorMessage
+                                name="password"
+                                component="div"
+                                className="text-sm text-red-500"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Select Role</Label>
+                              <Field name="role">
+                                {({ field }: any) => (
+                                  <RadioGroup
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    className="flex justify-around"
+                                  >
+                                    {roles.map((role) => (
+                                      <div
+                                        key={role}
+                                        className="flex items-center space-x-2"
+                                      >
+                                        <RadioGroupItem
+                                          value={role}
+                                          id={role}
+                                        />
+                                        <Label htmlFor={role}>
+                                          {role.replace("ROLE_", "")}
+                                        </Label>
+                                      </div>
+                                    ))}
+                                  </RadioGroup>
+                                )}
+                              </Field>
+                              <ErrorMessage
+                                name="role"
+                                component="div"
+                                className="text-sm text-red-500"
+                              />
+                            </div>
+                            <Button
+                              type="submit"
+                              className="w-full bg-blue-500 hover:bg-blue-800"
+                              disabled={isSubmitting}
+                            >
+                              Register
+                            </Button>
+                          </Form>
+                        )}
+                      </Formik>
+                    </TabsContent>
+                  </Tabs>
+                </>
+              )}
 
-                    <button
-                      type="submit"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                      disabled={isSubmitting}
+              {activeTab === "forgotPassword" && (
+                <div>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setActiveTab("login")}
+                    className="mb-4 flex items-center text-sm"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Back to Login
+                  </Button>
+                  {resetStep === "email" && (
+                    <Formik
+                      initialValues={{ email: "" }}
+                      validationSchema={forgotPasswordSchema}
+                      onSubmit={(values) => handleForgotPassword(values)}
                     >
-                      Register
-                    </button>
-                  </Form>
-                )}
-              </Formik>
-            )}
-
-            {activeTab === "forgotPassword" && (
-              <div>
-                <button
-                  onClick={() => setActiveTab("login")}
-                  className="mb-4 flex items-center text-sm text-gray-600 hover:text-gray-800"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back to Login
-                </button>
-                {resetStep === "email" && (
-                  <Formik
-                    initialValues={{ email: "" }}
-                    validationSchema={forgotPasswordSchema}
-                    onSubmit={(values) => handleForgotPassword(values)}
-                  >
-                    {({ errors, touched, isSubmitting }) => (
-                      <Form className="space-y-4">
-                        <div>
-                          <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Email
-                          </label>
-                          <div className="mt-1 relative rounded-md shadow-sm">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Mail className="h-5 w-5 text-gray-400" />
-                            </div>
+                      {({ errors, touched, isSubmitting }) => (
+                        <Form className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
                             <Field
+                              as={Input}
+                              id="email"
                               name="email"
-                              className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                              type="email"
                               placeholder="Enter your email"
                             />
-                          </div>
-                          <ErrorMessage
-                            name="email"
-                            component="div"
-                            className="mt-1 text-sm text-red-500"
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          disabled={isSubmitting}
-                        >
-                          Send Reset Email
-                        </button>
-                      </Form>
-                    )}
-                  </Formik>
-                )}
-                {resetStep === "otp" && (
-                  <Formik
-                    initialValues={{
-                      otp: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                    }}
-                    validationSchema={otpSchema}
-                    onSubmit={(values) => handleOTPVerification(values)}
-                  >
-                    {({ errors, touched, isSubmitting }) => (
-                      <Form className="space-y-4">
-                        <div>
-                          <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Email
-                          </label>
-                          <div className="mt-1 relative rounded-md shadow-sm">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Mail className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <Field
+                            <ErrorMessage
                               name="email"
-                              className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                              placeholder="Enter your email"
+                              component="div"
+                              className="text-sm text-red-500"
                             />
                           </div>
-                          <ErrorMessage
-                            name="email"
-                            component="div"
-                            className="mt-1 text-sm text-red-500"
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="otp"
-                            className="block text-sm font-medium text-gray-700"
+                          <Button
+                            type="submit"
+                            className="w-full justify-center bg-blue-500 hover:bg-blue-800"
+                            disabled={isSubmitting}
                           >
-                            Enter OTP
-                          </label>
-                          <Field
-                            name="otp"
-                            className="block w-full sm:text-sm border-gray-300 rounded-md"
-                          />
-                          <ErrorMessage
-                            name="otp"
-                            component="div"
-                            className="mt-1 text-sm text-red-500"
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
+                            Send Reset Email
+                          </Button>
+                        </Form>
+                      )}
+                    </Formik>
+                  )}
+                  {resetStep === "otp" && (
+                    <Formik
+                      initialValues={{
+                        otp: "",
+                        email: "",
+                        password: "",
+                        confirmPassword: "",
+                      }}
+                      validationSchema={otpSchema}
+                      onSubmit={(values) => handleOTPVerification(values)}
+                    >
+                      {({ errors, touched, isSubmitting }) => (
+                        <Form className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Field
+                              as={Input}
+                              id="email"
+                              name="email"
+                              type="email"
+                              placeholder="Enter your email"
+                            />
+                            <ErrorMessage
+                              name="email"
+                              component="div"
+                              className="text-sm text-red-500"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="otp">Enter OTP</Label>
+                            <InputOTP maxLength={6}>
+                              <InputOTPGroup>
+                                <InputOTPSlot index={0} />
+                                <InputOTPSlot index={1} />
+                                <InputOTPSlot index={2} />
+                                <InputOTPSlot index={3} />
+                                <InputOTPSlot index={4} />
+                                <InputOTPSlot index={5} />
+                              </InputOTPGroup>
+                            </InputOTP>
+                            <ErrorMessage
+                              name="otp"
+                              component="div"
+                              className="text-sm text-red-500"
+                            />
+                          </div>
+                          <div className="space-y-0">
+                            <Label htmlFor="password">New Password</Label>
+                            <Field
+                                as={Input}
+                                id="password"
+                                name="password"
+                                type={showNewPassword ? "text" : "password"}
+                                placeholder="Enter new password"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="relative bottom-7 left-[90%] items-center text-gray-500"
+                              >
+                                {showNewPassword ? <Eye/>: <EyeOff/>}
+                              </button>
+                            <ErrorMessage
+                              name="password"
+                              component="div"
+                              className="text-sm text-red-500"
+                            />
+                          </div>
+                          <div className="space-y-0">
+                            <Label htmlFor="confirmPassword">
+                              Confirm New Password
+                            </Label>
+                            <Field
+                                as={Input}
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Confirm new password"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="relative bottom-7 left-[90%] items-center text-gray-500"
+                              >
+                                {showConfirmPassword ? <Eye/>: <EyeOff/>}
+                              </button>
+                            <ErrorMessage
+                              name="confirmPassword"
+                              component="div"
+                              className="text-sm text-red-500"
+                            />
+                          </div>
+                          <Button
+                            type="submit"
+                            className="w-full justify-center bg-blue-500 hover:bg-blue-800"
+                            disabled={isSubmitting}
                           >
-                            New Password
-                          </label>
-                          <Field
-                            name="password"
-                            type="password"
-                            className="block w-full sm:text-sm border-gray-300 rounded-md"
-                          />
-                          <ErrorMessage
-                            name="password"
-                            component="div"
-                            className="mt-1 text-sm text-red-500"
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="confirmPassword"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Confirm New Password
-                          </label>
-                          <Field
-                            name="confirmPassword"
-                            type="password"
-                            className="block w-full sm:text-sm border-gray-300 rounded-md"
-                          />
-                          <ErrorMessage
-                            name="confirmPassword"
-                            component="div"
-                            className="mt-1 text-sm text-red-500"
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          disabled={isSubmitting}
-                        >
-                          Verify OTP
-                        </button>
-                      </Form>
-                    )}
-                  </Formik>
-                )}
-              </div>
-            )}
-          </div>
+                            Verify OTP
+                          </Button>
+                        </Form>
+                      )}
+                    </Formik>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
