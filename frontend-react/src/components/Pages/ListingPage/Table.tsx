@@ -111,6 +111,7 @@ export default function Table(props: any) {
       }
       setProperties(response.data.properties);
       dispatch(setFilteredProperties(response.data.properties));
+      setShowNotFound(false);
     } catch (err:any) {
       if(err.status === 404){
         setShowNotFound(true);
@@ -171,6 +172,7 @@ export default function Table(props: any) {
       }
       setProjects(response.data.projects);
       dispatch(setFilteredProjects(response.data.projects));
+      setShowNotFound(false);
     } catch (err:any) {
       if(err.status === 404){
         setShowNotFound(true);
