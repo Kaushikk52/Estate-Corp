@@ -175,14 +175,18 @@ export default function AuthPopup(props: any) {
         <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-blue-500">Welcome</CardTitle>
-              <Button
-                variant="ghost"
-                className="absolute top-2 right-2"
-                onClick={() => setIsOpen(false)}
-              >
-                ✕
-              </Button>
+              <div className="grid grid-cols-9 items-center">
+                <CardTitle className="col-start-1 col-span-1 text-2xl font-bold text-blue-500">
+                  Welcome
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  className="col-start-9 justify-self-end"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ✕
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {activeTab !== "forgotPassword" && (
@@ -204,7 +208,7 @@ export default function AuthPopup(props: any) {
                         onSubmit={(values) => handleLogin(values)}
                       >
                         {({ errors, touched, isSubmitting }) => (
-                          <Form className="space-y-4">
+                          <Form className="space-y-2">
                             <div className="space-y-1">
                               <Label htmlFor="email">Email</Label>
                               <Field
@@ -220,7 +224,7 @@ export default function AuthPopup(props: any) {
                                 className="text-sm text-red-500"
                               />
                             </div>
-                            <div className="space-y-1">
+                            <div className="space-y-0">
                               <Label htmlFor="password">Password</Label>
                               <Field
                                 as={Input}
@@ -234,7 +238,7 @@ export default function AuthPopup(props: any) {
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="relative bottom-8 left-[90%] items-center text-gray-500"
                               >
-                                {showPassword ? <Eye/>: <EyeOff/>}
+                                {showPassword ? <Eye /> : <EyeOff />}
                               </button>
                               <ErrorMessage
                                 name="password"
@@ -275,7 +279,7 @@ export default function AuthPopup(props: any) {
                         onSubmit={(values) => handleRegister(values)}
                       >
                         {({ errors, touched, isSubmitting }) => (
-                          <Form className="space-y-4">
+                          <Form className="space-y-2">
                             <div className="space-y-2">
                               <Label htmlFor="fullName">Name</Label>
                               <Field
@@ -286,6 +290,38 @@ export default function AuthPopup(props: any) {
                               />
                               <ErrorMessage
                                 name="fullName"
+                                component="div"
+                                className="text-sm text-red-500"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label>Select Role</Label>
+                              <Field name="role">
+                                {({ field }: any) => (
+                                  <RadioGroup
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    className="flex justify-around"
+                                  >
+                                    {roles.map((role) => (
+                                      <div
+                                        key={role}
+                                        className="flex items-center space-x-2"
+                                      >
+                                        <RadioGroupItem
+                                          value={role}
+                                          id={role}
+                                        />
+                                        <Label htmlFor={role}>
+                                          {role.replace("ROLE_", "")}
+                                        </Label>
+                                      </div>
+                                    ))}
+                                  </RadioGroup>
+                                )}
+                              </Field>
+                              <ErrorMessage
+                                name="role"
                                 component="div"
                                 className="text-sm text-red-500"
                               />
@@ -321,8 +357,7 @@ export default function AuthPopup(props: any) {
                                 />
                               </div>
                             </div>
-                            <div className="space-y-2">
-                              
+                            <div className="space-y-0">
                               <Label htmlFor="password">Password</Label>
                               <Field
                                 as={Input}
@@ -334,9 +369,9 @@ export default function AuthPopup(props: any) {
                               <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="relative bottom-9 left-[90%] items-center text-gray-500"
+                                className="relative bottom-7 left-[90%] items-center text-gray-500"
                               >
-                                {showPassword ? <Eye/>: <EyeOff/>}
+                                {showPassword ? <Eye /> : <EyeOff />}
                               </button>
                               <ErrorMessage
                                 name="password"
@@ -344,41 +379,9 @@ export default function AuthPopup(props: any) {
                                 className="text-sm text-red-500"
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label>Select Role</Label>
-                              <Field name="role">
-                                {({ field }: any) => (
-                                  <RadioGroup
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    className="flex justify-around"
-                                  >
-                                    {roles.map((role) => (
-                                      <div
-                                        key={role}
-                                        className="flex items-center space-x-2"
-                                      >
-                                        <RadioGroupItem
-                                          value={role}
-                                          id={role}
-                                        />
-                                        <Label htmlFor={role}>
-                                          {role.replace("ROLE_", "")}
-                                        </Label>
-                                      </div>
-                                    ))}
-                                  </RadioGroup>
-                                )}
-                              </Field>
-                              <ErrorMessage
-                                name="role"
-                                component="div"
-                                className="text-sm text-red-500"
-                              />
-                            </div>
                             <Button
                               type="submit"
-                              className="w-full bg-blue-500 hover:bg-blue-800"
+                              className="w-full justify-center bg-blue-500 hover:bg-blue-800"
                               disabled={isSubmitting}
                             >
                               Register
@@ -484,19 +487,21 @@ export default function AuthPopup(props: any) {
                           <div className="space-y-0">
                             <Label htmlFor="password">New Password</Label>
                             <Field
-                                as={Input}
-                                id="password"
-                                name="password"
-                                type={showNewPassword ? "text" : "password"}
-                                placeholder="Enter new password"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="relative bottom-7 left-[90%] items-center text-gray-500"
-                              >
-                                {showNewPassword ? <Eye/>: <EyeOff/>}
-                              </button>
+                              as={Input}
+                              id="password"
+                              name="password"
+                              type={showNewPassword ? "text" : "password"}
+                              placeholder="Enter new password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowNewPassword(!showNewPassword)
+                              }
+                              className="relative bottom-7 left-[90%] items-center text-gray-500"
+                            >
+                              {showNewPassword ? <Eye /> : <EyeOff />}
+                            </button>
                             <ErrorMessage
                               name="password"
                               component="div"
@@ -508,19 +513,21 @@ export default function AuthPopup(props: any) {
                               Confirm New Password
                             </Label>
                             <Field
-                                as={Input}
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm new password"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="relative bottom-7 left-[90%] items-center text-gray-500"
-                              >
-                                {showConfirmPassword ? <Eye/>: <EyeOff/>}
-                              </button>
+                              as={Input}
+                              id="confirmPassword"
+                              name="confirmPassword"
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Confirm new password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                              className="relative bottom-7 left-[90%] items-center text-gray-500"
+                            >
+                              {showConfirmPassword ? <Eye /> : <EyeOff />}
+                            </button>
                             <ErrorMessage
                               name="confirmPassword"
                               component="div"
