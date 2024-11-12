@@ -66,54 +66,59 @@ export default function Table(props: any) {
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
     try {
+      
       let url = `${baseURL}/v1/api/properties/filter?`;
+      switch (props.pageCategory) {
+        case "rent":
+          url += `category=${props.pageCategory.toUpperCase()}&`;
+          break;
+        case "buy":
+          url += `category=${props.pageCategory.toUpperCase()}&`;
+          break;
+        case "commercial":
+          url += `&variant=${props.pageCategory.toUpperCase()}&`;
+          break;
+        case "residential":
+          url += `variant=${props.pageCategory.toUpperCase()}&`;
+          break;
+
+        default:
+          url = `${baseURL}/v1/api/properties/filter?`;
+          break;
+      }
+
       if (filters) {
-        if (filters.locations.length > 0)
+        if (filters.locations.length > 0) {
           url += `locations=${filters.locations.join(",")}&`;
-        if (filters.bedrooms.length > 0)
+        }
+        if (filters.bedrooms.length > 0) {
           url += `bedrooms=${filters.bedrooms.join(",")}&`;
+        }
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
         if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
         if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
-        if (filters.minCarpetArea)
+        if (filters.minCarpetArea) {
           url += `minCarpetArea=${filters.minCarpetArea}&`;
-        if (filters.maxCarpetArea)
-          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
-        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
-      } else {
-        switch (props.pageCategory) {
-          case "rent":
-            url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "buy":
-            url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "commercial":
-            url = `${baseURL}/v1/api/properties/filter?&variant=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "residential":
-            url = `${baseURL}/v1/api/properties/filter?&variant=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          default:
-            url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
         }
+        if (filters.maxCarpetArea) {
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        }
+        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       }
+
       const response = await axios.get(url);
-      if(response.data.properties.length < 1){
+
+      if (response.data.properties.length < 1) {
         setShowNotFound(true);
-        // console.log("Properties not found ...",response)
         setProperties([]);
         dispatch(setFilteredProperties([]));
+      } else {
+        setProperties(response.data.properties);
+        dispatch(setFilteredProperties(response.data.properties));
+        setShowNotFound(false);
       }
-      setProperties(response.data.properties);
-      dispatch(setFilteredProperties(response.data.properties));
-      setShowNotFound(false);
-    } catch (err:any) {
-      if(err.status === 404){
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
         setShowNotFound(true);
         setProperties([]);
         dispatch(setFilteredProperties([]));
@@ -127,6 +132,7 @@ export default function Table(props: any) {
       setLoading(false);
     }
   };
+  
 
   const handlePropertyFilter = (filters: FilterState) => {
     fetchProperties(filters);
@@ -135,38 +141,43 @@ export default function Table(props: any) {
   const fetchProjects = async (filters?: FilterState) => {
     setLoading(true);
     try {
+      
       let url = `${baseURL}/v1/api/projects/filter?`;
+      switch (props.pageCategory) {
+        case "ongoing":
+          url += `underConstruction=YES&`;
+          break;
+        case "ready":
+          url += `underConstruction=NO&`;
+          break;
+        default:
+          url = `${baseURL}/v1/api/projects/filter?`;
+          break;
+      }
+
       if (filters) {
-        if (filters.locations.length > 0)
+        if (filters.locations.length > 0) {
           url += `locations=${filters.locations.join(",")}&`;
-        if (filters.bedrooms.length > 0)
+        }
+        if (filters.bedrooms.length > 0) {
           url += `bedrooms=${filters.bedrooms.join(",")}&`;
+        }
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
         if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
         if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
-        if (filters.minCarpetArea)
+        if (filters.minCarpetArea) {
           url += `minCarpetArea=${filters.minCarpetArea}&`;
-        if (filters.maxCarpetArea)
-          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
-        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
-      } else {
-        switch (props.pageCategory) {
-          case "ongoing":
-            url = `${baseURL}/v1/api/projects/filter?underConstruction=YES`;
-            break;
-
-          case "ready":
-            url = `${baseURL}/v1/api/projects/filter?underConstruction=NO`;
-            break;
-
-          default:
-            url = `${baseURL}/v1/api/projects/all`;
         }
+        if (filters.maxCarpetArea) {
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        }
+        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       }
+
       const response = await axios.get(url);
       if(response.data.projects.length < 1){
         setShowNotFound(true);
-        // console.log("Projects not found ...",response)
+        console.log("Projects not found ...",response)
         setProjects([]);
         dispatch(setFilteredProjects([]));
       }
