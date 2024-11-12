@@ -49,18 +49,26 @@ export default function LocationsCardsCarousel() {
   }, [activeFilter]);
 
   const fetchProperties = async () => {
-    let response;
-    if (activeFilter === "All") {
-      response = await axios.get(
-        `${baseURL}/v1/api/properties/isApproved?isApproved=true`
-      );
-    } else {
-      response = await axios.get(
-        `${baseURL}/v1/api/properties/filter?locations=${activeFilter}`
-      );
-    }
-    if (response.status == 200) {
-      setProperties(response.data.properties);
+    try{
+
+      let response;
+      if (activeFilter === "All") {
+        response = await axios.get(
+          `${baseURL}/v1/api/properties/isApproved?isApproved=true`
+        );
+      } else {
+        response = await axios.get(
+          `${baseURL}/v1/api/properties/filter?locations=${activeFilter}`
+        );
+      }
+      if (response.status == 200) {
+        setProperties(response.data.properties);
+      }
+    }catch(err:any){
+      if(err.status === 404){
+        setProperties([]);
+      }
+
     }
   };
 
