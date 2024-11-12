@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, AlertCircle } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers, FormikErrors } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { propertyValidationSchema } from "../../../Validations/propertyValidations";
@@ -93,7 +93,7 @@ export default function AddPropertyLayout() {
     {
       label: "Kandivali",
       options: ["Kandivali East", "Kandivali West"],
-    }
+    },
   ];
 
   useEffect(() => {
@@ -116,9 +116,7 @@ export default function AddPropertyLayout() {
     } catch (err) {
       console.log(err);
     }
-  },[]);
-
-
+  }, []);
 
   async function uploadSingleImage(image: File): Promise<string | null> {
     try {
@@ -131,7 +129,6 @@ export default function AddPropertyLayout() {
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
         formData
       );
-
       return res.data?.display_name ?? null;
     } catch (err) {
       console.error("Image upload failed:", err);
@@ -144,7 +141,10 @@ export default function AddPropertyLayout() {
       showToast("Please select an image first", "error");
       return [];
     }
-
+    toast.loading("Uploading Images ...", {
+      position: "bottom-right",
+      duration: 2000,
+    });
     const uploadPromises = images.map(uploadSingleImage);
     const imgUrls = await Promise.all(uploadPromises);
     return imgUrls.filter((url): url is string => url !== null);
@@ -177,7 +177,7 @@ export default function AddPropertyLayout() {
 
     try {
       setSubmitting(true);
-      const imageUrls:any = await uploadImages(values.images);
+      const imageUrls: any = await uploadImages(values.images);
       const preparedValues = prepareFormData(values);
       if (imageUrls.length > 0) {
         preparedValues.images = imageUrls;
@@ -186,7 +186,7 @@ export default function AddPropertyLayout() {
       const response = await axios.post(
         `${baseURL}/v1/api/properties/post`,
         preparedValues,
-       { headers: {Authorization: `Bearer ${token}`,timeout: 20000 }}
+        { headers: { Authorization: `Bearer ${token}`, timeout: 20000 } }
       );
 
       if (response.status === 201) {
@@ -248,12 +248,41 @@ export default function AddPropertyLayout() {
     }
   };
 
-  const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
+  const showErrorsToast = (errors: FormikErrors<typeof initialValues>, stepNumber: number) => {
+    const stepFields = getStepFields(stepNumber);
+    const errorMessages = stepFields.reduce((acc: string[], field) => {
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      for (const part of fieldParts) {
+        fieldError = fieldError && fieldError[part];
+      }
+      if (fieldError) {
+        acc.push(`${field}: ${fieldError}`);
+      }
+      return acc;
+    }, []);
+
+    if (errorMessages.length > 0) {
+      toast.error(
+        <div>
+          <strong>Errors on step {stepNumber}:</strong>
+          <ul className="list-disc pl-4 mt-2">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>,
+        { duration: 5000, position: "bottom-right" }
+      );
+    }
+  };
+
+  const hasStepErrors = (errors: FormikErrors<typeof initialValues>, touched: any, stepNumber: number) => {
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
-      const fieldParts = field.split(".");
-      let fieldError = errors;
-      let fieldTouched = touched;
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      let fieldTouched: any = touched;
       for (const part of fieldParts) {
         fieldError = fieldError && fieldError[part];
         fieldTouched = fieldTouched && fieldTouched[part];
@@ -261,6 +290,34 @@ export default function AddPropertyLayout() {
       return fieldError && fieldTouched;
     });
   };
+
+  const showAllErrors = (errors: FormikErrors<typeof initialValues>) => {
+    const allErrorMessages = steps.flatMap((_, index) => {
+      const stepNumber = index + 1;
+      const stepFields = getStepFields(stepNumber);
+      return stepFields.reduce((acc: string[], field) => {
+        const fieldParts = field.split('.');
+        let fieldError: any = errors;
+        for (const part of fieldParts) {
+          fieldError = fieldError && fieldError[part];
+        }
+        if (fieldError) {
+          acc.push(`Step ${stepNumber} - ${field}: ${fieldError}`);
+        }
+        return acc;
+      }, []);
+    });
+
+    if (allErrorMessages.length > 0) {
+      allErrorMessages.forEach((message)=>{
+        toast.error(
+          `${message}`,
+          { duration: 10000, position: "bottom-right" }
+        );
+      })
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-1 px-2 sm:px-3 lg:px-8">
@@ -332,7 +389,7 @@ export default function AddPropertyLayout() {
           validationSchema={propertyValidationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, errors, touched, setFieldValue, isSubmitting }) => (
+          {({ values, errors, touched, setFieldValue, isSubmitting}) => (
             <Form className="mt-8 space-y-6">
               <AnimatePresence mode="wait">
                 {step === 1 && (
@@ -557,7 +614,7 @@ export default function AddPropertyLayout() {
                           name="details.location"
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
-                        <option value="">Select location</option>
+                          <option value="">Select location</option>
                           {LOCATION_OPTIONS.map((group) => (
                             <optgroup key={group.label} label={group.label}>
                               {group.options.map((option) => (
@@ -799,7 +856,7 @@ export default function AddPropertyLayout() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                    <div>
+                      <div>
                         <label className="block text-sm font-medium text-gray-700">
                           Under Construction
                         </label>
@@ -871,7 +928,6 @@ export default function AddPropertyLayout() {
                           />
                         </div>
                       )}
-                    
                     </div>
 
                     {values.type === "RENT" && (
@@ -1203,14 +1259,15 @@ export default function AddPropertyLayout() {
                 )}
                 {step < 4 ? (
                   <button
-                    type="button" // Add this line
-                    onClick={() => setStep((prev) => prev + 1)}
-                    disabled={hasStepErrors(errors, touched, step)}
-                    className={`ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center ${
-                      hasStepErrors(errors, touched, step)
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
+                    type="button"
+                    onClick={() => {
+                      if (!hasStepErrors(errors, touched, step)) {
+                        setStep((prev) => prev + 1);
+                      } else {
+                        showErrorsToast(errors, step);
+                      }
+                    }}
+                    className="ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center"
                   >
                     Next
                     <ChevronRight className="w-5 h-5 ml-1" />
@@ -1218,6 +1275,11 @@ export default function AddPropertyLayout() {
                 ) : (
                   <Button
                     type="submit"
+                    onClick={() => {
+                      if (Object.keys(errors).length > 0) {
+                        showAllErrors(errors);
+                      }
+                    }}
                     disabled={isSubmitting}
                     className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
                   >
@@ -1235,6 +1297,24 @@ export default function AddPropertyLayout() {
                   </Button>
                 )}
               </div>
+              
+              {step === 4 && Object.keys(errors).length > 0 && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-yellow-400 mr-2" />
+                    <p className="text-sm text-yellow-700">
+                      There are errors in your form. Please review all steps before submitting.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => showAllErrors(errors)}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
+                  >
+                    View all errors
+                  </button>
+                </div>
+              )}
             </Form>
           )}
         </Formik>

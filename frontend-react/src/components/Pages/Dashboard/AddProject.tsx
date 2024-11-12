@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   Formik,
@@ -9,6 +9,7 @@ import {
   ErrorMessage,
   FormikHelpers,
   FieldArray,
+  FormikErrors,
 } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -236,20 +237,74 @@ async function handleSubmit(
         return [];
     }
   };
+  const showErrorsToast = (errors: FormikErrors<typeof initialValues>, stepNumber: number) => {
+    const stepFields = getStepFields(stepNumber);
+    const errorMessages = stepFields.reduce((acc: string[], field) => {
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      for (const part of fieldParts) {
+        fieldError = fieldError && fieldError[part];
+      }
+      if (fieldError) {
+        acc.push(`${field}: ${fieldError}`);
+      }
+      return acc;
+    }, []);
 
-  const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
-    // console.log(errors,touched,stepNumber);
+    if (errorMessages.length > 0) {
+      toast.error(
+        <div>
+          <strong>Errors on step {stepNumber}:</strong>
+          <ul className="list-disc pl-4 mt-2">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>,
+        { duration: 5000, position: "bottom-right" }
+      );
+    }
+  };
+
+  const hasStepErrors = (errors: FormikErrors<typeof initialValues>, touched: any, stepNumber: number) => {
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
-      const fieldParts = field.split(".");
-      let fieldError = errors;
-      let fieldTouched = touched;
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      let fieldTouched: any = touched;
       for (const part of fieldParts) {
         fieldError = fieldError && fieldError[part];
         fieldTouched = fieldTouched && fieldTouched[part];
       }
       return fieldError && fieldTouched;
     });
+  };
+
+  const showAllErrors = (errors: FormikErrors<typeof initialValues>) => {
+    const allErrorMessages = steps.flatMap((_, index) => {
+      const stepNumber = index + 1;
+      const stepFields = getStepFields(stepNumber);
+      return stepFields.reduce((acc: string[], field) => {
+        const fieldParts = field.split('.');
+        let fieldError: any = errors;
+        for (const part of fieldParts) {
+          fieldError = fieldError && fieldError[part];
+        }
+        if (fieldError) {
+          acc.push(`Step ${stepNumber} - ${field}: ${fieldError}`);
+        }
+        return acc;
+      }, []);
+    });
+
+    if (allErrorMessages.length > 0) {
+      allErrorMessages.forEach((message)=>{
+        toast.error(
+          `${message}`,
+          { duration: 10000, position: "bottom-right" }
+        );
+      })
+    }
   };
 
   return (
@@ -1243,6 +1298,24 @@ async function handleSubmit(
                 </Button>
               )}
             </div>
+
+            {step === 4 && Object.keys(errors).length > 0 && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-yellow-400 mr-2" />
+                    <p className="text-sm text-yellow-700">
+                      There are errors in your form. Please review all steps before submitting.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => showAllErrors(errors)}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
+                  >
+                    View all errors
+                  </button>
+                </div>
+              )}
             </Form>
           )}
         </Formik>
