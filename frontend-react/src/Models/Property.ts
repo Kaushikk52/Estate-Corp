@@ -16,6 +16,8 @@ interface Property {
     type: Type;
     address: Address;
     details: PropertyDetails;
+    createdAt:Date;
+    
   }
 
   export default Property;

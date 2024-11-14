@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import Property from "@/Models/Property";
 
 const data = [
   { name: "Jan", value: 400 },
@@ -431,7 +432,9 @@ export default function Dashboard() {
                       </td>
                     </tr>
                   ) : (
-                    properties.map((property, index) => (
+                    properties
+                    .sort((a: any, b: any) => a.createdAt.getFullYear - b.createdAt.getFullYear)
+                    .map((property, index) => (
                       <tr key={index}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {index + 1}
