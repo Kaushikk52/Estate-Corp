@@ -148,7 +148,7 @@ export default function ProjectsCarousel(props: any) {
                           {project.floorPlans
                             .map((plan: any) => plan.bedrooms)
                             .sort((a: number, b: number) => a - b)
-                            .join(",")}{" "}
+                            .join("/")}{" "}
                           BHK
                         </span>
                         <span className="text-sm font-semibold text-blue-600">
