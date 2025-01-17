@@ -35,6 +35,7 @@ function App() {
               <Route path='/dashboard/add-project' element={<AddProjectLayout />} />
               <Route path='/dashboard/users' element={<UsersLayout/>} />
             </Route>
+            <Route path="/blog"  element={<Listing />}/>
             <Route path="/listings/:type/:category"  element={<Listing />}/>
             <Route path="/contact-us" element={<ContactPage />}/>
           </Route>

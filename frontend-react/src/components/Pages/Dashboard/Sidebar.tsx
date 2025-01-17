@@ -1,15 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  Home,
-  LayoutDashboard,
-  Users,
-  Menu,
-  User,
-  LogOut,
-  Building2,
-  PlusSquare
-} from "lucide-react";
+import { Home,LayoutDashboard,Users,Menu,User,LogOut,PlusSquare,Flame } from "lucide-react";
 import axios from "axios";
 
 const navItems = [
@@ -17,6 +8,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard/main" },
   { icon: PlusSquare, label: "Add Project", href: "/dashboard/add-project" },
   { icon: Users, label: "Users", href: `users` },
+  {icon : Flame, label: "Blog Posting", href:`/blog`}
 ];
 
 export default function SidebarNavigation() {
