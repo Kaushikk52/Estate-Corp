@@ -10,9 +10,11 @@ import com.estate.corp.specifications.PropertySpecification;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
@@ -58,7 +60,7 @@ public class PropertyServices {
         return savedProperty;
     }
 
-    public List<Property> getAllProperties() {
+    public List<Property> getAllProperties(int pageNo, int pageSize) {
         return propertyRepo.findAll();
     }
 

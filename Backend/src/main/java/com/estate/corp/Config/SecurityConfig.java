@@ -65,6 +65,10 @@ public class SecurityConfig {
                         //Notifications endpoints
                         .requestMatchers("/v1/api/enquiry/email","/v1/api/enquiry/all").permitAll()
 
+                        //Blogs endpoints
+                        .requestMatchers(HttpMethod.GET,"/v1/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/v1/api/blogs/**").hasRole("ADMIN")
+
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

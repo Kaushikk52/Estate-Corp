@@ -4,10 +4,12 @@ import com.estate.corp.models.Property;
 import com.estate.corp.services.PropertyServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
@@ -23,8 +25,8 @@ public class PropertyController {
     private PropertyServices propertyServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<?> getAllProperties() {
-        List<Property> properties = propertyServ.getAllProperties();
+    public ResponseEntity<?> getAllProperties(@RequestParam(defaultValue = "0") int page , @RequestParam("10") int size) {
+        List<Property> properties = propertyServ.getAllProperties(page,size);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "All properties retrieved");
         response.put("properties",properties);
