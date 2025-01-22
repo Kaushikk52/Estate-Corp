@@ -14,10 +14,15 @@ import {
   Users,
   Package,
   Activity,
+  Trash2,
+  Pencil,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import Property from "@/Models/Property";
+import Project from "@/Models/Project";
+import {filter} from "lodash";
 
 const data = [
   { name: "Jan", value: 400 },
@@ -39,9 +44,13 @@ const CardBackground = ({ color }: { color: string }) => (
 
 export default function Dashboard() {
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
+  const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const navigate = useNavigate();
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [propertyName, setpropertyName] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [mssg, setMssg] = useState("status changed");
   const [notifications, setNotifications] = useState<any>();
   const [currentUser, setCurrentUser] = useState({
@@ -86,6 +95,8 @@ export default function Dashboard() {
       owner: { fullName: "" },
     },
   ]);
+
+  const [projects, setProjects] = useState<Project[]>([]);
   const cards = [
     {
       title: "Total Revenue",
@@ -124,18 +135,93 @@ export default function Dashboard() {
   useEffect(() => {
     getCurrentUser();
   }, []);
-  
+
+  async function deleteImage(publicId: string){
+    const apiKey = "592864215367616";
+    const apiSecret = "tnUjgE5Q-tn0Pme8G7q3tqWeBMw";
+    try {
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
+      const auth = btoa(`${apiKey}:${apiSecret}`);
+
+      const formData = new URLSearchParams();
+      formData.append("public_id", publicId);
+
+      const response = await axios.post(url, formData, {
+        headers: {
+          Authorization: `Bearer ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+
+      if (response.data.result === "ok") {
+        console.log("Image deleted successfully!");
+        alert("Image deleted successfully!");
+      } else {
+        console.error("Failed to delete image:", response.data);
+        alert("Failed to delete image.");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      alert("Error deleting image.");
+    }
+  }
+
+  const removeProperty = async (id: string,images:File[]) => {
+    try {
+      const deletePromises = images.map((image)=> 
+        {
+          console.log("Image : "+image)
+          deleteImage(`${uploadPreset}/${environment}/Properties/${image}`)
+        });
+      const deletedImgs = await Promise.all(deletePromises);
+      if(!deletedImgs){
+        toast.error(`Images not Deleted`,{
+          position:"bottom-right",
+          duration:3000
+        });
+        return;
+      }
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${baseURL}/v1/api/properties/delete/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 200) {
+        getProperties(currentUser.role);
+        toast.success(`Property deleted !`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    } catch (err) {
+      console.log("An error occurred : ", err);
+      toast.error(`An error occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+  };
+
   useEffect(() => {
-    if (searchTerm === "") {
+    if (propertyName === "") {
       getProperties(currentUser.role);
     } else {
-      searchFilter();
+      propertyFilter();
     }
-  }, [searchTerm]);
+  }, [propertyName]);
 
-  const searchFilter = () => {
+  useEffect(()=>{
+    if(projectName === "") {
+      getProjects(currentUser.role);
+    } else {
+      projectFilter();
+    }
+  },[projectName]);
+
+  const propertyFilter = () => {
     const filteredProperties = properties.filter((property) =>
-      property.name.toLowerCase().includes(searchTerm.toLowerCase())
+      property.name.toLowerCase().includes(propertyName.toLowerCase())
     );
     if (filteredProperties.length > 0) {
       // console.log(filteredProperties);
@@ -144,6 +230,21 @@ export default function Dashboard() {
       getProperties(currentUser.role);
     }
   };
+
+  const projectFilter = () => {
+    console.log("Projects : ",projects);
+    const filteredProjects = projects.filter((project)=> {
+      const isEqual = project.name.toLowerCase().includes(projectName.toLowerCase())
+      return isEqual;
+    });
+
+    console.log("Filtered Projects : ",filteredProjects)
+    if(filteredProjects.length > 0) {
+      setProjects(filteredProjects);
+    } else {
+      getProjects(currentUser.role);
+    }
+  }
 
   const getCurrentUser = async () => {
     try {
@@ -206,6 +307,27 @@ export default function Dashboard() {
       console.log("An error occurred : ", err.message);
     }
   };
+
+
+  const getProjects = async (role:any) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`${baseURL}/v1/api/projects/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        setProjects(response.data.projects);
+      } else if (response.status === 204) {
+        setProjects([]);
+        toast.error("No projects found", {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    } catch (err: any) {
+      console.log("An error occurred : ", err.message);
+    }
+  }
 
   const getNotifications = async (role: any) => {
     try {
@@ -305,9 +427,6 @@ export default function Dashboard() {
           <div></div>
         )}
 
-        {currentUser.role === "ROLE_ADMIN" ||
-        currentUser.role === "ROLE_AGENT" ||
-        currentUser.role === "ROLE_RESALER" ? (
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold mb-4">Properties Tracker</h2>
@@ -319,8 +438,8 @@ export default function Dashboard() {
                   w-full sm:w-60 md:w- lg:w-1/3 xl:w-1/4
                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                   transition-all duration-200"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={propertyName}
+                onChange={(e) => setpropertyName(e.target.value)}
               />
             </div>
             <div className="overflow-x-auto mt-3">
@@ -362,9 +481,11 @@ export default function Dashboard() {
                       </td>
                     </tr>
                   ) : (
-                    properties.map((property, index) => (
+                    properties
+                    .sort((a: any, b: any) => a.createdAt.getFullYear - b.createdAt.getFullYear)
+                    .map((property, index) => (
                       <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg">
                           {index + 1}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -383,11 +504,11 @@ export default function Dashboard() {
                           {property.address.locality}
                         </td>
                         {currentUser.role === "ROLE_ADMIN" ? (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between">
                             {property.details.hasOwnProperty("isApproved") !==
                               null && property.details.isApproved === false ? (
                               <button
-                                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                                className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
                                 onClick={() =>
                                   changeApprovalStatus(property.id, false)
                                 }
@@ -396,7 +517,7 @@ export default function Dashboard() {
                               </button>
                             ) : (
                               <button
-                                className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
                                 onClick={() =>
                                   changeApprovalStatus(property.id, true)
                                 }
@@ -404,9 +525,45 @@ export default function Dashboard() {
                                 Approved
                               </button>
                             )}
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/edit-property/${property.id}`
+                                )
+                              }
+                            >
+                              <Pencil size={20} />
+                            </button>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={() => removeProperty(property.id,property.images)}
+                            >
+                              <Trash2 size={20} />
+                            </button>
                           </td>
                         ) : (
-                          <td></td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between">
+                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-500">
+                              View
+                            </button>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/edit-property/${property.id}`
+                                )
+                              }
+                            >
+                              <Pencil size={20} />
+                            </button>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={() => removeProperty(property.id,property.images)}
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </td>
                         )}
                       </tr>
                     ))
@@ -415,9 +572,132 @@ export default function Dashboard() {
               </table>
             </div>
           </div>
-        ) : (
-          <div></div>
-        )}
+
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold mb-4">Project Tracker</h2>
+              <input
+                type="search"
+                placeholder={`Project Name ...`}
+                className=" px-4 py-2 
+                  border rounded-md 
+                  w-full sm:w-60 md:w- lg:w-1/3 xl:w-1/4
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                  transition-all duration-200"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+              />
+            </div>
+            <div className="overflow-x-auto mt-3">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      #
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Owner Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Project Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Under Construction
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      City
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    {currentUser.role === "ROLE_ADMIN" ? (
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Action
+                      </th>
+                    ) : (
+                      <th></th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {projects.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="text-center py-4">
+                        No Data
+                      </td>
+                    </tr>
+                  ) : (
+                    projects
+                    .sort((a: any, b: any) => a.createdAt.getFullYear - b.createdAt.getFullYear)
+                    .map((project, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {project.owner.fullName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {project.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {project.underConstruction}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {project.location}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {project.address.locality}
+                        </td>
+                        {currentUser.role === "ROLE_ADMIN" ? (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between">
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/edit-project/${project.id}`
+                                )
+                              }
+                            >
+                              <Pencil size={20} />
+                            </button>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={()=> {}}
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </td>
+                        ) : (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between">
+                            <button className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-500">
+                              View
+                            </button>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-500"
+                              onClick={() =>
+                                navigate(
+                                  `/dashboard/edit-property/${project.id}`
+                                )
+                              }
+                            >
+                              <Pencil size={20} />
+                            </button>
+                            <button
+                              className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                              onClick={() => {}}
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
       </div>
 
       <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-2">

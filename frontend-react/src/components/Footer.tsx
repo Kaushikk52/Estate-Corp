@@ -37,7 +37,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
             <ul className="space-y-2">
               <li><a href="#" className="flex gap-2 items-center"><MapPin size={35}/>A-2,Solitaire Height,Next to Dwarka Hotel,Shimpoli,Borivali-W,Mumbai-92</a></li>
-              <li><a href="#" className="flex gap-2 items-center"><Mail size={20}/>estatecorpbw@gmail.com</a></li>
+              <li><a href="#" className="flex gap-2 items-center"><Mail size={20}/>iestatecorp@gmail.com</a></li>
             </ul>
           </div>
 

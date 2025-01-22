@@ -2,12 +2,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import BlogSidebar from "./BlogSidebar";
-import PropertyFilter from "../../PropertyFilter";
-import ProjectFilter from "../../ProjectFilter";
-import Property from "../../../Models/Property";
+import PropertyFilter from "@/components/PropertyFilter";
+import ProjectFilter from "@/components/ProjectFilter";
+import Property from "@/Models/Property";
 import Projects from "./Projects";
 import Properties from "./Properties";
-import Project from "../../../Models/Project";
+import Project from "@/Models/Project";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setFilteredProjects,
+  setFilteredProperties,
+} from "@/features/Filters/filterSlice";
+import Filters from "@/components/Filters";
+import { set } from "react-datepicker/dist/date_utils";
 
 interface FilterState {
   locations: string[];
@@ -21,67 +28,103 @@ interface FilterState {
 }
 
 export default function Table(props: any) {
+  const dispatch = useDispatch();
   const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+  const {
+    filteredProjects,
+    filteredProperties,
+    allProperties,
+    allProjects,
+    filters,
+  } = useSelector((state: any) => state.filters);
   const [properties, setProperties] = useState<Property[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showNotFound, setShowNotFound] = useState(false);
 
   useEffect(() => {
-    if (props.pageType === "properties") {
-      setProperties([]);
-      setProjects([]);
-      fetchProperties();
-    } else {
-      setProperties([]);
-      setProjects([]);
-      fetchProjects();
+    switch (props.pageType) {
+      case "properties":
+        fetchProperties();
+        break;
+      case "projects":
+        fetchProjects();
+        break;
+      case "all":
+        if (filters){
+          fetchProjects(filters);
+          fetchProperties(filters);
+        }
+        break;
+      default:
+        fetchProjects(filters);
+        fetchProperties(filters);
+        break;
     }
-  }, [props.pageCategory, props.pageType]);
+  }, [props.pageCategory, props.pageType, filters]);
 
   const fetchProperties = async (filters?: FilterState) => {
     setLoading(true);
     try {
+      
       let url = `${baseURL}/v1/api/properties/filter?`;
+      switch (props.pageCategory) {
+        case "rent":
+          url += `category=${props.pageCategory.toUpperCase()}&`;
+          break;
+        case "buy":
+          url += `category=${props.pageCategory.toUpperCase()}&`;
+          break;
+        case "commercial":
+          url += `&variant=${props.pageCategory.toUpperCase()}&`;
+          break;
+        case "residential":
+          url += `variant=${props.pageCategory.toUpperCase()}&`;
+          break;
+
+        default:
+          url = `${baseURL}/v1/api/properties/filter?`;
+          break;
+      }
+
       if (filters) {
-        if (filters.locations.length > 0)
+        if (filters.locations.length > 0) {
           url += `locations=${filters.locations.join(",")}&`;
-        if (filters.bedrooms.length > 0)
+        }
+        if (filters.bedrooms.length > 0) {
           url += `bedrooms=${filters.bedrooms.join(",")}&`;
+        }
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
         if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
         if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
-        if (filters.minCarpetArea)
+        if (filters.minCarpetArea) {
           url += `minCarpetArea=${filters.minCarpetArea}&`;
-        if (filters.maxCarpetArea)
-          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
-        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
-      } else {
-        switch (props.pageCategory) {
-          case "rent":
-            url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "buy":
-            url = `${baseURL}/v1/api/properties/filter?&category=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "commercial":
-            url = `${baseURL}/v1/api/properties/filter?&variant=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          case "residential":
-            url = `${baseURL}/v1/api/properties/filter?&variant=${props.pageCategory.toUpperCase()}`;
-            break;
-
-          default:
-            url = `${baseURL}/v1/api/properties/isApproved?isApproved=true`;
         }
+        if (filters.maxCarpetArea) {
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        }
+        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       }
+
       const response = await axios.get(url);
-      setProperties(response.data.properties);
-    } catch (err) {
+
+      if (response.data.properties.length < 1) {
+        setShowNotFound(true);
+        setProperties([]);
+        dispatch(setFilteredProperties([]));
+      } else {
+        setProperties(response.data.properties);
+        dispatch(setFilteredProperties(response.data.properties));
+        setShowNotFound(false);
+      }
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        setShowNotFound(true);
+        setProperties([]);
+        dispatch(setFilteredProperties([]));
+      }
       console.error("An error occurred: ", err);
-      toast.error(`Failed to fetch properties`, {
+      toast.error("Failed to fetch properties", {
         position: "bottom-right",
         duration: 3000,
       });
@@ -89,6 +132,7 @@ export default function Table(props: any) {
       setLoading(false);
     }
   };
+  
 
   const handlePropertyFilter = (filters: FilterState) => {
     fetchProperties(filters);
@@ -97,45 +141,68 @@ export default function Table(props: any) {
   const fetchProjects = async (filters?: FilterState) => {
     setLoading(true);
     try {
+      
       let url = `${baseURL}/v1/api/projects/filter?`;
+      switch (props.pageCategory) {
+        case "ongoing":
+          url += `underConstruction=YES&`;
+          break;
+        case "ready":
+          url += `underConstruction=NO&`;
+          break;
+        default:
+          url = `${baseURL}/v1/api/projects/filter?`;
+          break;
+      }
+
       if (filters) {
-        if (filters.locations.length > 0)
+        if (filters.locations.length > 0) {
           url += `locations=${filters.locations.join(",")}&`;
-        if (filters.bedrooms.length > 0)
+        }
+        if (filters.bedrooms.length > 0) {
           url += `bedrooms=${filters.bedrooms.join(",")}&`;
+        }
         if (filters.minPrice) url += `minPrice=${filters.minPrice}&`;
         if (filters.maxPrice) url += `maxPrice=${filters.maxPrice}&`;
         if (filters.amtUnit) url += `amtUnit=${filters.amtUnit}&`;
-        if (filters.minCarpetArea)
+        if (filters.minCarpetArea) {
           url += `minCarpetArea=${filters.minCarpetArea}&`;
-        if (filters.maxCarpetArea)
-          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
-        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
-      } else {
-        switch (props.pageCategory) {
-          case "ongoing":
-            url = `${baseURL}/v1/api/projects/filter?underConstruction=YES`;
-            break;
-
-          case "ready":
-            url = `${baseURL}/v1/api/projects/filter?underConstruction=NO`;
-            break;
-
-          default:
-            url = `${baseURL}/v1/api/projects/all`;
         }
+        if (filters.maxCarpetArea) {
+          url += `maxCarpetArea=${filters.maxCarpetArea}&`;
+        }
+        if (filters.areaUnit) url += `areaUnit=${filters.areaUnit}&`;
       }
+
       const response = await axios.get(url);
+      if(response.data.projects.length < 1){
+        setShowNotFound(true);
+        console.log("Projects not found ...",response)
+        setProjects([]);
+        dispatch(setFilteredProjects([]));
+      }
       setProjects(response.data.projects);
-    } catch (err) {
+      dispatch(setFilteredProjects(response.data.projects));
+      setShowNotFound(false);
+    } catch (err:any) {
+      if(err.status === 404){
+        setShowNotFound(true);
+        setProjects([]);
+        dispatch(setFilteredProjects([]));
+      }
       console.error("An error occurred: ", err);
-      toast.error(`Failed to fetch properties`, {
+      toast.error("Failed to fetch projects", {
         position: "bottom-right",
         duration: 3000,
       });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAllFilter = (filters: FilterState) => {
+    fetchProperties(filters);
+    fetchProjects(filters);
   };
 
   const handleProjectFilter = (filters: FilterState) => {
@@ -148,7 +215,9 @@ export default function Table(props: any) {
         <h1 className="text-3xl md:text-4xl font-bold mb-8 text-blue-800 capitalize">
           Find Your Dream {props.pageType}
         </h1>
-        {props.pageType === "properties" ? (
+        {props.pageType === "all" ? (
+          <Filters onFilterChange={handleAllFilter} />
+        ) : props.pageType === "properties" ? (
           <PropertyFilter onFilterChange={handlePropertyFilter} />
         ) : (
           <ProjectFilter onFilterChange={handleProjectFilter} />
@@ -159,23 +228,35 @@ export default function Table(props: any) {
             <p className="mt-2 text-blue-600">Loading {props.pageType}...</p>
           </div>
         )}
-        {props.pageType === "properties" ? (
-          <Properties properties={properties} />
+        
+          {(!loading && showNotFound) &&
+            <div
+              className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              {props.pageType === "all" ?
+                <strong className="font-bold">No Properties/Projects found!</strong>
+                : <strong className="font-bold">No {props.pageType} found!</strong>
+              }
+              
+              <span className="block sm:inline">
+                {" "}
+                Please try adjusting your filters.
+              </span>
+            </div>
+          }
+
+        {props.pageType === "all" ? (
+          <>
+            <Properties properties={filteredProperties || allProperties} />
+            <Projects projects={filteredProjects || allProjects} />
+          </>
+        ) : props.pageType === "properties" ? (
+          <Properties properties={properties || filteredProperties} />
         ) : (
-          <Projects projects={projects} />
+          <Projects projects={projects || filteredProjects} />
         )}
-        {!loading && projects.length === 0 && properties.length === 0 && (
-          <div
-            className="text-center mt-8 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <strong className="font-bold">No {props.pageType} found!</strong>
-            <span className="block sm:inline">
-              {" "}
-              Please try adjusting your filters.
-            </span>
-          </div>
-        )}
+        
       </main>
       <BlogSidebar />
     </div>

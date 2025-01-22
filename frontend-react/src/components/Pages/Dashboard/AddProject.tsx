@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   Formik,
@@ -9,12 +9,14 @@ import {
   ErrorMessage,
   FormikHelpers,
   FieldArray,
+  FormikErrors,
 } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { projectValidationSchema } from "../../../Validations/projectValidations";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Button } from "@/components/ui/button";
 
 
 const DatePickerField = ({ field, form }: any) => {
@@ -34,7 +36,6 @@ export default function AddProjectLayout() {
   const cloudName = import.meta.env.VITE_APP_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
   const environment = import.meta.env.VITE_APP_ENV || 'LOCAL';
-  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const projectsPath = `${uploadPreset}/${environment}/Projects`;
   const [step, setStep] = useState(1);
 
@@ -63,6 +64,10 @@ export default function AddProjectLayout() {
       label: "Goregaon",
       options: ["Goregaon East", "Goregaon West"],
     },
+    {
+      label: "Kandivali",
+      options: ["Kandivali East", "Kandivali West"],
+    }
   ];
 
   const initialValues = {
@@ -122,100 +127,90 @@ export default function AddProjectLayout() {
     }
   }, []);
 
-  async function uploadImages(images: any,type:string) {
-    if (!images || images.length === 0) {
-      toast.error("Please select an image first", {
-        position: "bottom-right",
-        duration: 3000,
-      });
-      return [];
-    }
 
-    const imgUrls: string[] = [];
+async function uploadSingleImage(image: File): Promise<string | null> {
+  try {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", projectsPath);
 
-    try {
-      await Promise.all(
-        images.map(async (img: any) => {
-          const formData = new FormData();
-          formData.append("file", img);
-          formData.append("upload_preset", uploadPreset);
-          if(type === "properties"){
-            formData.append("folder",propertiesPath);
-          }else{
-            formData.append("folder",projectsPath);
-          }
-          const response = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
-            formData
-          );
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
+      formData
+    );
 
-          if (response && response.data && response.data.display_name) {
-            // console.log("Image uploaded...", response.data.display_name);
-            imgUrls.push(response.data.display_name);
-          }
-        })
-      );
+    return res.data?.display_name || null;
+  } catch (err) {
+    console.error("Image upload failed:", err);
+    return null;
+  }
+}
 
-      return imgUrls;
-    } catch (err) {
-      toast.error(`Upload failed: ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
-      return [];
-    }
+async function uploadImages(images: File[]): Promise<string[]> {
+  if (!images?.length) {
+    toast.error("Please select an image first", {
+      position: "bottom-right",
+      duration: 3000,
+    });
+    return [];
   }
 
-  async function handleSubmit(
-    values: typeof initialValues,
-    { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
-  ) {
-    if (step !== 4 || values.ammenities.length < 1) {
-      setSubmitting(false);
-      return;
-    }
-    try {
-      const updatedFloorPlans = await Promise.all(
-        values.floorPlans.map(async (floorPlan) => {
-          const url = await uploadImages([floorPlan.image],"properties");
-          return { ...floorPlan, image: url[0] };
-        })
-      );
+  const uploadPromises = images.map(uploadSingleImage);
+  const imgUrls = await Promise.all(uploadPromises);
+  return imgUrls.filter((url): url is string => url !== null);
+}
 
-      const projectImages = await uploadImages(values.images,"projects");
+async function handleSubmit(
+  values: typeof initialValues,
+  { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
+) {
+  if (step !== 4 || values.ammenities.length < 1) {
+    setSubmitting(false);
+    return;
+  }
+  try {
+    setSubmitting(true)
+    const updatedFloorPlans = await Promise.all(
+      values.floorPlans.map(async (floorPlan) => {
+        if(floorPlan.image == null){
+          return { ...floorPlan, image: null };
+        }
+        const url = await uploadSingleImage(floorPlan.image);
+        return { ...floorPlan, image: url };
+      })
+    );
+    const projectImages = await uploadImages(values.images);
+    const projectData = {
+      ...values,
+      floorPlans: updatedFloorPlans,
+      images: projectImages,
+      underConstruction: values.underConstruction,
+    };
 
-      const projectData = {
-        ...values,
-        floorPlans: updatedFloorPlans,
-        images: projectImages,
-        underConstruction: values.underConstruction,
-      };
+    const token = localStorage.getItem("token");
+    const response = await axios.post(`${baseURL}/v1/api/projects/add`, projectData, 
+      { headers: { Authorization: `Bearer ${token}`, timeout: 20000 }}
+    );
 
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `${baseURL}/v1/api/projects/add`,
-        projectData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.status === 201) {
-        toast.success("Project created successfully!", {
-          position: "bottom-right",
-          duration: 3000,
-        });
-        resetForm();
-        setStep(1);
-      }
-    } catch (err: any) {
-      console.log(err);
-      toast.error(`An error occurred: ${err.message}`, {
+    if (response.status === 201) {
+      toast.success("Project created successfully!", {
         position: "bottom-right",
         duration: 3000,
       });
-    } finally {
-      setSubmitting(false);
+      resetForm();
+      setStep(1);
     }
+  } catch (err: any) {
+    console.error("Project creation error:", err);
+    toast.error(`An error occurred: ${err.message}`, {
+      position: "bottom-right",
+      duration: 3000,
+    });
+  } finally {
+    setSubmitting(false);
   }
+}
 
   const steps = ["Details", "Floor Plans", "Images", "Amenities"];
 
@@ -242,20 +237,74 @@ export default function AddProjectLayout() {
         return [];
     }
   };
+  const showErrorsToast = (errors: FormikErrors<typeof initialValues>, stepNumber: number) => {
+    const stepFields = getStepFields(stepNumber);
+    const errorMessages = stepFields.reduce((acc: string[], field) => {
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      for (const part of fieldParts) {
+        fieldError = fieldError && fieldError[part];
+      }
+      if (fieldError) {
+        acc.push(`${field}: ${fieldError}`);
+      }
+      return acc;
+    }, []);
 
-  const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
-    // console.log(errors,touched,stepNumber);
+    if (errorMessages.length > 0) {
+      toast.error(
+        <div>
+          <strong>Errors on step {stepNumber}:</strong>
+          <ul className="list-disc pl-4 mt-2">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>,
+        { duration: 5000, position: "bottom-right" }
+      );
+    }
+  };
+
+  const hasStepErrors = (errors: FormikErrors<typeof initialValues>, touched: any, stepNumber: number) => {
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
-      const fieldParts = field.split(".");
-      let fieldError = errors;
-      let fieldTouched = touched;
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      let fieldTouched: any = touched;
       for (const part of fieldParts) {
         fieldError = fieldError && fieldError[part];
         fieldTouched = fieldTouched && fieldTouched[part];
       }
       return fieldError && fieldTouched;
     });
+  };
+
+  const showAllErrors = (errors: FormikErrors<typeof initialValues>) => {
+    const allErrorMessages = steps.flatMap((_, index) => {
+      const stepNumber = index + 1;
+      const stepFields = getStepFields(stepNumber);
+      return stepFields.reduce((acc: string[], field) => {
+        const fieldParts = field.split('.');
+        let fieldError: any = errors;
+        for (const part of fieldParts) {
+          fieldError = fieldError && fieldError[part];
+        }
+        if (fieldError) {
+          acc.push(`Step ${stepNumber} - ${field}: ${fieldError}`);
+        }
+        return acc;
+      }, []);
+    });
+
+    if (allErrorMessages.length > 0) {
+      allErrorMessages.forEach((message)=>{
+        toast.error(
+          `${message}`,
+          { duration: 10000, position: "bottom-right" }
+        );
+      })
+    }
   };
 
   return (
@@ -1205,41 +1254,68 @@ export default function AddProjectLayout() {
               </AnimatePresence>
 
               <div className="flex justify-between pt-5">
-                {step > 1 && (
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setStep((prev) => prev - 1)}
+                  className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
+                >
+                  <ChevronLeft className="w-5 h-5 mr-1" />
+                  Previous
+                </button>
+              )}
+              {step < 4 ? (
+                <Button
+                  type="button"
+                  onClick={() => setStep((prev) => prev + 1)}
+                  disabled={hasStepErrors(errors, touched, step)}
+                  className={`ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center ${
+                    hasStepErrors(errors, touched, step)
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  Next
+                  <ChevronRight className="w-5 h-5 ml-1" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Listing
+                      <Check className="w-5 h-5 ml-1" />
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+
+            {step === 4 && Object.keys(errors).length > 0 && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-yellow-400 mr-2" />
+                    <p className="text-sm text-yellow-700">
+                      There are errors in your form. Please review all steps before submitting.
+                    </p>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setStep((prev) => prev - 1)}
-                    className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
+                    onClick={() => showAllErrors(errors)}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
                   >
-                    <ChevronLeft className="w-5 h-5 mr-1" />
-                    Previous
+                    View all errors
                   </button>
-                )}
-                {step < 4 ? (
-                  <button
-                    type="button" // Add this line
-                    onClick={() => setStep((prev) => prev + 1)}
-                    disabled={hasStepErrors(errors, touched, step)}
-                    className={`ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center ${
-                      hasStepErrors(errors, touched, step)
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    Next
-                    <ChevronRight className="w-5 h-5 ml-1" />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
-                  >
-                    Submit Listing
-                    <Check className="w-5 h-5 ml-1" />
-                  </button>
-                )}
-              </div>
+                </div>
+              )}
             </Form>
           )}
         </Formik>

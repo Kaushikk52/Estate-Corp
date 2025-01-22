@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Bath, Bed, Home, MapPin, Scaling } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Link } from "react-router-dom";
 import Property from "../../../Models/Property";
 
@@ -11,10 +11,12 @@ export default function Properties(props: any) {
   const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [properties, setProperties] = useState<Property[]>([]);
+  const id = useId();
 
   useEffect(() => {
     setProperties(props.properties);
   }, [props.properties]);
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -31,9 +33,9 @@ export default function Properties(props: any) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="bg-white bg-opacity-90 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+            className="bg-white bg-opacity-90 mt-5 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
           >
-            <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col md:flex-row ">
               <div className="w-full sm:w-2/5 relative">
                 <img
                   src={

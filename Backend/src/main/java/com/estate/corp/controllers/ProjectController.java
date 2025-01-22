@@ -117,15 +117,16 @@ public class ProjectController {
             List<Project> filteredProjects = projectServ.getFilteredProjects(filters);
             Map<String, Object> response = new HashMap<>();
 
+            response.put("projects", filteredProjects);
+
             if (filteredProjects.isEmpty()) {
                 response.put("message", "No projects found");
                 log.warn("No projects found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 log.info("Retrieved all projects");
-                response.put("projects", filteredProjects);
-                return ResponseEntity.ok(response);
             }
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             log.error("An error occurred: {}", e.getMessage());

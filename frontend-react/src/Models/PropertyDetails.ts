@@ -17,6 +17,7 @@ interface PropertyDetails{
     underConstruction:string,
     facing:string;
     ammenities:string[];
+    isApproved:boolean;
 }
 
 export default PropertyDetails;

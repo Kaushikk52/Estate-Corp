@@ -59,6 +59,9 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false, length = 10)
     private UserRole role;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Blog> blogs;
+
     public enum UserRole {
         ROLE_USER, ROLE_RESALER, ROLE_AGENT, ROLE_ADMIN;
     }

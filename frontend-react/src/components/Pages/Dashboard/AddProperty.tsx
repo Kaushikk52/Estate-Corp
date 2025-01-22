@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, AlertCircle } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers, FormikErrors } from "formik";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { propertyValidationSchema } from "../../../Validations/propertyValidations";
 import DatePicker from "react-datepicker";
+import { Button } from "@/components/ui/button";
 
 const DatePickerField = ({ field, form }: any) => {
   return (
@@ -56,12 +57,44 @@ export default function AddPropertyLayout() {
       price: 0,
       amtUnit: "",
       isNegotiable: "",
+      isApproved: false,
       furnishedStatus: "",
       ammenities: [] as string[],
       description: "",
     },
     images: [] as File[],
   };
+
+  const LOCATION_OPTIONS = [
+    {
+      label: "Bhayandar",
+      options: ["Bhayandar East", "Bhayandar West"],
+    },
+    {
+      label: "Mira Road",
+      options: ["Mira Road East"],
+    },
+    {
+      label: "Dahisar",
+      options: ["Dahisar East", "Dahisar West"],
+    },
+    {
+      label: "Borivali",
+      options: ["Borivali East", "Borivali West"],
+    },
+    {
+      label: "Malad",
+      options: ["Malad East", "Malad West"],
+    },
+    {
+      label: "Goregaon",
+      options: ["Goregaon East", "Goregaon West"],
+    },
+    {
+      label: "Kandivali",
+      options: ["Kandivali East", "Kandivali West"],
+    },
+  ];
 
   useEffect(() => {
     const token: any = localStorage.getItem("token");
@@ -83,48 +116,54 @@ export default function AddPropertyLayout() {
     } catch (err) {
       console.log(err);
     }
-  });
+  }, []);
 
-  async function uploadImages(images: any) {
-    if (!images || images.length === 0) {
-      toast.error("Please select an image first", {
-        position: "bottom-right",
-        duration: 3000,
-      });
-      return [];
-    }
-
-    const imgUrls: string[] = [];
-
+  async function uploadSingleImage(image: File): Promise<string | null> {
     try {
-      // Use Promise.all to ensure all uploads complete before proceeding
-      await Promise.all(
-        images.map(async (img: any) => {
-          const formData = new FormData();
-          formData.append("file", img);
-          formData.append("upload_preset", uploadPreset);
-          formData.append("folder", propertiesPath);
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("upload_preset", uploadPreset);
+      formData.append("folder", propertiesPath);
 
-          const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
-            formData
-          );
-
-          if (res && res.data && res.data.display_name) {
-            // console.log("Image uploaded...", res.data.display_name);
-            imgUrls.push(res.data.display_name);
-          }
-        })
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
+        formData
       );
-
-      return imgUrls; // Return only after all uploads are done
+      return res.data?.display_name ?? null;
     } catch (err) {
-      toast.error(`Upload failed: ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
+      console.error("Image upload failed:", err);
+      return null;
+    }
+  }
+
+  async function uploadImages(images: File[]): Promise<string[]> {
+    if (!images?.length) {
+      showToast("Please select an image first", "error");
       return [];
     }
+    toast.loading("Uploading Images ...", {
+      position: "bottom-right",
+      duration: 2000,
+    });
+    const uploadPromises = images.map(uploadSingleImage);
+    const imgUrls = await Promise.all(uploadPromises);
+    return imgUrls.filter((url): url is string => url !== null);
+  }
+
+  function showToast(message: string, type: "success" | "error") {
+    toast[type](message, { position: "bottom-right", duration: 3000 });
+  }
+
+  function prepareFormData(values: typeof initialValues): typeof initialValues {
+    const updatedValues = { ...values };
+    if (updatedValues.type === "RENT") {
+      updatedValues.details.price = 0;
+    } else if (updatedValues.type === "BUY") {
+      updatedValues.details.rent = 0;
+    }
+
+    updatedValues.details.isApproved = false;
+    return updatedValues;
   }
 
   async function handleSubmit(
@@ -136,52 +175,33 @@ export default function AddPropertyLayout() {
       return;
     }
 
-    if (values.type === "RENT") {
-      values.details.price = 0;
-    } else if (values.type === "BUY") {
-      values.details.rent = 0;
-    }
-
     try {
-      const urls: any = await uploadImages(values.images);
-      if (urls.length > 0) {
-        // console.log("uploaded urls", urls);
-        values.images = [...urls];
-        // console.log("values.images : ", values.images);
+      setSubmitting(true);
+      const imageUrls: any = await uploadImages(values.images);
+      const preparedValues = prepareFormData(values);
+      if (imageUrls.length > 0) {
+        preparedValues.images = imageUrls;
       }
-    } catch (err) {
-      console.log(err);
-      toast.error(`An Error Occurred : ${err}`, {
-        position: "bottom-right",
-        duration: 3000,
-      });
-    } finally {
-      Object.assign(values.details, { isApproved: false });
       const token = localStorage.getItem("token");
-      try {
-        const response = await axios.post(
-          `${baseURL}/v1/api/properties/post`,
-          values,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (response.status === 201) {
-          toast.success("Form submitted successfully!", {
-            position: "bottom-right",
-            duration: 3000,
-          });
-          resetForm();
-          setSubmitting(false);
-          setStep(1);
-        }
-      } catch (err: any) {
-        console.log(err);
-        if (err.status === 401) {
-          toast.error("Access denied ! Authentication is required", {
-            position: "bottom-right",
-            duration: 3000,
-          });
-        }
+      const response = await axios.post(
+        `${baseURL}/v1/api/properties/post`,
+        preparedValues,
+        { headers: { Authorization: `Bearer ${token}`, timeout: 20000 } }
+      );
+
+      if (response.status === 201) {
+        showToast("Form submitted successfully!", "success");
+        resetForm();
+        setStep(1);
       }
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        showToast("Access denied! Authentication is required", "error");
+      } else {
+        showToast(`An error occurred: ${err.message}`, "error");
+      }
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -228,12 +248,41 @@ export default function AddPropertyLayout() {
     }
   };
 
-  const hasStepErrors = (errors: any, touched: any, stepNumber: number) => {
+  const showErrorsToast = (errors: FormikErrors<typeof initialValues>, stepNumber: number) => {
+    const stepFields = getStepFields(stepNumber);
+    const errorMessages = stepFields.reduce((acc: string[], field) => {
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      for (const part of fieldParts) {
+        fieldError = fieldError && fieldError[part];
+      }
+      if (fieldError) {
+        acc.push(`${field}: ${fieldError}`);
+      }
+      return acc;
+    }, []);
+
+    if (errorMessages.length > 0) {
+      toast.error(
+        <div>
+          <strong>Errors on step {stepNumber}:</strong>
+          <ul className="list-disc pl-4 mt-2">
+            {errorMessages.map((message, index) => (
+              <li key={index}>{message}</li>
+            ))}
+          </ul>
+        </div>,
+        { duration: 5000, position: "bottom-right" }
+      );
+    }
+  };
+
+  const hasStepErrors = (errors: FormikErrors<typeof initialValues>, touched: any, stepNumber: number) => {
     const stepFields = getStepFields(stepNumber);
     return stepFields.some((field) => {
-      const fieldParts = field.split(".");
-      let fieldError = errors;
-      let fieldTouched = touched;
+      const fieldParts = field.split('.');
+      let fieldError: any = errors;
+      let fieldTouched: any = touched;
       for (const part of fieldParts) {
         fieldError = fieldError && fieldError[part];
         fieldTouched = fieldTouched && fieldTouched[part];
@@ -241,6 +290,34 @@ export default function AddPropertyLayout() {
       return fieldError && fieldTouched;
     });
   };
+
+  const showAllErrors = (errors: FormikErrors<typeof initialValues>) => {
+    const allErrorMessages = steps.flatMap((_, index) => {
+      const stepNumber = index + 1;
+      const stepFields = getStepFields(stepNumber);
+      return stepFields.reduce((acc: string[], field) => {
+        const fieldParts = field.split('.');
+        let fieldError: any = errors;
+        for (const part of fieldParts) {
+          fieldError = fieldError && fieldError[part];
+        }
+        if (fieldError) {
+          acc.push(`Step ${stepNumber} - ${field}: ${fieldError}`);
+        }
+        return acc;
+      }, []);
+    });
+
+    if (allErrorMessages.length > 0) {
+      allErrorMessages.forEach((message)=>{
+        toast.error(
+          `${message}`,
+          { duration: 10000, position: "bottom-right" }
+        );
+      })
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-1 px-2 sm:px-3 lg:px-8">
@@ -312,7 +389,7 @@ export default function AddPropertyLayout() {
           validationSchema={propertyValidationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, errors, touched, setFieldValue, isSubmitting }) => (
+          {({ values, errors, touched, setFieldValue, isSubmitting}) => (
             <Form className="mt-8 space-y-6">
               <AnimatePresence mode="wait">
                 {step === 1 && (
@@ -538,40 +615,15 @@ export default function AddPropertyLayout() {
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                           <option value="">Select location</option>
-                          <optgroup label="Bhayandar">
-                            <option value="Bhayandar East">
-                              Bhayandar East
-                            </option>
-                            <option value="Bhayandar West">
-                              Bhayandar West
-                            </option>
-                          </optgroup>
-
-                          <optgroup label="Mira Road">
-                            <option value="Mira Road East">
-                              Mira Road East
-                            </option>
-                          </optgroup>
-
-                          <optgroup label="Dahisar">
-                            <option value="Dahisar East">Dahisar East</option>
-                            <option value="Dahisar West">Dahisar West</option>
-                          </optgroup>
-
-                          <optgroup label="Borivali">
-                            <option value="Borivali East">Borivali East</option>
-                            <option value="Borivali West">Borivali West</option>
-                          </optgroup>
-
-                          <optgroup label="Malad">
-                            <option value="Malad East">Malad East</option>
-                            <option value="Malad West">Malad West</option>
-                          </optgroup>
-
-                          <optgroup label="Goregaon">
-                            <option value="Goregaon East">Goregaon East</option>
-                            <option value="Goregaon West">Goregaon West</option>
-                          </optgroup>
+                          {LOCATION_OPTIONS.map((group) => (
+                            <optgroup key={group.label} label={group.label}>
+                              {group.options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ))}
                         </Field>
                         <ErrorMessage
                           name="details.location"
@@ -804,6 +856,36 @@ export default function AddPropertyLayout() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Under Construction
+                        </label>
+                        <div className="mt-2 space-x-4">
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.underConstruction"
+                              value="Yes"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">Yes</span>
+                          </label>
+                          <label className="inline-flex items-center">
+                            <Field
+                              type="radio"
+                              name="details.underConstruction"
+                              value="No"
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            <span className="ml-2">No</span>
+                          </label>
+                        </div>
+                        <ErrorMessage
+                          name="details.underConstruction"
+                          component="div"
+                          className="text-red-500 text-sm mt-1"
+                        />
+                      </div>
                       {values.details.underConstruction === "Yes" ? (
                         <div>
                           <label
@@ -846,36 +928,6 @@ export default function AddPropertyLayout() {
                           />
                         </div>
                       )}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Under Construction
-                        </label>
-                        <div className="mt-2 space-x-4">
-                          <label className="inline-flex items-center">
-                            <Field
-                              type="radio"
-                              name="details.underConstruction"
-                              value="Yes"
-                              className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="ml-2">Yes</span>
-                          </label>
-                          <label className="inline-flex items-center">
-                            <Field
-                              type="radio"
-                              name="details.underConstruction"
-                              value="No"
-                              className="form-radio h-4 w-4 text-blue-600"
-                            />
-                            <span className="ml-2">No</span>
-                          </label>
-                        </div>
-                        <ErrorMessage
-                          name="details.underConstruction"
-                          component="div"
-                          className="text-red-500 text-sm mt-1"
-                        />
-                      </div>
                     </div>
 
                     {values.type === "RENT" && (
@@ -1207,29 +1259,62 @@ export default function AddPropertyLayout() {
                 )}
                 {step < 4 ? (
                   <button
-                    type="button" // Add this line
-                    onClick={() => setStep((prev) => prev + 1)}
-                    disabled={hasStepErrors(errors, touched, step)}
-                    className={`ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center ${
-                      hasStepErrors(errors, touched, step)
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
+                    type="button"
+                    onClick={() => {
+                      if (!hasStepErrors(errors, touched, step)) {
+                        setStep((prev) => prev + 1);
+                      } else {
+                        showErrorsToast(errors, step);
+                      }
+                    }}
+                    className="ml-auto bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 items-center"
                   >
                     Next
                     <ChevronRight className="w-5 h-5 ml-1" />
                   </button>
                 ) : (
-                  <button
+                  <Button
                     type="submit"
+                    onClick={() => {
+                      if (Object.keys(errors).length > 0) {
+                        showAllErrors(errors);
+                      }
+                    }}
                     disabled={isSubmitting}
                     className="ml-auto bg-green-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 items-center"
                   >
-                    Submit Listing
-                    <Check className="w-5 h-5 ml-1" />
-                  </button>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        Submit Listing
+                        <Check className="w-5 h-5 ml-1" />
+                      </>
+                    )}
+                  </Button>
                 )}
               </div>
+              
+              {step === 4 && Object.keys(errors).length > 0 && (
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-yellow-400 mr-2" />
+                    <p className="text-sm text-yellow-700">
+                      There are errors in your form. Please review all steps before submitting.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => showAllErrors(errors)}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
+                  >
+                    View all errors
+                  </button>
+                </div>
+              )}
             </Form>
           )}
         </Formik>

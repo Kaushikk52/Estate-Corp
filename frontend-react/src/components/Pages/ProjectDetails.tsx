@@ -123,7 +123,7 @@ export default function ProjectDetails() {
       const bedroomList = response.data?.floorPlans
         .map((plan: any) => plan.bedrooms)
         .sort((a: number, b: number) => a - b)
-        .join(",");
+        .join("/");
       setBedroomList(bedroomList);
     } else {
       toast.error(`Failed to fetch project details. Please try again.`, {
@@ -309,7 +309,9 @@ export default function ProjectDetails() {
         >
           <h2 className="text-3xl font-semibold mb-6">Floor Plans</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {project?.floorPlans.map((plan: any) => (
+            {project?.floorPlans
+            .sort((a: FloorPlan, b:FloorPlan ) => a.bedrooms - b.bedrooms)
+            .map((plan: any) => (
               <motion.div
                 key={plan.id}
                 whileHover={{ scale: 1.05 }}
@@ -335,7 +337,7 @@ export default function ProjectDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <img
-                  src={`${imgPrefix}${propertiesPath}/${selectedPlan?.image}`}
+                  src={`${imgPrefix}${projectsPath}/${selectedPlan?.image}`}
                   alt={selectedPlan?.name}
                   loading="lazy"
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"

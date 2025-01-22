@@ -179,8 +179,8 @@ export default function ContactPage() {
               icon: MessageCircle,
               title: "Mail us",
               description: "Speak to our friendly team.",
-              linkText: "estatecorpbw@gmail.com",
-              link: "mailto:estatecorpbw@gmail.com",
+              linkText: "iestatecorp@gmail.com",
+              link: "mailto:iestatecorp@gmail.com",
             },
             {
               icon: MapPin,
@@ -192,8 +192,8 @@ export default function ContactPage() {
             {
               icon: Phone,
               title: "Call us",
-              description: "Mon-Fri from 8am to 5pm.",
-              linkText: "7700994313",
+              description: "Mon-Fri from 11am to 7pm.",
+              linkText: "+91 7700 9943 13",
               link: "tel:+917700994313",
             },
           ].map((item, index) => (

@@ -4,10 +4,12 @@ import com.estate.corp.models.Property;
 import com.estate.corp.services.PropertyServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
@@ -23,8 +25,8 @@ public class PropertyController {
     private PropertyServices propertyServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<?> getAllProperties() {
-        List<Property> properties = propertyServ.getAllProperties();
+    public ResponseEntity<?> getAllProperties(@RequestParam(defaultValue = "0") int page , @RequestParam("10") int size) {
+        List<Property> properties = propertyServ.getAllProperties(page,size);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "All properties retrieved");
         response.put("properties",properties);
@@ -91,11 +93,11 @@ public class PropertyController {
             if (filteredProperties.isEmpty()) {
                 response.put("message", "No properties found");
                 log.warn("No properties found");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
             } else {
                 log.info("Retrieved all properties");
-                return ResponseEntity.ok(response);
             }
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("An error occurred: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request.");
@@ -210,4 +212,15 @@ public class PropertyController {
         }
     }
 
+    @PostMapping(value = "/delete/{id}")
+    public ResponseEntity<?> deleteProperty(@PathVariable String id){
+        try{
+            propertyServ.removeProperty(id);
+            log.info("Property with ID : {} Deleted successfully",id);
+            return  ResponseEntity.status(HttpStatus.OK).body("Property deleted successfully");
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+    }
 }
