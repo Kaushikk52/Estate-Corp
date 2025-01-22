@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Phone, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import {  ArrowLeft, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -297,10 +297,10 @@ export default function AuthPopup(props: any) {
                             <div className="space-y-1">
                               <Label>Select Role</Label>
                               <Field name="role">
-                                {({ field }: any) => (
+                                {({ field,form }: any) => (
                                   <RadioGroup
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    onValueChange={(value)=> {form.setFieldValue(field.name,value)}}
+                                    defaultValue={roles[0]}
                                     className="flex justify-around"
                                   >
                                     {roles.map((role) => (
