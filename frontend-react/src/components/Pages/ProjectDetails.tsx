@@ -1,29 +1,30 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Formik, Field, ErrorMessage, FormikHelpers, Form } from "formik";
-import * as Yup from "yup";
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Formik, Field, ErrorMessage, type FormikHelpers, Form } from "formik"
+import * as Yup from "yup"
 import {
   MapPin,
   Calendar,
   ChevronLeft,
   IndianRupee,
   BedDoubleIcon,
-  ChartNoAxesGantt,
+  GanttChartIcon as ChartNoAxesGantt,
   Scan,
   Bed,
   Bath,
   ExternalLink,
   Building,
-} from "lucide-react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { uniq } from "lodash";
-import axios from "axios";
-import Project from "../../Models/Project";
-import FloorPlan from "../../Models/FloorPlan";
-import toast from "react-hot-toast";
+} from "lucide-react"
+import "swiper/css"
+import "swiper/css/navigation"
+import "swiper/css/pagination"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { uniq } from "lodash"
+import axios from "axios"
+import type Project from "../../Models/Project"
+import type FloorPlan from "../../Models/FloorPlan"
+import toast from "react-hot-toast"
+import ImagePreviewModal from "../ImagePreviewModal"
 
 const initialValues = {
   name: "",
@@ -31,36 +32,41 @@ const initialValues = {
   email: "",
   content: "",
   terms: false,
-};
+}
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   phone: Yup.string().required("Phone is required"),
   content: Yup.string().required("Message is required"),
-});
+})
 
 export default function ProjectDetails() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX;
-  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET;
-  const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
-  const projectsPath = `${uploadPreset}/${environment}/Projects`;
-  const propertiesPath = `${uploadPreset}/${environment}/Properties`;
-  const [selectedPlan, setSelectedPlan] = useState<FloorPlan>();
-  const [project, setProject] = useState<Project | any>();
-  const [currentUser, setCurrentUser] = useState<any>();
-  const [selectedImage, setSelectedImage] = useState<string | undefined>("");
-  const [bedroomList, setBedroomList] = useState("");
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
+  const imgPrefix = import.meta.env.VITE_APP_IMG_PREFIX
+  const uploadPreset = import.meta.env.VITE_APP_UPLOAD_PRESET
+  const environment = import.meta.env.VITE_APP_ENV || "LOCAL"
+  const projectsPath = `${uploadPreset}/${environment}/Projects`
+  const propertiesPath = `${uploadPreset}/${environment}/Properties`
+  const [selectedPlan, setSelectedPlan] = useState<FloorPlan>()
+  const [project, setProject] = useState<Project | any>()
+  const [currentUser, setCurrentUser] = useState<any>()
+  const [selectedImage, setSelectedImage] = useState<string | undefined>("")
+  const [bedroomList, setBedroomList] = useState("")
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [previewImage, setPreviewImage] = useState<{ src: string; alt: string; type: "project" | "floorPlan" } | null>(
+    null,
+  )
 
-  const handleSubmit = async (
-    values: any,
-    { setSubmitting, resetForm }: FormikHelpers<any>
-  ) => {
+  const openPreview = (src: string, alt: string, type: "project" | "floorPlan") => {
+    setPreviewImage({ src, alt, type })
+  }
+
+  const handleSubmit = async (values: any, { setSubmitting, resetForm }: FormikHelpers<any>) => {
     try {
-      const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+      const baseURL = import.meta.env.VITE_APP_BACKEND_BASE_URL
       const body = {
         userId: currentUser?.userId,
         projectId: project.id,
@@ -69,95 +75,91 @@ export default function ProjectDetails() {
         ownerName: project.owner.fullName,
         enquiry: values,
         subject: "PROJECT_ENQUIRY",
-      };
+      }
 
-      const response = await axios.post(
-        `${baseURL}/v1/api/enquiry/email`,
-        body
-      );
+      const response = await axios.post(`${baseURL}/v1/api/enquiry/email`, body)
 
       if (response.status === 200 || response.status === 201) {
         toast.success(`Email sent Successfully`, {
           position: "bottom-right",
           duration: 3000,
-        });
-        resetForm();
+        })
+        resetForm()
       } else {
-        throw new Error("Failed to send email");
+        throw new Error("Failed to send email")
       }
     } catch (err) {
-      console.error(err);
+      console.error(err)
       toast.error(`Couldn't send Email, Try again`, {
         position: "bottom-right",
         duration: 3000,
-      });
+      })
     } finally {
-      setSubmitting(false);
+      setSubmitting(false)
     }
-  };
+  }
 
   useEffect(() => {
-    getProjectById(id);
-    getCurrentUser();
+    getProjectById(id)
+    getCurrentUser()
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const header = document.getElementById("sticky-header");
+      const scrollPosition = window.scrollY
+      const header = document.getElementById("sticky-header")
       if (header) {
         if (scrollPosition > 100) {
-          header.classList.add("bg-white", "shadow-md");
+          header.classList.add("bg-white", "shadow-md")
         } else {
-          header.classList.remove("bg-white", "shadow-md");
+          header.classList.remove("bg-white", "shadow-md")
         }
       }
-    };
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const getProjectById = async (id: any) => {
-    const response = await axios.get(`${baseURL}/v1/api/projects/id/${id}`);
+    const response = await axios.get(`${baseURL}/v1/api/projects/id/${id}`)
     if (response.status === 200) {
-      setProject(response.data);
-      setSelectedPlan(response.data?.floorPlans[0]);
-      setSelectedImage(response.data.images[0]);
+      setProject(response.data)
+      setSelectedPlan(response.data?.floorPlans[0])
+      setSelectedImage(response.data.images[0])
       const bedroomList = response.data?.floorPlans
         .map((plan: any) => plan.bedrooms)
         .sort((a: number, b: number) => a - b)
-        .join("/");
-      setBedroomList(bedroomList);
+        .join("/")
+      setBedroomList(bedroomList)
     } else {
       toast.error(`Failed to fetch project details. Please try again.`, {
         position: "bottom-right",
         duration: 3000,
-      });
+      })
     }
-  };
+  }
 
   const getCurrentUser = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token")
       if (!token) {
-        setCurrentUser(undefined);
+        setCurrentUser(undefined)
       }
-      const response = await axios.get(
-        `${baseURL}/v1/api/users/getCurrentUser`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.get(`${baseURL}/v1/api/users/getCurrentUser`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       if (response.status === 201 || response.status === 200) {
-        setCurrentUser(response.data);
+        setCurrentUser(response.data)
       }
     } catch (err: any) {
-      console.log("An error occured : ", err);
+      console.log("An error occured : ", err)
       if (err.status === 401) {
-        localStorage.removeItem("token");
+        localStorage.removeItem("token")
       }
       toast.error(`An error occurred : ${err}`, {
         position: "bottom-right",
         duration: 3000,
-      });
+      })
     }
-  };
+  }
 
   const handleCopyUrl = () => {
     navigator.clipboard
@@ -166,15 +168,15 @@ export default function ProjectDetails() {
         toast.success(`URL copied to clipboard!`, {
           position: "bottom-right",
           duration: 3000,
-        });
+        })
       })
       .catch(() => {
         toast.error(`Failed to copy URL`, {
           position: "bottom-right",
           duration: 3000,
-        });
-      });
-  };
+        })
+      })
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -185,7 +187,9 @@ export default function ProjectDetails() {
         className="max-w-7xl mx-auto pt-5 px-4 sm:px-6 lg:px-8"
       >
         <button
-          onClick={() => {navigate(-1)}}
+          onClick={() => {
+            navigate(-1)
+          }}
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-5"
         >
           <ChevronLeft className="w-5 h-5 mr-2" />
@@ -202,21 +206,26 @@ export default function ProjectDetails() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 md:mb-0">
-                {project?.name}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 md:mb-0">{project?.name}</h1>
               <div className="flex items-center text-gray-600 mb-6">
                 <MapPin className="w-5 h-5 mr-2" />
                 <span>
-                  {project?.address.landmark} {project?.address.locality}{" "}
-                  {project?.address.street} - {project?.address.zipCode}
+                  {project?.address.landmark} {project?.address.locality} {project?.address.street} -{" "}
+                  {project?.address.zipCode}
                 </span>
               </div>
               <img
                 src={`${imgPrefix}${projectsPath}/${selectedImage}`}
                 alt={project?.name}
                 loading="lazy"
-                className="w-full h-[400px] object-cover rounded-lg shadow-md"
+                className="w-full h-[400px] object-cover rounded-lg shadow-md cursor-pointer"
+                onClick={() =>
+                  openPreview(
+                    `${imgPrefix}${projectsPath}/${selectedImage}`,
+                    project?.name || "Project Image",
+                    "project",
+                  )
+                }
               />
               <div className="flex mt-4 space-x-4 overflow-x-auto p-2">
                 {project?.images.map((image: any, index: any) => (
@@ -226,20 +235,23 @@ export default function ProjectDetails() {
                     src={`${imgPrefix}${projectsPath}/${image}`}
                     alt={`${project?.name} - Image ${index + 1}`}
                     className={`w-24 h-24 object-cover rounded-md cursor-pointer transition-all ${
-                      selectedImage === image
-                        ? "ring-2 ring-gray-500"
-                        : "opacity-70 hover:opacity-100"
+                      selectedImage === image ? "ring-2 ring-gray-500" : "opacity-70 hover:opacity-100"
                     }`}
-                    onClick={() => setSelectedImage(image)}
+                    onClick={() => {
+                      setSelectedImage(image)
+                      openPreview(
+                        `${imgPrefix}${projectsPath}/${image}`,
+                        `${project?.name} - Image ${index + 1}`,
+                        "project",
+                      )
+                    }}
                   />
                 ))}
               </div>
             </div>
 
             <div className="mt-6">
-              <h2 className="text-3xl font-semibold mb-6 mt-12">
-                Project Overview
-              </h2>
+              <h2 className="text-3xl font-semibold mb-6 mt-12">Project Overview</h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center">
@@ -250,14 +262,12 @@ export default function ProjectDetails() {
                   <Calendar className="w-5 h-5 mr-2 text-blue-600" />
                   {project?.underConstruction == "Yes" ? (
                     <span>
-                      Possession: {new Date(project?.possesion).getDate()}/
-                      {new Date(project?.possesion).getMonth() + 1}/
-                      {new Date(project?.possesion).getFullYear()}
+                      Possession: {new Date(project?.possesion).getDate()}/{new Date(project?.possesion).getMonth() + 1}
+                      /{new Date(project?.possesion).getFullYear()}
                     </span>
                   ) : (
                     <span>
-                      Built-In: {new Date(project?.builtIn).getDate()}/
-                      {new Date(project?.builtIn).getMonth() + 1}/
+                      Built-In: {new Date(project?.builtIn).getDate()}/{new Date(project?.builtIn).getMonth() + 1}/
                       {new Date(project?.builtIn).getFullYear()}
                     </span>
                   )}
@@ -311,23 +321,23 @@ export default function ProjectDetails() {
           <h2 className="text-3xl font-semibold mb-6">Floor Plans</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             {project?.floorPlans
-            .sort((a: FloorPlan, b:FloorPlan ) => a.bedrooms - b.bedrooms)
-            .map((plan: any) => (
-              <motion.div
-                key={plan.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                  selectedPlan?.id === plan.id
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-300"
-                }`}
-                onClick={() => setSelectedPlan(plan)}
-              >
-                <h3 className="font-semibold">{plan.name}</h3>
-                <p className="text-sm text-gray-600">{plan.bedrooms} BHK</p>
-              </motion.div>
-            ))}
+              .sort((a: FloorPlan, b: FloorPlan) => a.bedrooms - b.bedrooms)
+              .map((plan: any) => (
+                <motion.div
+                  key={plan.id}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    selectedPlan?.id === plan.id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-blue-300"
+                  }`}
+                  onClick={() => setSelectedPlan(plan)}
+                >
+                  <h3 className="font-semibold">{plan.name}</h3>
+                  <p className="text-sm text-gray-600">{plan.bedrooms} BHK</p>
+                </motion.div>
+              ))}
           </div>
           <motion.div
             key={selectedPlan?.id}
@@ -341,57 +351,31 @@ export default function ProjectDetails() {
                   src={`${imgPrefix}${projectsPath}/${selectedPlan?.image}`}
                   alt={selectedPlan?.name}
                   loading="lazy"
-                  className="w-full h-[400px] object-cover rounded-lg shadow-md"
+                  className="w-full h-[400px] object-cover rounded-lg shadow-md cursor-pointer"
+                  onClick={() =>
+                    openPreview(
+                      `${imgPrefix}${projectsPath}/${selectedPlan?.image}`,
+                      selectedPlan?.name || "Floor Plan",
+                      "floorPlan",
+                    )
+                  }
                 />
                 <div className="border border-gray-300 rounded-lg shadow-md p-6 w-full md:w-2/2 mt-3">
-                  <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                  >
+                  <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
                     {({ isSubmitting }) => (
                       <Form className="space-y-4">
-                        <h2 className="font-bold text-xl">
-                          Contact over email
-                        </h2>
+                        <h2 className="font-bold text-xl">Contact over email</h2>
                         <div>
-                          <Field
-                            name="name"
-                            type="text"
-                            placeholder="Name"
-                            className="w-full p-2 border rounded"
-                          />
-                          <ErrorMessage
-                            name="name"
-                            component="div"
-                            className="text-red-500 text-sm"
-                          />
+                          <Field name="name" type="text" placeholder="Name" className="w-full p-2 border rounded" />
+                          <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
                         </div>
                         <div>
-                          <Field
-                            name="phone"
-                            type="tel"
-                            placeholder="Phone"
-                            className="w-full p-2 border rounded"
-                          />
-                          <ErrorMessage
-                            name="phone"
-                            component="div"
-                            className="text-red-500 text-sm"
-                          />
+                          <Field name="phone" type="tel" placeholder="Phone" className="w-full p-2 border rounded" />
+                          <ErrorMessage name="phone" component="div" className="text-red-500 text-sm" />
                         </div>
                         <div>
-                          <Field
-                            name="email"
-                            type="email"
-                            placeholder="Email"
-                            className="w-full p-2 border rounded"
-                          />
-                          <ErrorMessage
-                            name="email"
-                            component="div"
-                            className="text-red-500 text-sm"
-                          />
+                          <Field name="email" type="email" placeholder="Email" className="w-full p-2 border rounded" />
+                          <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
                         </div>
                         <div>
                           <Field
@@ -401,31 +385,15 @@ export default function ProjectDetails() {
                             placeholder="Hello, I am interested in your property. Please provide more details."
                             className="w-full p-2 border rounded"
                           />
-                          <ErrorMessage
-                            name="content"
-                            component="div"
-                            className="text-red-500 text-sm"
-                          />
+                          <ErrorMessage name="content" component="div" className="text-red-500 text-sm" />
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Field
-                            type="checkbox"
-                            name="terms"
-                            id="terms"
-                            className="rounded text-orange-500"
-                          />
-                          <label
-                            htmlFor="terms"
-                            className="text-sm text-gray-600"
-                          >
+                          <Field type="checkbox" name="terms" id="terms" className="rounded text-orange-500" />
+                          <label htmlFor="terms" className="text-sm text-gray-600">
                             By submitting this form I agree to Terms of Use
                           </label>
                         </div>
-                        <ErrorMessage
-                          name="terms"
-                          component="div"
-                          className="text-red-500 text-sm"
-                        />
+                        <ErrorMessage name="terms" component="div" className="text-red-500 text-sm" />
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
@@ -442,9 +410,7 @@ export default function ProjectDetails() {
               </div>
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Floor Plan</h2>
-                <h3 className="text-xl font-semibold mb-4">
-                  {selectedPlan?.name}
-                </h3>
+                <h3 className="text-xl font-semibold mb-4">{selectedPlan?.name}</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center">
                     <Scan className="w-5 h-5 mr-2 text-blue-600" />
@@ -490,23 +456,17 @@ export default function ProjectDetails() {
                     <tbody>
                       <tr className="flex flex-col">
                         <td className="font-medium">Locality</td>
-                        <td className="text-gray-600">
-                          {project?.address.locality}
-                        </td>
+                        <td className="text-gray-600">{project?.address.locality}</td>
                       </tr>
                       <tr className="flex flex-col">
                         <td className="font-medium">Zip Code</td>
-                        <td className="text-gray-600">
-                          {project?.address.zipCode}
-                        </td>
+                        <td className="text-gray-600">{project?.address.zipCode}</td>
                       </tr>
                     </tbody>
                     <tbody>
                       <tr className="flex flex-col">
                         <td className="font-medium">Street</td>
-                        <td className="text-gray-600">
-                          {project?.address.street}
-                        </td>
+                        <td className="text-gray-600">{project?.address.street}</td>
                       </tr>
                       <tr className="flex flex-col">
                         <td className="font-medium">Location</td>
@@ -530,9 +490,7 @@ export default function ProjectDetails() {
                     <tbody>
                       <tr className="flex flex-col">
                         <td className="font-medium">Owner:</td>
-                        <td className="text-gray-600">
-                          {project?.owner.fullName}
-                        </td>
+                        <td className="text-gray-600">{project?.owner.fullName}</td>
                         <td className="font-medium">Property Size:</td>
                         <td className="text-gray-600">
                           {selectedPlan?.carpetArea} {selectedPlan?.areaUnit}
@@ -542,15 +500,11 @@ export default function ProjectDetails() {
                     <tbody>
                       <tr className="flex flex-col">
                         <td className="font-medium">Bedrooms:</td>
-                        <td className="text-gray-600">
-                          {selectedPlan?.bedrooms}
-                        </td>
+                        <td className="text-gray-600">{selectedPlan?.bedrooms}</td>
                       </tr>
                       <tr className="flex flex-col">
                         <td className="font-medium">Bathrooms:</td>
-                        <td className="text-gray-600">
-                          {selectedPlan?.bathrooms}
-                        </td>
+                        <td className="text-gray-600">{selectedPlan?.bathrooms}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -578,7 +532,17 @@ export default function ProjectDetails() {
             </div>
           </motion.div>
         </motion.div>
+        {previewImage && (
+          <ImagePreviewModal
+            isOpen={!!previewImage}
+            onClose={() => setPreviewImage(null)}
+            imageSrc={previewImage.src}
+            alt={previewImage.alt}
+            type={previewImage.type}
+          />
+        )}
       </div>
     </div>
-  );
+  )
 }
+
