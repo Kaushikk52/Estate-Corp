@@ -15,6 +15,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, A11y, Autoplay } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import Project from "../../Models/Project";
+import {uniq} from "lodash";
 
 // Import Swiper styles
 import "swiper/css";
@@ -145,10 +146,10 @@ export default function ProjectsCarousel(props: any) {
                       </h3>
                       <div className="">
                         <span className="mr-2 text-sm font-semibold text-blue-600">
-                          {project.floorPlans
-                            .map((plan: any) => plan.bedrooms)
-                            .sort((a: number, b: number) => a - b)
-                            .join("/")}{" "}
+                          {uniq(project.floorPlans
+                          .map((plan: any) => plan.bedrooms))
+                          .sort((a: number, b: number) => a - b)
+                          .join("/")}{" "}
                           BHK
                         </span>
                         <span className="text-sm font-semibold text-blue-600">

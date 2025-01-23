@@ -3,6 +3,7 @@ import { Bed, Building, Calendar, Home, MapPin } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Project from "../../../Models/Project"
+import { uniq } from "lodash"
 
 
 export default function Projects(props:any) {
@@ -79,10 +80,10 @@ export default function Projects(props:any) {
                     </span>
                     <span className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-blue-100 text-blue-800">
                       <Bed className="h-3 w-3 mr-1" />
-                      {project.floorPlans
-                        .map((plan) => plan.bedrooms)
-                        .sort((a, b) => a - b)
-                        .join(",")} BHK
+                      {uniq(project.floorPlans
+                      .map((plan: any) => plan.bedrooms))
+                      .sort((a: number, b: number) => a - b)
+                      .join("/")}{" "} BHK
                     </span>
                   </div>
                   <p className="text-gray-600 lineclamp2 mt-3">

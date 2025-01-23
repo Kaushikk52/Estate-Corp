@@ -27,6 +27,7 @@ import "swiper/css/navigation";
 import Project from "../../Models/Project";
 import { useDispatch, useSelector } from "react-redux";
 import Filters from "../Filters";
+import { uniq } from "lodash";
 
 interface FilterState {
   locations: string[];
@@ -369,10 +370,10 @@ export default function PropertyCardsCarousel() {
                         </h3>
                         <div className="">
                           <span className="mr-2 text-sm font-semibold text-blue-600">
-                            {project.floorPlans
-                              .map((plan: any) => plan.bedrooms)
-                              .sort((a: number, b: number) => a - b)
-                              .join(",")}{" "}
+                            {uniq(project.floorPlans
+                            .map((plan: any) => plan.bedrooms))
+                            .sort((a: number, b: number) => a - b)
+                            .join("/")}{" "}
                             BHK
                           </span>
                           <span className="text-sm font-semibold text-blue-600">

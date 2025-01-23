@@ -19,6 +19,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { uniq } from "lodash";
 import axios from "axios";
 import Project from "../../Models/Project";
 import FloorPlan from "../../Models/FloorPlan";
@@ -267,7 +268,7 @@ export default function ProjectDetails() {
                 </div>
                 <div className="flex items-center">
                   <BedDoubleIcon className="w-5 h-5 mr-2 text-blue-600" />
-                  <span>{bedroomList} bedrooms</span>
+                  <span>{uniq(bedroomList)} bedrooms</span>
                 </div>
                 <div className="flex items-center">
                   <Building className="w-5 h-5 mr-2 text-blue-600" />
