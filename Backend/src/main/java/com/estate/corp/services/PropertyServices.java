@@ -60,7 +60,7 @@ public class PropertyServices {
         return savedProperty;
     }
 
-    public List<Property> getAllProperties(int pageNo, int pageSize) {
+    public List<Property> getAllProperties() {
         return propertyRepo.findAll();
     }
 

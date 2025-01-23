@@ -25,8 +25,8 @@ public class PropertyController {
     private PropertyServices propertyServ;
 
     @GetMapping(value = "/all")
-    public ResponseEntity<?> getAllProperties(@RequestParam(defaultValue = "0") int page , @RequestParam("10") int size) {
-        List<Property> properties = propertyServ.getAllProperties(page,size);
+    public ResponseEntity<?> getAllProperties() {
+        List<Property> properties = propertyServ.getAllProperties();
         Map<String, Object> response = new HashMap<>();
         response.put("message", "All properties retrieved");
         response.put("properties",properties);

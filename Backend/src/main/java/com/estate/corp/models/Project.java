@@ -41,7 +41,7 @@ public class Project {
     @Column(nullable = true)
     private List<FloorPlan> floorPlans;
 
-    @Column(name = "images", length = 500, columnDefinition = "LONGTEXT")
+    @Column(name = "images", length = 5000, columnDefinition = "VARBINARY(5000)")
     private String[] images;
 
     private String location;
