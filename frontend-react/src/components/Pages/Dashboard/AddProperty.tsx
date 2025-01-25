@@ -118,36 +118,42 @@ export default function AddPropertyLayout() {
     }
   }, []);
 
-  async function uploadSingleImage(image: File): Promise<string | null> {
+  async function uploadSingleImage(image: File, type: string): Promise<string | null> {
     try {
       const formData = new FormData();
       formData.append("file", image);
-      formData.append("upload_preset", uploadPreset);
-      formData.append("folder", propertiesPath);
-
-      const res = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
-        formData
-      );
-      return res.data?.display_name ?? null;
+      formData.append("type", type); // Pass the type (e.g., "PROJECT", "PROPERTY")
+  
+      const res = await axios.post("/api/images/upload/single", formData);
+      return res.data ?? null; // Return the file URL
     } catch (err) {
       console.error("Image upload failed:", err);
       return null;
     }
   }
 
-  async function uploadImages(images: File[]): Promise<string[]> {
+  async function uploadImages(images: File[], type: string): Promise<string[]> {
     if (!images?.length) {
-      showToast("Please select an image first", "error");
+      showToast("Please select images first", "error");
       return [];
     }
+  
     toast.loading("Uploading Images ...", {
       position: "bottom-right",
       duration: 2000,
     });
-    const uploadPromises = images.map(uploadSingleImage);
-    const imgUrls = await Promise.all(uploadPromises);
-    return imgUrls.filter((url): url is string => url !== null);
+  
+    const formData = new FormData();
+    images.forEach((image) => formData.append("files", image));
+    formData.append("type", type); // Pass the type (e.g., "PROJECT", "PROPERTY")
+  
+    try {
+      const res = await axios.post(`${baseURL}/v1/api/images/upload/multiple`, formData);
+      return res.data ?? [];
+    } catch (err) {
+      console.error("Batch upload failed:", err);
+      return [];
+    }
   }
 
   function showToast(message: string, type: "success" | "error") {
@@ -177,7 +183,7 @@ export default function AddPropertyLayout() {
 
     try {
       setSubmitting(true);
-      const imageUrls: any = await uploadImages(values.images);
+      const imageUrls: any = await uploadImages(values.images,"Properties");
       const preparedValues = prepareFormData(values);
       if (imageUrls.length > 0) {
         preparedValues.images = imageUrls;

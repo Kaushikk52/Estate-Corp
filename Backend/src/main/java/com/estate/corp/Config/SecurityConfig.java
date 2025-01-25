@@ -46,6 +46,9 @@ public class SecurityConfig {
                         // Authentication endpoints
                         .requestMatchers(HttpMethod.POST, "/v1/api/auth/**").permitAll()
 
+                        // Images endpoints
+                        .requestMatchers(HttpMethod.POST,"/v1/api/images/**").permitAll()
+
                         // Users endpoints
                         .requestMatchers(HttpMethod.GET, "/v1/api/users/all").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/v1/api/users/adminProperties").permitAll()
