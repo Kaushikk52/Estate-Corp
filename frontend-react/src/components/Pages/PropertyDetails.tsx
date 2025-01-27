@@ -17,6 +17,7 @@ import { ErrorMessage, Field, Formik, FormikHelpers, Form } from "formik";
 import * as Yup from "yup";
 import Property from "../../Models/Property";
 import toast from "react-hot-toast";
+import ImagePreviewModal from "../ImagePreviewModal";
 
 export default function PropertyDetails() {
   const navigate = useNavigate();
@@ -29,6 +30,13 @@ export default function PropertyDetails() {
   const [property, setProperty] = useState<Property | null>(null);
   const [currentUser, setCurrentUser] = useState<any>();
   const [selectedImage, setSelectedImage] = useState<string | undefined>("");
+  const [previewImage, setPreviewImage] = useState<{ src: string; alt: string; type: "property" } | null>(
+    null,
+  )
+
+  const openPreview = (src: string, alt: string, type: "property") => {
+    setPreviewImage({ src, alt, type })
+  }
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -207,6 +215,13 @@ export default function PropertyDetails() {
                   loading="lazy"
                   alt={property.name}
                   className="w-full h-[400px] object-cover rounded-lg shadow-md"
+                  onClick={() =>
+                    openPreview(
+                      `${imgPrefix}${propertiesPath}/${selectedImage}`,
+                      property?.name || "Property Image",
+                      "property",
+                    )
+                  }
                 />
                 <div
                   className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${
@@ -574,6 +589,15 @@ export default function PropertyDetails() {
               </div>
             </div>
           </div>
+          {previewImage && (
+          <ImagePreviewModal
+            isOpen={!!previewImage}
+            onClose={() => setPreviewImage(null)}
+            imageSrc={previewImage.src}
+            alt={previewImage.alt}
+            type={previewImage.type}
+          />
+        )}
         </div>
       </motion.div>
     </div>

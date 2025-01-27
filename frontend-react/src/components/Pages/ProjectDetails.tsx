@@ -55,7 +55,6 @@ export default function ProjectDetails() {
   const [currentUser, setCurrentUser] = useState<any>()
   const [selectedImage, setSelectedImage] = useState<string | undefined>("")
   const [bedroomList, setBedroomList] = useState("")
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState<{ src: string; alt: string; type: "project" | "floorPlan" } | null>(
     null,
   )
@@ -239,11 +238,11 @@ export default function ProjectDetails() {
                     }`}
                     onClick={() => {
                       setSelectedImage(image)
-                      openPreview(
-                        `${imgPrefix}${projectsPath}/${image}`,
-                        `${project?.name} - Image ${index + 1}`,
-                        "project",
-                      )
+                      // openPreview(
+                      //   `${imgPrefix}${projectsPath}/${image}`,
+                      //   `${project?.name} - Image ${index + 1}`,
+                      //   "project",
+                      // )
                     }}
                   />
                 ))}

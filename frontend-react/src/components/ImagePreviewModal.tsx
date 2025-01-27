@@ -6,7 +6,7 @@ interface ImagePreviewModalProps {
   onClose: () => void
   imageSrc: string
   alt: string
-  type: "project" | "floorPlan"
+  type: "project" | "floorPlan" | "property"
 }
 
 const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ isOpen, onClose, imageSrc, alt, type }) => {

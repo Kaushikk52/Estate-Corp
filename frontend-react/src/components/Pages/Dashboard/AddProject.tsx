@@ -128,37 +128,45 @@ export default function AddProjectLayout() {
   }, []);
 
 
-async function uploadSingleImage(image: File): Promise<string | null> {
-  try {
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", uploadPreset);
-    formData.append("folder", projectsPath);
-
-    const res = await axios.post(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload/`,
-      formData
-    );
-
-    return res.data?.display_name || null;
-  } catch (err) {
-    console.error("Image upload failed:", err);
-    return null;
+  async function uploadSingleImage(image: File, type: string): Promise<string | null> {
+    try {
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("type", type); // Pass the type (e.g., "PROJECT", "PROPERTY")
+  
+      const res = await axios.post("/api/images/upload/single", formData);
+      return res.data ?? null; // Return the file URL
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      return null;
+    }
   }
-}
 
-async function uploadImages(images: File[]): Promise<string[]> {
+async function uploadImages(images: File[], type: string): Promise<string[]> {
   if (!images?.length) {
-    toast.error("Please select an image first", {
+    toast.error(`Please select images first`, {
       position: "bottom-right",
       duration: 3000,
     });
     return [];
   }
 
-  const uploadPromises = images.map(uploadSingleImage);
-  const imgUrls = await Promise.all(uploadPromises);
-  return imgUrls.filter((url): url is string => url !== null);
+  toast.loading("Uploading Images ...", {
+    position: "bottom-right",
+    duration: 2000,
+  });
+
+  const formData = new FormData();
+  images.forEach((image) => formData.append("files", image));
+  formData.append("type", type); // Pass the type (e.g., "PROJECT", "PROPERTY")
+
+  try {
+    const res = await axios.post(`${baseURL}/v1/api/images/upload/multiple`, formData);
+    return res.data ?? [];
+  } catch (err) {
+    console.error("Batch upload failed:", err);
+    return [];
+  }
 }
 
 async function handleSubmit(
@@ -176,11 +184,11 @@ async function handleSubmit(
         if(floorPlan.image == null){
           return { ...floorPlan, image: null };
         }
-        const url = await uploadSingleImage(floorPlan.image);
+        const url = await uploadSingleImage(floorPlan.image,"Projects");
         return { ...floorPlan, image: url };
       })
     );
-    const projectImages = await uploadImages(values.images);
+    const projectImages = await uploadImages(values.images,"Projects");
     const projectData = {
       ...values,
       floorPlans: updatedFloorPlans,
