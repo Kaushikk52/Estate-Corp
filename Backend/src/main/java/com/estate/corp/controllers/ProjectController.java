@@ -134,4 +134,18 @@ public class ProjectController {
         }
     }
 
+    @PostMapping(value = "/delete/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable String id){
+        try{
+            projectServ.deleteProject(id);
+            log.info("Project with ID : {} Deleted successfully",id);
+            return  ResponseEntity.status(HttpStatus.OK).body("Project deleted successfully");
+        }catch(Exception e){
+            log.warn("An Error occurred : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+    }
+
+
+
 }

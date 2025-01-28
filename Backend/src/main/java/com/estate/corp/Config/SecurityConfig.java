@@ -59,6 +59,7 @@ public class SecurityConfig {
                         // Projects endpoints
                         .requestMatchers(HttpMethod.POST,"/v1/api/projects/add").authenticated()
                         .requestMatchers(HttpMethod.GET, "/v1/api/projects/all","/v1/api/projects/filter", "/v1/api/projects/id/*", "/v1/api/projects/name/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/api/projects/delete/**").authenticated()
 
                         // Properties endpoints
                         .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter", "/v1/api/properties/all", "/v1/api/properties/isApproved", "/v1/api/properties/id/*", "/v1/api/properties/name/*").permitAll()

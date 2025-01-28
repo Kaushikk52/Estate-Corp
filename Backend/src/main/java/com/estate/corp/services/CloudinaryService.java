@@ -25,7 +25,7 @@ public class CloudinaryService {
 
     public String uploadFile(MultipartFile file, String type) throws IOException {
         String environment = this.env != null ? this.env : "LOCAL";
-        String folderPath = String.format("%s/%s", environment.toUpperCase(), type);
+        String folderPath = "estate_corp/" + environment.toUpperCase() + "/" + type;
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder",folderPath));
         return uploadResult.get("display_name").toString(); // Return file URL
     }
@@ -50,8 +50,40 @@ public class CloudinaryService {
     }
 
 
-    public String deleteFile(String publicId) throws IOException {
-        Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-        return result.get("result").toString(); // Return 'ok' if successful
+    public String deleteFile(String publicId,String type) throws IOException {
+        String environment = this.env != null ? this.env : "LOCAL";
+        String folderPath = "estate_corp/" + environment.toUpperCase() + "/"+type+"/";
+        String fullPublicId = folderPath + publicId;
+        Map result = cloudinary.uploader().destroy(fullPublicId, ObjectUtils.emptyMap());
+        return result.get("result").toString();
     }
+
+
+    public List<String> deleteFiles(List<String> publicIds,String type) {
+        String environment = this.env != null ? this.env : "LOCAL";
+        String folderPath = "estate_corp/" + environment.toUpperCase() + "/"+type+"/";
+
+        return publicIds.stream()
+                .map(publicId -> {
+                    try {
+                        // Include folderPath in the publicId if the files are stored in a specific folder
+                        String fullPublicId = folderPath + publicId;
+
+                        Map result = cloudinary.uploader().destroy(fullPublicId, ObjectUtils.emptyMap());
+                        String deletionResult = result.get("result").toString();
+
+                        if ("ok".equals(deletionResult)) {
+                            return fullPublicId + " deleted successfully.";
+                        } else {
+                            return fullPublicId + " deletion failed: " + deletionResult;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return publicId + " deletion failed: " + e.getMessage();
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+
 }

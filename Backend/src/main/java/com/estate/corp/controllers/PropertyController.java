@@ -1,6 +1,7 @@
 package com.estate.corp.controllers;
 
 import com.estate.corp.models.Property;
+import com.estate.corp.services.CloudinaryService;
 import com.estate.corp.services.PropertyServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

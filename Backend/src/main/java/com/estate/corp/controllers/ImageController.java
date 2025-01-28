@@ -43,9 +43,9 @@ public class ImageController {
 
 
     @DeleteMapping("/delete/single")
-    public ResponseEntity<?> deleteSingleImage(@RequestBody String publicId){
+    public ResponseEntity<?> deleteSingleImage(@RequestBody String publicId, @RequestBody String type){
         try{
-            String result = cloudinaryService.deleteFile(publicId);
+            String result = cloudinaryService.deleteFile(publicId,type);
             if(!Objects.equals(result,"ok")){
              throw new RuntimeException("An Runtime Exception occurred");
             }

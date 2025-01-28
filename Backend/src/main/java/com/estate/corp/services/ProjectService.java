@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,9 @@ public class ProjectService {
 
     @Autowired
     private UserService userServ;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @Value("${imgUrl.source.path}")
     private String sourceUrl;
@@ -79,6 +83,22 @@ public class ProjectService {
         Specification<Project> spec = ProjectSpecification.filterByCriteria(filters);
         List<Project> filteredProjects =  projectRepo.findAll(spec);
         return filteredProjects;
+    }
+
+    public void deleteProject(String id){
+        Project project = projectRepo.findById(id).orElseThrow(() -> new RuntimeException("Project not found : "+id));
+        List<FloorPlan> floorPlanList = project.getFloorPlans();
+        floorPlanList.forEach((floorPlan -> {
+            try {
+               String result =  cloudinaryService.deleteFile(floorPlan.getImage(), "Projects");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        List<String> results =  cloudinaryService.deleteFiles(List.of(project.getImages()),"Projects");
+
+
+        projectRepo.delete(project);
     }
 
 }

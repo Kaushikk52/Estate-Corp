@@ -37,6 +37,9 @@ public class PropertyServices {
     @Autowired
     private UserService userServ;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     @Value("${imgUrl.source.path}")
     private String sourceUrl;
     @Value("${imgUrl.destination.path}")
@@ -100,7 +103,9 @@ public class PropertyServices {
 
     public void removeProperty(String id){
         Property property = propertyRepo.findById(id).orElseThrow(()-> new RuntimeException("Property not Found"));
+        List<String> results =  cloudinaryService.deleteFiles(List.of(property.getImages()),"Properties");
         propertyRepo.delete(property);
+
     }
 
 }
