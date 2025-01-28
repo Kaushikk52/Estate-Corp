@@ -134,7 +134,7 @@ export default function AddProjectLayout() {
       formData.append("file", image);
       formData.append("type", type); // Pass the type (e.g., "PROJECT", "PROPERTY")
   
-      const res = await axios.post("/api/images/upload/single", formData);
+      const res = await axios.post(`${baseURL}/v1/api/images/upload/single`, formData);
       return res.data ?? null; // Return the file URL
     } catch (err) {
       console.error("Image upload failed:", err);

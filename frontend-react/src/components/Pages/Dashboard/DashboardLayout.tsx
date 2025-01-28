@@ -136,51 +136,8 @@ export default function Dashboard() {
     getCurrentUser();
   }, []);
 
-  async function deleteImage(publicId: string){
-    const apiKey = "592864215367616";
-    const apiSecret = "tnUjgE5Q-tn0Pme8G7q3tqWeBMw";
+  const removeProperty = async (id: string) => {
     try {
-      const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
-      const auth = btoa(`${apiKey}:${apiSecret}`);
-
-      const formData = new URLSearchParams();
-      formData.append("public_id", publicId);
-
-      const response = await axios.post(url, formData, {
-        headers: {
-          Authorization: `Bearer ${auth}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-
-      if (response.data.result === "ok") {
-        console.log("Image deleted successfully!");
-        alert("Image deleted successfully!");
-      } else {
-        console.error("Failed to delete image:", response.data);
-        alert("Failed to delete image.");
-      }
-    } catch (error) {
-      console.error("Error deleting image:", error);
-      alert("Error deleting image.");
-    }
-  }
-
-  const removeProperty = async (id: string,images:File[]) => {
-    try {
-      const deletePromises = images.map((image)=> 
-        {
-          console.log("Image : "+image)
-          deleteImage(`${uploadPreset}/${environment}/Properties/${image}`)
-        });
-      const deletedImgs = await Promise.all(deletePromises);
-      if(!deletedImgs){
-        toast.error(`Images not Deleted`,{
-          position:"bottom-right",
-          duration:3000
-        });
-        return;
-      }
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${baseURL}/v1/api/properties/delete/${id}`,
@@ -202,6 +159,31 @@ export default function Dashboard() {
       });
     }
   };
+
+  
+  const deleteProject = async (id : string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${baseURL}/v1/api/projects/delete/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 200) {
+        getProjects(currentUser.role);
+        toast.success(`Project deleted !`, {
+          position: "bottom-right",
+          duration: 3000,
+        });
+      }
+    } catch (err) {
+      console.log("An error occurred : ", err);
+      toast.error(`An error occurred : ${err}`, {
+        position: "bottom-right",
+        duration: 3000,
+      });
+    }
+  }
 
   useEffect(() => {
     if (propertyName === "") {
@@ -537,7 +519,7 @@ export default function Dashboard() {
                             </button>
                             <button
                               className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={() => removeProperty(property.id,property.images)}
+                              onClick={() => removeProperty(property.id)}
                             >
                               <Trash2 size={20} />
                             </button>
@@ -559,7 +541,7 @@ export default function Dashboard() {
                             </button>
                             <button
                               className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={() => removeProperty(property.id,property.images)}
+                              onClick={() => removeProperty(property.id)}
                             >
                               <Trash2 size={20} />
                             </button>
@@ -663,7 +645,7 @@ export default function Dashboard() {
                             </button>
                             <button
                               className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={()=> {}}
+                              onClick={()=> {deleteProject(project.id)}}
                             >
                               <Trash2 size={20} />
                             </button>
@@ -685,7 +667,7 @@ export default function Dashboard() {
                             </button>
                             <button
                               className="p-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                              onClick={() => {}}
+                              onClick={() => {deleteProject(project.id)}}
                             >
                               <Trash2 size={20} />
                             </button>
