@@ -8,6 +8,8 @@ import { jwtDecode } from "jwt-decode";
 import { propertyValidationSchema } from "../../../Validations/propertyValidations";
 import DatePicker from "react-datepicker";
 import { Button } from "@/components/ui/button";
+import { useParams } from "react-router-dom";
+import Property from "@/Models/Property";
 
 const DatePickerField = ({ field, form }: any) => {
   return (
@@ -28,41 +30,16 @@ export default function EditPropertyLayout() {
   const environment = import.meta.env.VITE_APP_ENV || "LOCAL";
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [step, setStep] = useState(1);
+  const [property, setProperty] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const {id} = useParams();
 
-  const initialValues = {
-    name: "",
-    mahareraNo: "",
-    type: "",
-    propertyVariant: "",
-    subVariant: "",
-    address: {
-      landmark: "",
-      locality: "",
-      street: "",
-      zipCode: "",
-    },
-    details: {
-      bedrooms: "",
-      bathrooms: "",
-      balconies: "",
-      floorNo: "",
-      location: "",
-      facing: "",
-      carpetArea: "",
-      areaUnit: "",
-      builtIn: "",
-      possesion: "",
-      underConstruction: "",
-      rent: 0,
-      price: 0,
-      amtUnit: "",
-      isNegotiable: "",
-      isApproved: false,
-      furnishedStatus: "",
-      ammenities: [] as string[],
-      description: "",
-    },
-    images: [] as File[],
+  const initialValues = async (): Promise<Property> => {
+    const response = await axios.get(`${baseURL}/v1/api/properties/id/${id}`);
+    // console.log("property : ", response);
+    setProperty(response.data);
+    setSelectedImage(response.data.images[0]);
+    return response.data;
   };
 
   const LOCATION_OPTIONS = [
@@ -116,6 +93,7 @@ export default function EditPropertyLayout() {
     } catch (err) {
       console.log(err);
     }
+    initialValues();
   });
 
   async function uploadSingleImage(image: File): Promise<string | null> {
@@ -326,6 +304,7 @@ export default function EditPropertyLayout() {
         </div>
 
         <Formik
+        enableReinitialize
           initialValues={initialValues}
           validationSchema={propertyValidationSchema}
           onSubmit={handleSubmit}
@@ -354,6 +333,7 @@ export default function EditPropertyLayout() {
                           id="name"
                           name="name"
                           type="text"
+                          value={property?.name}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -373,6 +353,7 @@ export default function EditPropertyLayout() {
                           id="mahareraNo"
                           name="mahareraNo"
                           type="text"
+                          value={property?.mahareraNo}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -393,6 +374,7 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="type"
                               value="RENT"
+                              checked={property?.type === "RENT"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Rent</span>
@@ -402,6 +384,7 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="type"
                               value="BUY"
+                              checked={property?.type === "BUY"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Sell</span>
@@ -423,6 +406,7 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="details.isNegotiable"
                               value="YES"
+                              checked={property?.details.isNegotiable === "YES"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Yes</span>
@@ -432,6 +416,7 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="details.isNegotiable"
                               value="NO"
+                              checked={property?.details.isNegotiable === "NO"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">No</span>
@@ -456,6 +441,7 @@ export default function EditPropertyLayout() {
                           as="select"
                           id="propertyVariant"
                           name="propertyVariant"
+                          value={property?.propertyVariant}
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                           <option value="">Select variant</option>
@@ -514,6 +500,7 @@ export default function EditPropertyLayout() {
                         id="address.landmark"
                         name="address.landmark"
                         type="text"
+                        value={property?.address.landmark}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                       <ErrorMessage
@@ -534,6 +521,7 @@ export default function EditPropertyLayout() {
                           id="address.locality"
                           name="address.locality"
                           type="text"
+                          value={property?.address.locality}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -553,6 +541,7 @@ export default function EditPropertyLayout() {
                           as="select"
                           id="details.location"
                           name="details.location"
+                          value={property?.details.location}
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                            <option value="">Select location</option>
@@ -585,6 +574,7 @@ export default function EditPropertyLayout() {
                           id="address.street"
                           name="address.street"
                           type="text"
+                          value={property?.address.street}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -604,6 +594,7 @@ export default function EditPropertyLayout() {
                           id="address.zipCode"
                           name="address.zipCode"
                           type="text"
+                          value={property?.address.zipCode} 
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage

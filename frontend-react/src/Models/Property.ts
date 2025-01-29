@@ -17,6 +17,7 @@ interface Property {
     address: Address;
     details: PropertyDetails;
     createdAt:Date;
+    propertyVariant: string;
     
   }
 

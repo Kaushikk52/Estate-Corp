@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Project from "../../../Models/Project"
 import { uniq } from "lodash"
+import FloorPlan from "@/Models/FloorPlan"
 
 
 export default function Projects(props:any) {
@@ -42,11 +43,11 @@ export default function Projects(props:any) {
                   src={project.images.length > 0 ? `${imgPrefix}${projectsPath}/${project.images[0]}` : defaultImg}
                   alt={project.name}
                   loading="lazy"
-                  className="w-full h-full object-cover md:object-center aspect-[4/2]"
+                  className="w-full h-full object-cover md:object-center "
                 />
                 <span className="absolute inline-flex top-2 right-2 items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                   <Home className="h-3 w-3 mr-1" />
-                  {project.underConstruction === "Yes" ? "Under Construction" : "Ready"}
+                  {project.underConstruction === "Yes" ? "Under Construction" : "Ready1"}
                 </span>
               </div>
               <div className="flex-1 w-full sm:w-3/5 p-6 flex flex-col justify-between">
@@ -56,7 +57,13 @@ export default function Projects(props:any) {
                       {project.name}
                     </h3>
                     <div className="text-xl font-semibold text-blue-600">
-                      {project.floorPlans.length} Floor Plans
+                    {project.floorPlans.map((plan : FloorPlan)=> {
+                            let amount:string;
+                            plan.rent ? 
+                            amount = `${plan.rent} ${plan.amtUnit} /Month`  
+                            : amount = `${plan.price} ${plan.amtUnit} /Year`;     
+                            return amount;
+                          })} 
                     </div>
                   </div>
                   <p className="text-gray-600 mb-4 flex items-center lineclamp1">

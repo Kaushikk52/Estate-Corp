@@ -21,6 +21,7 @@ import {uniq} from "lodash";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
+import FloorPlan from "@/Models/FloorPlan";
 
 export default function ProjectsCarousel(props: any) {
   const defaultImg = import.meta.env.VITE_APP_DEFAULT_IMG;
@@ -153,7 +154,13 @@ export default function ProjectsCarousel(props: any) {
                           BHK
                         </span>
                         <span className="text-sm font-semibold text-blue-600">
-                          {project.floorPlans.length} Floor Plans
+                          {project.floorPlans.map((plan : FloorPlan)=> {
+                            let amount:string;
+                            plan.rent ? 
+                            amount = `${plan.rent} ${plan.amtUnit} /Month`  
+                            : amount = `${plan.price} ${plan.amtUnit} /Year`;     
+                            return amount;
+                          })} 
                         </span>
                       </div>
                     </div>

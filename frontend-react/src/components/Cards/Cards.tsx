@@ -28,6 +28,7 @@ import Project from "../../Models/Project";
 import { useDispatch, useSelector } from "react-redux";
 import Filters from "../Filters";
 import { uniq } from "lodash";
+import FloorPlan from "@/Models/FloorPlan";
 
 interface FilterState {
   locations: string[];
@@ -377,7 +378,13 @@ export default function PropertyCardsCarousel() {
                             BHK
                           </span>
                           <span className="text-sm font-semibold text-blue-600">
-                            {project.floorPlans.length} Floor Plans
+                          {project.floorPlans.map((plan : FloorPlan)=> {
+                            let amount:string;
+                            plan.rent ? 
+                            amount = `${plan.rent} ${plan.amtUnit} /Month`  
+                            : amount = `${plan.price} ${plan.amtUnit} /Year`;     
+                            return amount;
+                          })} 
                           </span>
                         </div>
                       </div>
