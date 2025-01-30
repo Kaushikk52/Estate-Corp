@@ -63,7 +63,7 @@ public class SecurityConfig {
 
                         // Properties endpoints
                         .requestMatchers(HttpMethod.GET, "/v1/api/properties/filter", "/v1/api/properties/all", "/v1/api/properties/isApproved", "/v1/api/properties/id/*", "/v1/api/properties/name/*").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/v1/api/properties/approvalStatus/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/v1/api/properties/approvalStatus/*","/v1/api/properties/update/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/v1/api/properties/post","/v1/api/properties/delete/**").authenticated()
 
                         //Notifications endpoints

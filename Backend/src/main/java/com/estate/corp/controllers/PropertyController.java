@@ -213,6 +213,15 @@ public class PropertyController {
         }
     }
 
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<?> updateProperty(@RequestBody Property property){
+        try{
+
+        } catch (Exception e) {
+
+        }
+    }
+
     @PostMapping(value = "/delete/{id}")
     public ResponseEntity<?> deleteProperty(@PathVariable String id){
         try{
