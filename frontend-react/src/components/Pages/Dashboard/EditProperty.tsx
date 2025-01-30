@@ -32,14 +32,55 @@ export default function EditPropertyLayout() {
   const [step, setStep] = useState(1);
   const [property, setProperty] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [initialValues , setInitialValues] = useState({
+    name: "",
+    type: "",
+    mahareraNo: "",
+    propertyVariant: "",
+    subVariant: "",
+    address: {
+      landmark: "",
+      locality: "",
+      street: "",
+      zipCode: "",
+    },
+    details: {
+      location: "",
+      bedrooms: 0,
+      bathrooms: 0,
+      balconies: 0,
+      floorNo: 0,
+      facing: "",
+      carpetArea: 0,
+      builtIn: new Date(),
+      possesion: new Date(),
+      underConstruction: "",
+      rent: 0,
+      price: 0,
+      amtUnit: "",
+      furnishedStatus: "",
+      description: "",
+      isNegotiable: "",
+      isApproved: false,
+      ammenities: [],
+    },
+    images: [],
+  });
+
   const {id} = useParams();
 
-  const initialValues = async (): Promise<Property> => {
-    const response = await axios.get(`${baseURL}/v1/api/properties/id/${id}`);
-    // console.log("property : ", response);
-    setProperty(response.data);
-    setSelectedImage(response.data.images[0]);
-    return response.data;
+  const getProperty = async () => {
+    try{
+      const response = await axios.get(`${baseURL}/v1/api/properties/id/${id}`);
+      setInitialValues(response.data);
+      // console.log("property : ", response);
+      setProperty(response.data);
+      setSelectedImage(response.data.images[0]);
+      return response.data;
+    }catch(err){
+      console.error("Error fetching property:", err);
+    }
+  
   };
 
   const LOCATION_OPTIONS = [
@@ -93,8 +134,8 @@ export default function EditPropertyLayout() {
     } catch (err) {
       console.log(err);
     }
-    initialValues();
-  });
+    getProperty();
+  },[id]);
 
   async function uploadSingleImage(image: File): Promise<string | null> {
     try {
@@ -160,7 +201,7 @@ export default function EditPropertyLayout() {
       }
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${baseURL}/v1/api/properties/post`,
+        `${baseURL}/v1/api/properties/update/${id}`,
         preparedValues,
        { headers: {Authorization: `Bearer ${token}` }}
       );
@@ -214,6 +255,7 @@ export default function EditPropertyLayout() {
           "details.amtUnit",
           "details.furnishedStatus",
           "details.description",
+          "details.isApproved",
         ];
       case 3:
         return ["images"];
@@ -333,7 +375,6 @@ export default function EditPropertyLayout() {
                           id="name"
                           name="name"
                           type="text"
-                          value={property?.name}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -353,7 +394,6 @@ export default function EditPropertyLayout() {
                           id="mahareraNo"
                           name="mahareraNo"
                           type="text"
-                          value={property?.mahareraNo}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -374,7 +414,6 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="type"
                               value="RENT"
-                              checked={property?.type === "RENT"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Rent</span>
@@ -384,7 +423,6 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="type"
                               value="BUY"
-                              checked={property?.type === "BUY"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Sell</span>
@@ -406,7 +444,6 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="details.isNegotiable"
                               value="YES"
-                              checked={property?.details.isNegotiable === "YES"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">Yes</span>
@@ -416,7 +453,6 @@ export default function EditPropertyLayout() {
                               type="radio"
                               name="details.isNegotiable"
                               value="NO"
-                              checked={property?.details.isNegotiable === "NO"}
                               className="form-radio h-4 w-4 text-blue-600"
                             />
                             <span className="ml-2">No</span>
@@ -441,7 +477,6 @@ export default function EditPropertyLayout() {
                           as="select"
                           id="propertyVariant"
                           name="propertyVariant"
-                          value={property?.propertyVariant}
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                           <option value="">Select variant</option>
@@ -500,7 +535,6 @@ export default function EditPropertyLayout() {
                         id="address.landmark"
                         name="address.landmark"
                         type="text"
-                        value={property?.address.landmark}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       />
                       <ErrorMessage
@@ -521,7 +555,6 @@ export default function EditPropertyLayout() {
                           id="address.locality"
                           name="address.locality"
                           type="text"
-                          value={property?.address.locality}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -541,7 +574,6 @@ export default function EditPropertyLayout() {
                           as="select"
                           id="details.location"
                           name="details.location"
-                          value={property?.details.location}
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
                            <option value="">Select location</option>
@@ -574,7 +606,6 @@ export default function EditPropertyLayout() {
                           id="address.street"
                           name="address.street"
                           type="text"
-                          value={property?.address.street}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
@@ -594,7 +625,6 @@ export default function EditPropertyLayout() {
                           id="address.zipCode"
                           name="address.zipCode"
                           type="text"
-                          value={property?.address.zipCode} 
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         />
                         <ErrorMessage
