@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Loader2, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import axios from "axios";
@@ -31,8 +31,8 @@ export default function EditPropertyLayout() {
   const propertiesPath = `${uploadPreset}/${environment}/Properties`;
   const [step, setStep] = useState(1);
   const [property, setProperty] = useState<any>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [initialValues , setInitialValues] = useState({
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const [initialValues, setInitialValues] = useState({
     name: "",
     type: "",
     mahareraNo: "",
@@ -65,22 +65,22 @@ export default function EditPropertyLayout() {
       ammenities: [],
     },
     images: [],
+    newImages: [] as File[],
   });
 
-  const {id} = useParams();
+  const { id } = useParams();
 
   const getProperty = async () => {
-    try{
+    try {
       const response = await axios.get(`${baseURL}/v1/api/properties/id/${id}`);
       setInitialValues(response.data);
       // console.log("property : ", response);
       setProperty(response.data);
-      setSelectedImage(response.data.images[0]);
+      // setSelectedImage(response.data.images[0]);
       return response.data;
-    }catch(err){
+    } catch (err) {
       console.error("Error fetching property:", err);
     }
-  
   };
 
   const LOCATION_OPTIONS = [
@@ -111,7 +111,7 @@ export default function EditPropertyLayout() {
     {
       label: "Kandivali",
       options: ["Kandivali East", "Kandivali West"],
-    }
+    },
   ];
 
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function EditPropertyLayout() {
       console.log(err);
     }
     getProperty();
-  },[id]);
+  }, [id]);
 
   async function uploadSingleImage(image: File): Promise<string | null> {
     try {
@@ -183,6 +183,22 @@ export default function EditPropertyLayout() {
     return updatedValues;
   }
 
+  async function deleteImages(images: string[]) {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${baseURL}/v1/api/images/delete/mutliple`,
+        { publicId : images },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if(response.status === 200) {
+        showToast("Images deleted successfully!", "success");
+      }
+    } catch (err) {
+      console.log("Error deleting images:", err);
+    }
+  }
+
   async function handleSubmit(
     values: typeof initialValues,
     { setSubmitting, resetForm }: FormikHelpers<typeof initialValues>
@@ -194,16 +210,19 @@ export default function EditPropertyLayout() {
 
     try {
       setSubmitting(true);
-      const imageUrls:any = await uploadImages(values.images);
+      if(imagesToDelete.length > 0){
+        const deletedImages = await deleteImages(imagesToDelete);
+      }
+      const newImageUrls: any = await uploadImages(values.newImages);
       const preparedValues = prepareFormData(values);
-      if (imageUrls.length > 0) {
-        preparedValues.images = imageUrls;
+      if (newImageUrls.length > 0) {
+        preparedValues.newImages = newImageUrls;
       }
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${baseURL}/v1/api/properties/update/${id}`,
         preparedValues,
-       { headers: {Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.status === 201) {
@@ -258,7 +277,7 @@ export default function EditPropertyLayout() {
           "details.isApproved",
         ];
       case 3:
-        return ["images"];
+        return ["images", "newImages"];
       case 4:
         return ["details.ammenities"];
       default:
@@ -346,7 +365,7 @@ export default function EditPropertyLayout() {
         </div>
 
         <Formik
-        enableReinitialize
+          enableReinitialize
           initialValues={initialValues}
           validationSchema={propertyValidationSchema}
           onSubmit={handleSubmit}
@@ -576,7 +595,7 @@ export default function EditPropertyLayout() {
                           name="details.location"
                           className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
                         >
-                           <option value="">Select location</option>
+                          <option value="">Select location</option>
                           {LOCATION_OPTIONS.map((group) => (
                             <optgroup key={group.label} label={group.label}>
                               {group.options.map((option) => (
@@ -1043,8 +1062,8 @@ export default function EditPropertyLayout() {
                                   const files = event.currentTarget.files;
                                   if (files) {
                                     // console.log(files);
-                                    setFieldValue("images", [
-                                      ...values.images,
+                                    setFieldValue("newImages", [
+                                      ...(values.newImages || []),
                                       ...Array.from(files),
                                     ]);
                                   }
@@ -1064,15 +1083,58 @@ export default function EditPropertyLayout() {
                         className="text-red-500 text-sm mt-1"
                       />
                     </div>
-                    {values.images.length > 0 && (
+                    {(values.images.length || values.newImages?.length) > 0 && (
                       <div>
                         <h4 className="text-sm font-medium text-gray-700 mb-2">
                           Uploaded Images:
                         </h4>
                         <ul className="list-disc pl-5 text-sm text-gray-600">
-                          {values.images.map((file: File, index: number) => (
-                            <li key={index}>{file.name}</li>
+                          {values.images.map((image, index: number) => (
+                            <li
+                              key={index}
+                              className="flex items-center justify-between"
+                            >
+                              <span>{image}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  imagesToDelete.push(values.images[index]);
+                                  console.log(imagesToDelete);
+                                  setFieldValue(
+                                    "images",
+                                    values.images.filter((_, i) => i !== index)
+                                  );
+                                }}
+                                className="ml-2 text-red-500 hover:text-red-700 text-sm"
+                              >
+                                <X />
+                              </button>
+                            </li>
                           ))}
+                          {values.newImages?.map(
+                            (image: File, index: number) => (
+                              <li
+                                key={index}
+                                className="flex items-center justify-between"
+                              >
+                                <span>{image.name}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFieldValue(
+                                      "newImages",
+                                      values.newImages.filter(
+                                        (_, i) => i !== index
+                                      )
+                                    );
+                                  }}
+                                  className="ml-2 text-red-500 hover:text-red-700 text-sm"
+                                >
+                                  <X />
+                                </button>
+                              </li>
+                            )
+                          )}
                         </ul>
                       </div>
                     )}

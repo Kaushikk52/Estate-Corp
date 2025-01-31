@@ -216,7 +216,7 @@ public class PropertyController {
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<?> updateProperty(@RequestBody Property property){
         try{
-
+            return ResponseEntity.status(HttpStatus.OK).body("Property updated successfully ");
         } catch (Exception e) {
 
         }

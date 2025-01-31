@@ -56,5 +56,14 @@ public class ImageController {
     }
 
 
+    @DeleteMapping("/delete/multiple")
+    public ResponseEntity<?> deleteMultiple(@RequestBody List<String> publicId, @RequestBody String type) {
+        try {
+            List<String> result = cloudinaryService.deleteFiles(publicId,type);
+            return ResponseEntity.ok("Images deleted : "+result.size());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
+        }
+    }
 
 }
